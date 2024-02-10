@@ -11,8 +11,8 @@ from directory_manager import get_icon_dir
 
 class DefaultButton(customtkinter.CTkButton):
     def __init__(self, master: Any, **kwargs):
-        super().__init__(master, **kwargs, corner_radius=0, fg_color='#D9D9D9', text_color='black', hover_color='grey',
-                         width=90, font=('Roboto', 12))
+        super().__init__(master, **kwargs, corner_radius=5, fg_color='#34495e', text_color='white', hover_color='#596275',
+                         width=90, font=('Roboto', 12), compound='top')
 
 
 class PathObjectButton(customtkinter.CTkButton):
@@ -20,7 +20,8 @@ class PathObjectButton(customtkinter.CTkButton):
         super().__init__(master, **kwargs,
                          image=ImageTk.PhotoImage(Image.open(f"{get_icon_dir()}/file.png")
                                                   .resize((32, 32), Image.Resampling.LANCZOS)),
-                         fg_color='transparent', hover_color='gray', text_color='black', compound='top')
+                         fg_color='#596275', hover_color='#303952', text_color='white', compound='top',
+                         corner_radius=5)
         self.path = path
         self.item_name = path.split('/')[-1]
 

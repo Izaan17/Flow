@@ -4,6 +4,8 @@ from typing import Any
 
 import customtkinter
 from PIL import Image, ImageTk
+
+import settings
 from widgets.ErrorPopup import ErrorPopup
 
 from directory_manager import get_icon_dir
@@ -11,8 +13,8 @@ from directory_manager import get_icon_dir
 
 class DefaultButton(customtkinter.CTkButton):
     def __init__(self, master: Any, **kwargs):
-        super().__init__(master, **kwargs, corner_radius=5, fg_color='#34495e', text_color='white', hover_color='#596275',
-                         width=90, font=('Roboto', 12), compound='top')
+        super().__init__(master, **kwargs, corner_radius=5, fg_color='#34495e', text_color='white',
+                         hover_color='#596275', width=90, font=('Roboto', 12), compound='top')
 
 
 class PathObjectButton(customtkinter.CTkButton):
@@ -72,7 +74,8 @@ class FileObjectButton(PathObjectButton):
         is_picture = [True for format_ in picture_formats if path.endswith(format_)]
         is_picture = bool(is_picture)
         if is_picture:
-            preview_image = self.load_image(path, (50, 50))
+            preview_image = self.load_image(path, (int(settings.settings.get_setting("icon_width", 50)),
+                                                   int(settings.settings.get_setting("icon_width", 50))))
             if preview_image:
                 self.configure(image=preview_image)
 
@@ -80,7 +83,7 @@ class FileObjectButton(PathObjectButton):
     def load_image(path, size):
         try:
             image = Image.open(path)
-            image.thumbnail(size)
+            image.thumbnail(size, reducing_gap=1.0)
             return ImageTk.PhotoImage(image)
         except Exception as e:
             print(f"Error loading image: {e}")

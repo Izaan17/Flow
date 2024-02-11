@@ -5,11 +5,13 @@ import tkinter.simpledialog
 
 import customtkinter
 
+from settings import settings
 from directory_manager import get_storage_dir, get_icon_dir
 from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
 from widgets.CheckBox import TaskCheckBox
 from widgets.ErrorPopup import ErrorPopup
 from widgets.Page import Page
+from widgets.Dropdown import DefaultDropDown
 from PIL import Image, ImageTk
 
 
@@ -30,15 +32,26 @@ class TasksPage(Page):
                                         image=ImageTk.PhotoImage(Image.open(f'{get_icon_dir()}/plus-square.png')))
         add_task_button.pack(padx=(0, 10), side='right', anchor='nw')
 
-        tasks_scrollable_frame = customtkinter.CTkScrollableFrame(master=self, fg_color='#2c3e50')
-        tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5))
+        tasks_list_and_info_frame = customtkinter.CTkFrame(self, fg_color='transparent')
+        tasks_list_and_info_frame.pack(fill='both', expand=True)
+
+        tasks_scrollable_frame = customtkinter.CTkScrollableFrame(master=tasks_list_and_info_frame,
+                                                                  fg_color='transparent')
+        tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+
+        task_info_frame = customtkinter.CTkFrame(tasks_list_and_info_frame, fg_color='white', width=10)
+        task_info_frame.pack(side='right', fill='both', expand=True)
 
         # check_box = CheckListBox()
         # check_box.pack()
 
         def add_task_callback():
             print('added task')
-            TaskCheckBox(tasks_scrollable_frame, text="Text").pack(fill='both', expand=True, pady=(0, 10))
+            TaskCheckBox(tasks_scrollable_frame, text="Veniam laborum fugiat nostrud occaecat sint quis ullamco "
+                                                      "fugiat commodo proident exercitation dolor "
+                                                      "consectetur.", source="https://www.youtube.com").pack(
+                fill='both', expand=True,
+                pady=(0, 10))
 
         add_task_button.configure(command=add_task_callback)
 
@@ -55,12 +68,14 @@ class CurriculumPage(Page):
         self.top_buttons_frame.pack(padx=10, pady=(0, 5), side='top', anchor='nw')
 
         self.add_folder_button = DefaultButton(self.top_buttons_frame, text="Add Folder", command=self.add_folder,
-                                               image=ImageTk.PhotoImage(Image.open(f'{get_icon_dir()}/folder-plus.png')))
+                                               image=ImageTk.PhotoImage(
+                                                   Image.open(f'{get_icon_dir()}/folder-plus.png')))
         self.add_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.create_folder_button = DefaultButton(self.top_buttons_frame, text="Create Folder",
                                                   command=self.create_folder,
-                                                  image=ImageTk.PhotoImage(Image.open(f'{get_icon_dir()}/folder-plus.png')))
+                                                  image=ImageTk.PhotoImage(
+                                                      Image.open(f'{get_icon_dir()}/folder-plus.png')))
         self.create_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.clear_grid_button = DefaultButton(self.top_buttons_frame, text="Clear", command=self.clear_grid,
@@ -68,7 +83,8 @@ class CurriculumPage(Page):
         self.clear_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.refresh_grid_button = DefaultButton(self.top_buttons_frame, text="Refresh", command=self.refresh_grid,
-                                                 image=ImageTk.PhotoImage(Image.open(f'{get_icon_dir()}/rotate-ccw.png')))
+                                                 image=ImageTk.PhotoImage(
+                                                     Image.open(f'{get_icon_dir()}/rotate-ccw.png')))
         self.refresh_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.back_button = DefaultButton(self.top_buttons_frame, text="Back", command=self.go_back,
@@ -155,5 +171,23 @@ class CurriculumPage(Page):
 class SettingsPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color='white')
-        settings_label = customtkinter.CTkLabel(self, text="Settings", font=('Roboto', 36))
-        settings_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
+
+        self.all_icon_sizes = ["24x24", "50x50", "100x100", "125x125", "200x200"]
+
+        self.settings_label = customtkinter.CTkLabel(self, text="Settings", font=('Roboto', 36))
+        self.settings_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
+
+        self.drop_down_frame = customtkinter.CTkFrame(self)
+        self.drop_down_frame.pack(fill='both', expand=True)
+
+        self.icon_size_drop_down = DefaultDropDown(self.drop_down_frame, label_text="Icon Size",
+                                                   values=self.all_icon_sizes, command=self.on_icon_change)
+        self.icon_size_drop_down.pack(anchor='w')
+        # Set saved icon size or default
+        self.icon_size_drop_down.set(f"{settings.get_setting('icon_width')}x{settings.get_setting('icon_height')}")
+
+    @staticmethod
+    def on_icon_change(choice):
+        icon_size = choice.split("x")
+        settings.add_setting("icon_width", icon_size[0])
+        settings.add_setting("icon_height", icon_size[1])

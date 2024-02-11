@@ -48,8 +48,7 @@ class TasksPage(Page):
         def add_task_callback():
             print('added task')
             TaskCheckBox(tasks_scrollable_frame, text="Veniam laborum fugiat nostrud occaecat sint quis ullamco "
-                                                      "fugiat commodo proident exercitation dolor "
-                                                      "consectetur.", source="https://www.youtube.com").pack(
+                                                      "fugiat", source="MyOpenMath", link="https://youtube.com").pack(
                 fill='both', expand=True,
                 pady=(0, 10))
 

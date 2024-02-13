@@ -3,12 +3,11 @@ import tkinter
 from typing import Any
 
 import customtkinter
-from PIL import Image, ImageTk
+from PIL import Image
 
 import settings
-from widgets.ErrorPopup import ErrorPopup
-
 from directory_manager import get_icon_dir
+from widgets.ErrorPopup import ErrorPopup
 
 
 class DefaultButton(customtkinter.CTkButton):
@@ -20,12 +19,12 @@ class DefaultButton(customtkinter.CTkButton):
 class PathObjectButton(customtkinter.CTkButton):
     def __init__(self, master: Any, path, **kwargs):
         super().__init__(master, **kwargs,
-                         image=ImageTk.PhotoImage(Image.open(f"{get_icon_dir()}/file.png")
-                                                  .resize((32, 32), Image.Resampling.LANCZOS)),
-                         fg_color='#596275', hover_color='#303952', text_color='white', compound='top',
+                         image=customtkinter.CTkImage(light_image=Image.open(f"{get_icon_dir()}/file.png"),
+                                                      size=(32, 32)), fg_color='#596275', hover_color='#303952',
+                         text_color='white', compound='top',
                          corner_radius=5)
         self.path = path
-        self.item_name = path.split('/')[-1]
+        self.item_name = path.split(os.sep)[-1]
 
         def delete():
             try:
@@ -64,7 +63,7 @@ class FolderObjectButton(PathObjectButton):
     def __init__(self, master: Any, path, **kwargs):
         super().__init__(master, path, **kwargs)
         # change to folder icon
-        self.configure(image=ImageTk.PhotoImage(Image.open(f'{get_icon_dir()}/folder.png')))
+        self.configure(image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/folder.png'), size=(32, 32)))
 
 
 class FileObjectButton(PathObjectButton):
@@ -84,7 +83,7 @@ class FileObjectButton(PathObjectButton):
         try:
             image = Image.open(path)
             image.thumbnail(size, reducing_gap=1.0)
-            return ImageTk.PhotoImage(image)
+            return customtkinter.CTkImage(image, size=size)
         except Exception as e:
             print(f"Error loading image: {e}")
             return None

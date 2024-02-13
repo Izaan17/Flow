@@ -2,6 +2,7 @@ import customtkinter
 from tkinter import PhotoImage
 
 from widgets import MenuButton
+from PIL import Image
 from pages.pages import TasksPage, CurriculumPage, SettingsPage
 
 # Set light mode
@@ -17,9 +18,9 @@ root.wm_iconphoto(False, app_icon)
 
 
 # ===LOAD ICONS===
-check_mark_box_icon = PhotoImage(file='icons/check-square.png')
-book_icon = PhotoImage(file='icons/book.png')
-settings_icon = PhotoImage(file='icons/settings.png')
+check_mark_box_icon = customtkinter.CTkImage(light_image=Image.open('icons/check-square.png'))
+book_icon = customtkinter.CTkImage(light_image=Image.open('icons/book.png'))
+settings_icon = customtkinter.CTkImage(light_image=Image.open('icons/settings.png'))
 
 left_menu_frame = customtkinter.CTkFrame(master=root, fg_color='#17325B', width=150, corner_radius=0)
 left_menu_frame.pack(side='left', fill='y')

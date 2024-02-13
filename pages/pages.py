@@ -101,7 +101,10 @@ class CurriculumPage(Page):
 
     @staticmethod
     def open_file(file):
-        os.system(f'open "" "{file}"')
+        if os.name == "nt":
+            os.system(f'start "" "{file}"')
+        else:
+            os.system(f'open "" "{file}"')
 
     def open_directory(self, directory):
         self.back_stack.append(self.current_directory)

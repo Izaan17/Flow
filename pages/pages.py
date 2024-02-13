@@ -30,7 +30,11 @@ class TasksPage(Page):
 
         add_task_button = DefaultButton(top_buttons_frame, text="Add Task",
                                         image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/plus-square.png')))
-        add_task_button.pack(padx=(0, 10), side='right', anchor='nw')
+        add_task_button.pack(padx=(0, 10), side='left', anchor='nw')
+
+        clear_all_tasks_button = DefaultButton(top_buttons_frame, text="Clear All",
+                                               image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/trash.png')))
+        clear_all_tasks_button.pack(padx=(0, 10))
 
         tasks_list_and_info_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         tasks_list_and_info_frame.pack(fill='both', expand=True)
@@ -46,13 +50,18 @@ class TasksPage(Page):
         # check_box.pack()
 
         def add_task_callback():
-            print('added task')
             TaskCheckBox(tasks_scrollable_frame, text="Veniam laborum fugiat nostrud occaecat sint quis ullamco "
-                                                      "fugiat", source="MyOpenMath", link="https://youtube.com").pack(
+                                                      "fugiat", source="MyOpenMath", link="https://youtube.com",
+                         details_frame=task_info_frame).pack(
                 fill='both', expand=True,
                 pady=(0, 10))
 
+        def clear_tasks_callback():
+            for child in tasks_scrollable_frame.winfo_children():
+                child.destroy()
+
         add_task_button.configure(command=add_task_callback)
+        clear_all_tasks_button.configure(command=clear_tasks_callback)
 
 
 # Todo: Add current directory label or box.

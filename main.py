@@ -13,7 +13,7 @@ root = customtkinter.CTk()
 root.wm_title('LuminFlow')
 root.geometry("1300x650")
 root.configure(fg_color='white')
-app_icon = PhotoImage(file='icons/app-icon.png')
+app_icon = PhotoImage(file='icons/hat.png')
 root.wm_iconphoto(False, app_icon)
 
 

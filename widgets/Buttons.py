@@ -1,5 +1,7 @@
 import os.path
+import shutil
 import tkinter
+import tkinter.simpledialog
 from typing import Any
 
 import customtkinter
@@ -7,7 +9,7 @@ from PIL import Image
 
 import settings
 from directory_manager import get_icon_dir
-from widgets.ErrorPopup import ErrorPopup
+from widgets.Popups import ErrorPopup
 
 
 class DefaultButton(customtkinter.CTkButton):
@@ -17,7 +19,7 @@ class DefaultButton(customtkinter.CTkButton):
 
 
 class PathObjectButton(customtkinter.CTkButton):
-    def __init__(self, master: Any, path, **kwargs):
+    def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
         super().__init__(master, **kwargs,
                          image=customtkinter.CTkImage(light_image=Image.open(f"{get_icon_dir()}/file.png"),
                                                       size=(32, 32)), fg_color='#596275', hover_color='#303952',
@@ -37,7 +39,7 @@ class PathObjectButton(customtkinter.CTkButton):
                     os.remove(path)
 
                 # If no exceptions were raised, destroy the widget
-                self.destroy()
+                refresh_grid_func()
 
             except FileNotFoundError as e:
                 ErrorPopup(master, str(e))
@@ -48,8 +50,25 @@ class PathObjectButton(customtkinter.CTkButton):
             except Exception as e:
                 ErrorPopup(master, f"An error occurred: {e}")
 
+        def rename():
+            new_renamed_file_name = tkinter.simpledialog.askstring("File Rename", "Enter new file name")
+            old_path_split = self.path.split(os.sep)
+            # Delete last file name
+            del old_path_split[-1]
+            current_dir = '/'.join(old_path_split)
+            if new_renamed_file_name:
+                new_file_name = os.path.join(current_dir, new_renamed_file_name)
+                if os.path.exists(new_file_name):
+                    ErrorPopup(master, "File already exists")
+                try:
+                    shutil.move(self.path, new_file_name)
+                    refresh_grid_func()
+                except Exception as error:
+                    ErrorPopup(master, f"Error renaming file: {error}")
+
         # Right Click menu
         right_click_menu = tkinter.Menu()
+        right_click_menu.add_command(label="Rename", command=rename)
         right_click_menu.add_command(label="Delete", command=delete)
 
         def action_menu(event):
@@ -60,15 +79,15 @@ class PathObjectButton(customtkinter.CTkButton):
 
 
 class FolderObjectButton(PathObjectButton):
-    def __init__(self, master: Any, path, **kwargs):
-        super().__init__(master, path, **kwargs)
+    def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
+        super().__init__(master, path, refresh_grid_func, **kwargs)
         # change to folder icon
         self.configure(image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/folder.png'), size=(32, 32)))
 
 
 class FileObjectButton(PathObjectButton):
-    def __init__(self, master: Any, path, **kwargs):
-        super().__init__(master, path, **kwargs)
+    def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
+        super().__init__(master, path, refresh_grid_func, **kwargs)
         picture_formats = [".png", ".jpg", "jpeg"]
         is_picture = [True for format_ in picture_formats if path.endswith(format_)]
         is_picture = bool(is_picture)

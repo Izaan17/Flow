@@ -9,7 +9,7 @@ from settings import settings
 from directory_manager import get_storage_dir, get_icon_dir
 from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
 from widgets.CheckBox import TaskCheckBox
-from widgets.ErrorPopup import ErrorPopup
+from widgets.Popups import ErrorPopup, SuccessPopup
 from widgets.Page import Page
 from widgets.Dropdown import DefaultDropDown
 from PIL import Image
@@ -85,6 +85,11 @@ class CurriculumPage(Page):
                                                    Image.open(f'{get_icon_dir()}/folder-plus.png')))
         self.add_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
+        self.add_file_button = DefaultButton(self.top_buttons_frame, text="Add File", command=self.add_file,
+                                             image=customtkinter.CTkImage(
+                                                 Image.open(f'{get_icon_dir()}/folder-plus.png')))
+        self.add_file_button.pack(padx=(0, 10), side='left', anchor='nw')
+
         self.create_folder_button = DefaultButton(self.top_buttons_frame, text="Create Folder",
                                                   command=self.create_folder,
                                                   image=customtkinter.CTkImage(
@@ -110,17 +115,19 @@ class CurriculumPage(Page):
                                          image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/arrow-left.png')))
         self.back_button.pack(padx=(0, 10), side='left', anchor='nw')
 
-        self.content_scrollable_frame = customtkinter.CTkScrollableFrame(master=self, fg_color='#2c3e50')
-        self.content_scrollable_frame.pack(fill='both', expand=True, padx=5, pady=5)
-
         self.current_directory = settings.get_setting("default_dir", get_storage_dir())
         self.current_directory_var = customtkinter.StringVar(self, value=self.current_directory)
         self.back_stack = []
 
-        self.current_directory_label = customtkinter.CTkLabel(self.top_buttons_frame,
+        self.current_directory_frame = customtkinter.CTkFrame(self)
+        self.current_directory_label = customtkinter.CTkLabel(self.current_directory_frame,
                                                               textvariable=self.current_directory_var,
-                                                              font=('Roboto', 12))
-        self.current_directory_label.pack()
+                                                              font=('Roboto', 14))
+        self.current_directory_frame.pack(padx=5, anchor='w')
+        self.current_directory_label.pack(padx=10, anchor='w')
+
+        self.content_scrollable_frame = customtkinter.CTkScrollableFrame(master=self, fg_color='#2c3e50')
+        self.content_scrollable_frame.pack(fill='both', expand=True, padx=5, pady=5)
 
         self.refresh_grid()
 
@@ -148,11 +155,11 @@ class CurriculumPage(Page):
         for name in files:
             file_path = os.path.join(self.current_directory, name)
             if os.path.isdir(file_path):
-                button = FolderObjectButton(self.content_scrollable_frame, file_path)
+                button = FolderObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
                 button.bind("<Double-Button-1>", command=lambda event, path=file_path: self.open_directory(path))
                 button.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
             else:
-                file = FileObjectButton(self.content_scrollable_frame, file_path)
+                file = FileObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
                 file.bind("<Double-Button-1>", command=lambda event, path=file_path: self.open_file(path))
                 file.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
 
@@ -195,8 +202,16 @@ class CurriculumPage(Page):
                 shutil.copytree(template_folder_path, new_folder_path)
                 self.refresh_grid()
 
+    def add_file(self):
+        file_to_copy = tkinter.filedialog.askopenfilenames()
+        if file_to_copy:
+            for file in file_to_copy:
+                shutil.copy(file, self.current_directory)
+                self.refresh_grid()
+
     def set_default_dir(self):
         settings.add_setting("default_dir", self.current_directory)
+        SuccessPopup(self.content_scrollable_frame, f"Success! '{self.current_directory}' is now the default!")
 
     def go_home(self):
         self.set_current_dir(directory=get_storage_dir())

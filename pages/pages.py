@@ -76,6 +76,10 @@ class CurriculumPage(Page):
         self.top_buttons_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.top_buttons_frame.pack(padx=10, pady=(0, 5), side='top', anchor='nw')
 
+        self.home_button = DefaultButton(self.top_buttons_frame, text="Home", image=customtkinter.CTkImage(
+            Image.open(f'{get_icon_dir()}/home.png')), command=self.go_home)
+        self.home_button.pack(padx=(0, 10), side='left', anchor='nw')
+
         self.add_folder_button = DefaultButton(self.top_buttons_frame, text="Add Folder", command=self.add_folder,
                                                image=customtkinter.CTkImage(
                                                    Image.open(f'{get_icon_dir()}/folder-plus.png')))
@@ -96,6 +100,12 @@ class CurriculumPage(Page):
                                                      Image.open(f'{get_icon_dir()}/rotate-ccw.png')))
         self.refresh_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
+        self.set_default_directory_button = DefaultButton(self.top_buttons_frame, text="Make Default",
+                                                          image=customtkinter.CTkImage(
+                                                              Image.open(f'{get_icon_dir()}/bookmark.png')),
+                                                          command=self.set_default_dir)
+        self.set_default_directory_button.pack(padx=(0, 10), side='left', anchor='nw')
+
         self.back_button = DefaultButton(self.top_buttons_frame, text="Back", command=self.go_back,
                                          image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/arrow-left.png')))
         self.back_button.pack(padx=(0, 10), side='left', anchor='nw')
@@ -103,8 +113,14 @@ class CurriculumPage(Page):
         self.content_scrollable_frame = customtkinter.CTkScrollableFrame(master=self, fg_color='#2c3e50')
         self.content_scrollable_frame.pack(fill='both', expand=True, padx=5, pady=5)
 
-        self.current_directory = get_storage_dir()
+        self.current_directory = settings.get_setting("default_dir", get_storage_dir())
+        self.current_directory_var = customtkinter.StringVar(self, value=self.current_directory)
         self.back_stack = []
+
+        self.current_directory_label = customtkinter.CTkLabel(self.top_buttons_frame,
+                                                              textvariable=self.current_directory_var,
+                                                              font=('Roboto', 12))
+        self.current_directory_label.pack()
 
         self.refresh_grid()
 
@@ -117,7 +133,7 @@ class CurriculumPage(Page):
 
     def open_directory(self, directory):
         self.back_stack.append(self.current_directory)
-        self.current_directory = directory
+        self.set_current_dir(directory)
         self.refresh_grid()
 
     def clear_grid(self):
@@ -153,7 +169,7 @@ class CurriculumPage(Page):
 
     def go_back(self):
         if self.back_stack:
-            self.current_directory = self.back_stack.pop()
+            self.set_current_dir(directory=self.back_stack.pop())
             self.refresh_grid()
 
     def create_folder(self):
@@ -178,6 +194,17 @@ class CurriculumPage(Page):
                 new_folder_path = os.path.join(self.current_directory, new_folder_name)
                 shutil.copytree(template_folder_path, new_folder_path)
                 self.refresh_grid()
+
+    def set_default_dir(self):
+        settings.add_setting("default_dir", self.current_directory)
+
+    def go_home(self):
+        self.set_current_dir(directory=get_storage_dir())
+        self.refresh_grid()
+
+    def set_current_dir(self, directory):
+        self.current_directory = directory
+        self.current_directory_var.set(directory)
 
 
 class SettingsPage(Page):

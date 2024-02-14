@@ -1,3 +1,5 @@
+import os
+
 import customtkinter
 from tkinter import PhotoImage
 
@@ -13,15 +15,16 @@ root = customtkinter.CTk()
 root.wm_title('LuminFlow')
 root.geometry("1300x650")
 root.configure(fg_color='white')
-app_icon = PhotoImage(file='icons/hat.png')
+app_icon = PhotoImage(file=f'icons{os.sep}hat.png')
 root.wm_iconphoto(False, app_icon)
 
 
 # ===LOAD ICONS===
 default_icon_size = (25, 25)
-check_mark_box_icon = customtkinter.CTkImage(light_image=Image.open('icons/check-square.png'), size=default_icon_size)
-book_icon = customtkinter.CTkImage(light_image=Image.open('icons/book.png'), size=default_icon_size)
-settings_icon = customtkinter.CTkImage(light_image=Image.open('icons/settings.png'), size=default_icon_size)
+check_mark_box_icon = customtkinter.CTkImage(light_image=Image.open(f'icons{os.sep}check-square.png'),
+                                             size=default_icon_size)
+book_icon = customtkinter.CTkImage(light_image=Image.open(f'icons{os.sep}book.png'), size=default_icon_size)
+settings_icon = customtkinter.CTkImage(light_image=Image.open(f'icons{os.sep}settings.png'), size=default_icon_size)
 
 left_menu_frame = customtkinter.CTkFrame(master=root, fg_color='#17325B', width=150, corner_radius=0)
 left_menu_frame.pack(side='left', fill='y')

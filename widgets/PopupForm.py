@@ -10,7 +10,7 @@ class PopupForm(customtkinter.CTkToplevel):
         super().__init__(master, **kwargs)
         self.entries: list[customtkinter.CTkEntry] = []
         self.submit_button = DefaultButton(self, text='Submit', command=self.on_submit)
-        self.submit_button.pack(side='bottom')
+        self.submit_button.pack(side='bottom', pady=10)
         self.data = None
 
     def add_field(self, text_box: customtkinter.CTkEntry):

@@ -3,16 +3,18 @@ import os
 import customtkinter
 from tkinter import PhotoImage
 
+from pages.curriculum_page import CurriculumPage
+from pages.settings_page import SettingsPage
+from pages.tasks_page import TasksPage
 from widgets import MenuButton
 from PIL import Image
-from pages.pages import TasksPage, CurriculumPage, SettingsPage
 
 # Set light mode
 customtkinter.set_appearance_mode('light')
 customtkinter.set_default_color_theme('blue')
 
 root = customtkinter.CTk()
-root.wm_title('LuminFlow')
+root.wm_title('Flow')
 root.geometry("1300x650")
 root.configure(fg_color='white')
 app_icon = PhotoImage(file=f'icons{os.sep}hat.png')

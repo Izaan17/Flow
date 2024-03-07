@@ -1,70 +1,19 @@
 import os
 import shutil
+import tkinter
 import tkinter.filedialog
 import tkinter.simpledialog
 
 import customtkinter
-
-from settings import settings
-from directory_manager import get_storage_dir, get_icon_dir
-from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
-from widgets.CheckBox import TaskCheckBox
-from widgets.Popups import ErrorPopup, SuccessPopup
-from widgets.Page import Page
-from widgets.Dropdown import DefaultDropDown
 from PIL import Image
 
-
-class TasksPage(Page):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, fg_color='white')
-        tasks_label = customtkinter.CTkLabel(self, text="My Tasks", font=('Roboto', 36))
-        tasks_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
-
-        top_buttons_frame = customtkinter.CTkFrame(self, fg_color='transparent')
-        top_buttons_frame.pack(padx=10, pady=(0, 5), side='top', anchor='nw')
-
-        import_tasks_button = DefaultButton(top_buttons_frame, text="Import Tasks",
-                                            image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/download.png')))
-        import_tasks_button.pack(padx=(0, 10), side='left', anchor='nw')
-
-        add_task_button = DefaultButton(top_buttons_frame, text="Add Task",
-                                        image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/plus-square.png')))
-        add_task_button.pack(padx=(0, 10), side='left', anchor='nw')
-
-        clear_all_tasks_button = DefaultButton(top_buttons_frame, text="Clear All",
-                                               image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/trash.png')))
-        clear_all_tasks_button.pack(padx=(0, 10))
-
-        tasks_list_and_info_frame = customtkinter.CTkFrame(self, fg_color='transparent')
-        tasks_list_and_info_frame.pack(fill='both', expand=True)
-
-        tasks_scrollable_frame = customtkinter.CTkScrollableFrame(master=tasks_list_and_info_frame,
-                                                                  fg_color='transparent')
-        tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
-
-        task_info_frame = customtkinter.CTkFrame(tasks_list_and_info_frame, fg_color='white', width=10)
-        task_info_frame.pack(side='right', fill='both', expand=True)
-
-        # check_box = CheckListBox()
-        # check_box.pack()
-
-        def add_task_callback():
-            TaskCheckBox(tasks_scrollable_frame, text="Veniam laborum fugiat nostrud occaecat sint quis ullamco "
-                                                      "fugiat", source="MyOpenMath", link="https://youtube.com",
-                         details_frame=task_info_frame).pack(
-                fill='both', expand=True,
-                pady=(0, 10))
-
-        def clear_tasks_callback():
-            for child in tasks_scrollable_frame.winfo_children():
-                child.destroy()
-
-        add_task_button.configure(command=add_task_callback)
-        clear_all_tasks_button.configure(command=clear_tasks_callback)
+from directory_manager import get_icon_dir, get_storage_dir
+from settings import settings
+from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
+from widgets.Page import Page
+from widgets.Popups import ErrorPopup, SuccessPopup
 
 
-# Todo: Add current directory label or box.
 class CurriculumPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color='white')
@@ -77,42 +26,44 @@ class CurriculumPage(Page):
         self.top_buttons_frame.pack(padx=10, pady=(0, 5), side='top', anchor='nw')
 
         self.home_button = DefaultButton(self.top_buttons_frame, text="Home", image=customtkinter.CTkImage(
-            Image.open(f'{get_icon_dir()}/home.png')), command=self.go_home)
+            Image.open(f'{get_icon_dir()}{os.sep}home.png')), command=self.go_home)
         self.home_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.add_folder_button = DefaultButton(self.top_buttons_frame, text="Add Folder", command=self.add_folder,
                                                image=customtkinter.CTkImage(
-                                                   Image.open(f'{get_icon_dir()}/folder-plus.png')))
+                                                   Image.open(f'{get_icon_dir()}{os.sep}folder-plus.png')))
         self.add_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.add_file_button = DefaultButton(self.top_buttons_frame, text="Add File", command=self.add_file,
                                              image=customtkinter.CTkImage(
-                                                 Image.open(f'{get_icon_dir()}/folder-plus.png')))
+                                                 Image.open(f'{get_icon_dir()}{os.sep}file-plus.png')))
         self.add_file_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.create_folder_button = DefaultButton(self.top_buttons_frame, text="Create Folder",
                                                   command=self.create_folder,
                                                   image=customtkinter.CTkImage(
-                                                      Image.open(f'{get_icon_dir()}/folder-plus.png')))
+                                                      Image.open(f'{get_icon_dir()}{os.sep}folder-plus.png')))
         self.create_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.clear_grid_button = DefaultButton(self.top_buttons_frame, text="Clear", command=self.clear_grid,
-                                               image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/trash.png')))
+                                               image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'
+                                                                                       f'{os.sep}trash.png')))
         self.clear_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.refresh_grid_button = DefaultButton(self.top_buttons_frame, text="Refresh", command=self.refresh_grid,
                                                  image=customtkinter.CTkImage(
-                                                     Image.open(f'{get_icon_dir()}/rotate-ccw.png')))
+                                                     Image.open(f'{get_icon_dir()}{os.sep}rotate-ccw.png')))
         self.refresh_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.set_default_directory_button = DefaultButton(self.top_buttons_frame, text="Make Default",
                                                           image=customtkinter.CTkImage(
-                                                              Image.open(f'{get_icon_dir()}/bookmark.png')),
+                                                              Image.open(f'{get_icon_dir()}{os.sep}bookmark.png')),
                                                           command=self.set_default_dir)
         self.set_default_directory_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.back_button = DefaultButton(self.top_buttons_frame, text="Back", command=self.go_back,
-                                         image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/arrow-left.png')))
+                                         image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'
+                                                                                 f'{os.sep}arrow-left.png')))
         self.back_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.current_directory = settings.get_setting("default_dir", get_storage_dir())
@@ -170,9 +121,9 @@ class CurriculumPage(Page):
 
         # Update back button state
         if len(self.back_stack) == 0:
-            self.back_button.configure(state=tkinter.DISABLED)
+            self.back_button.configure(state=customtkinter.DISABLED)
         else:
-            self.back_button.configure(state=tkinter.NORMAL)
+            self.back_button.configure(state=customtkinter.NORMAL)
 
     def go_back(self):
         if self.back_stack:
@@ -220,29 +171,3 @@ class CurriculumPage(Page):
     def set_current_dir(self, directory):
         self.current_directory = directory
         self.current_directory_var.set(directory)
-
-
-class SettingsPage(Page):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, fg_color='white')
-
-        self.all_icon_sizes = ["24x24", "50x50", "100x100", "125x125", "200x200"]
-
-        self.settings_label = customtkinter.CTkLabel(self, text="Settings", font=('Roboto', 36))
-        self.settings_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
-
-        self.drop_downs_frame = customtkinter.CTkFrame(self, fg_color='white')
-        self.drop_downs_frame.pack(fill='both', expand=True)
-
-        self.icon_size_drop_down = DefaultDropDown(self.drop_downs_frame, label_text="Image Preview Size",
-                                                   values=self.all_icon_sizes, command=self.on_icon_change)
-        self.icon_size_drop_down.pack(anchor='w')
-        # Set saved icon size or default
-        self.icon_size_drop_down.set(f"{settings.get_setting('icon_width', 50)}x"
-                                     f"{settings.get_setting('icon_height', 50)}")
-
-    @staticmethod
-    def on_icon_change(choice):
-        icon_size = choice.split("x")
-        settings.add_setting("icon_width", icon_size[0])
-        settings.add_setting("icon_height", icon_size[1])

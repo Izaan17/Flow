@@ -8,25 +8,31 @@ from widgets.Buttons import DefaultButton
 class PopupForm(customtkinter.CTkToplevel):
     def __init__(self, master: Any, **kwargs):
         super().__init__(master, **kwargs)
-        self.entries: list[customtkinter.CTkEntry] = []
+        self.widgets: list[customtkinter.CTkBaseClass] = []
         self.submit_button = DefaultButton(self, text='Submit', command=self.on_submit)
         self.submit_button.pack(side='bottom', pady=10)
-        self.data = None
+        self.data_ready = False
+        self.data = {}
 
-    def add_field(self, text_box: customtkinter.CTkEntry):
-        self.entries.append(text_box)
+    def add_widget(self, widget: customtkinter.CTkBaseClass):
+        self.widgets.append(widget)
+        self.data[id(widget)] = None
         self.pack_fields()
 
     def pack_fields(self):
-        for child in self.entries:
+        for child in self.widgets:
             child.pack()
 
     def on_submit(self):
-        self.get_data_from_fields()
+        for widget in self.widgets:
+            if isinstance(widget, customtkinter.CTkEntry) or isinstance(widget, customtkinter.CTkComboBox) or isinstance(widget, customtkinter.CTkOptionMenu):
+                self.data[id(widget)] = widget.get()
+        self.data_ready = True
         self.destroy()
 
-    def get_data_from_fields(self):
-        self.data = [entry.get() for entry in self.entries]
+    def get_data(self, widget):
+        if self.data_ready:
+            return self.data[id(widget)]
 
 
 if __name__ == '__main__':
@@ -35,8 +41,8 @@ if __name__ == '__main__':
     tasks_name_text_box = customtkinter.CTkEntry(p, placeholder_text="Task Name")
     tasks_name_text_box.pack(pady=10)
     tasks_name_text_box2 = customtkinter.CTkEntry(p, placeholder_text="Task Name 2")
-    p.add_field(tasks_name_text_box)
-    p.add_field(tasks_name_text_box2)
+    p.add_widget(tasks_name_text_box)
+    p.add_widget(tasks_name_text_box2)
     print(p)
     root.wait_window(p)
     print(p.data)

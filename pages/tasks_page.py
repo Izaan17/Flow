@@ -13,6 +13,8 @@ from widgets.Page import Page
 from widgets.PopupForm import PopupForm
 from tkcalendar import Calendar
 
+ALL_TASK_SOURCES = ["MyOpenMath", "BlackBoard", "Achieve"]
+
 
 class TasksPage(Page):
     def __init__(self, *args, **kwargs):
@@ -68,7 +70,7 @@ class TasksPage(Page):
 
             task_name_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Task Name')
             task_source_entry = customtkinter.CTkComboBox(task_popup_form,
-                                                          values=["MyOpenMath", "BlackBoard", "Achieve"])
+                                                          values=ALL_TASK_SOURCES)
             task_link_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Task Link')
             hour_drop_down = customtkinter.CTkOptionMenu(task_popup_form,
                                                          values=[str(i) for i in range(1, 24)])
@@ -93,25 +95,27 @@ class TasksPage(Page):
             # Wait for window to be destroyed or submitted
             self.wait_window(task_popup_form)
 
-            task_name = task_popup_form.get_data(task_name_entry)
-            task_source = task_popup_form.get_data(task_source_entry)
-            task_link = task_popup_form.get_data(task_link_entry)
-            original_format_string = '%m/%d/%y %H:%M'
-            desired_format_string = '%m-%d-%Y-%H-%M'
-            parsed_date = datetime.datetime.strptime(
-                f"{due_date_calendar.get_date()} "
-                f"{task_popup_form.get_data(hour_drop_down)}:{task_popup_form.get_data(minute_drop_down)}",
-                original_format_string)
-            formatted_date = parsed_date.strftime(desired_format_string)
-            new_check_box_id = check_box_manager.load_last_id()
-            new_check_box = TaskCheckBox(tasks_scrollable_frame, text=task_name, source=task_source,
-                                         link=task_link,
-                                         details_frame=task_info_frame, checkbox_manager=check_box_manager,
-                                         due_date=formatted_date,
-                                         uid=new_check_box_id)
-            check_box_manager.add_checkbox(CheckBoxData.from_checkbox(new_check_box,
-                                                                      new_check_box_id))
-            new_check_box.pack(fill='both', expand=True, pady=(0, 10))
+            # Check if the user pressed the submit button if yes get the data else do nothing
+            if task_popup_form.data_ready:
+                task_name = task_popup_form.get_data(task_name_entry)
+                task_source = task_popup_form.get_data(task_source_entry)
+                task_link = task_popup_form.get_data(task_link_entry)
+                original_format_string = '%m/%d/%y %H:%M'
+                desired_format_string = '%m-%d-%Y-%H-%M'
+                parsed_date = datetime.datetime.strptime(
+                    f"{due_date_calendar.get_date()} "
+                    f"{task_popup_form.get_data(hour_drop_down)}:{task_popup_form.get_data(minute_drop_down)}",
+                    original_format_string)
+                formatted_date = parsed_date.strftime(desired_format_string)
+                new_check_box_id = check_box_manager.load_last_id()
+                new_check_box = TaskCheckBox(tasks_scrollable_frame, text=task_name, source=task_source,
+                                             link=task_link,
+                                             details_frame=task_info_frame, checkbox_manager=check_box_manager,
+                                             due_date=formatted_date,
+                                             uid=new_check_box_id)
+                check_box_manager.add_checkbox(CheckBoxData.from_checkbox(new_check_box,
+                                                                          new_check_box_id))
+                new_check_box.pack(fill='both', expand=True, pady=(0, 10))
 
         def clear_tasks_callback():
             for child in tasks_scrollable_frame.winfo_children():

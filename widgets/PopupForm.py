@@ -17,15 +17,11 @@ class PopupForm(customtkinter.CTkToplevel):
     def add_widget(self, widget: customtkinter.CTkBaseClass):
         self.widgets.append(widget)
         self.data[id(widget)] = None
-        self.pack_fields()
-
-    def pack_fields(self):
-        for child in self.widgets:
-            child.pack()
 
     def on_submit(self):
         for widget in self.widgets:
-            if isinstance(widget, customtkinter.CTkEntry) or isinstance(widget, customtkinter.CTkComboBox) or isinstance(widget, customtkinter.CTkOptionMenu):
+            if (isinstance(widget, customtkinter.CTkEntry) or isinstance(widget, customtkinter.CTkComboBox) or
+                    isinstance(widget, customtkinter.CTkOptionMenu)):
                 self.data[id(widget)] = widget.get()
         self.data_ready = True
         self.destroy()
@@ -33,6 +29,8 @@ class PopupForm(customtkinter.CTkToplevel):
     def get_data(self, widget):
         if self.data_ready:
             return self.data[id(widget)]
+        else:
+            raise Exception(f"Data is not ready or submitted yet. Widget => {widget}")
 
 
 if __name__ == '__main__':

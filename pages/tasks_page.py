@@ -67,8 +67,13 @@ class TasksPage(Page):
             task_popup_form.wm_title("Add Task")
 
             task_name_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Task Name')
-            task_source_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Task Source')
+            task_source_entry = customtkinter.CTkComboBox(task_popup_form,
+                                                          values=["MyOpenMath", "BlackBoard", "Achieve"])
             task_link_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Task Link')
+            hour_drop_down = customtkinter.CTkOptionMenu(task_popup_form,
+                                                         values=[str(i) for i in range(1, 24)])
+            minute_drop_down = customtkinter.CTkOptionMenu(task_popup_form,
+                                                           values=[str(i) for i in range(60)])
 
             due_date_calendar = Calendar(task_popup_form)
             due_date_calendar.pack(padx=10)
@@ -76,49 +81,37 @@ class TasksPage(Page):
             task_name_entry.pack(pady=10)
             task_source_entry.pack(pady=10)
             task_link_entry.pack(pady=10)
+            hour_drop_down.pack(padx=5, pady=10)
+            minute_drop_down.pack(padx=5, pady=10)
 
-            task_popup_form.add_field(task_name_entry)
-            task_popup_form.add_field(task_source_entry)
-            task_popup_form.add_field(task_link_entry)
+            task_popup_form.add_widget(task_name_entry)
+            task_popup_form.add_widget(task_source_entry)
+            task_popup_form.add_widget(task_link_entry)
+            task_popup_form.add_widget(hour_drop_down)
+            task_popup_form.add_widget(minute_drop_down)
+
             # Wait for window to be destroyed or submitted
             self.wait_window(task_popup_form)
-            if task_popup_form.data:
-                date_and_time_popup = customtkinter.CTkToplevel(self)
-                date_and_time_popup.wm_title("Time")
-                hour_drop_down = customtkinter.CTkOptionMenu(date_and_time_popup,
-                                                             values=[str(i) for i in range(1, 24)])
-                hour_drop_down.pack(padx=5, pady=10)
-                minute_drop_down = customtkinter.CTkOptionMenu(date_and_time_popup,
-                                                               values=[str(i) for i in range(60)])
-                minute_drop_down.pack(padx=5, pady=10)
-                self.hour = None
-                self.minutes = None
 
-                def submit_and_get_data():
-                    self.hour = hour_drop_down.get()
-                    self.minutes = minute_drop_down.get()
-                    date_and_time_popup.destroy()
-
-                submit_button = DefaultButton(date_and_time_popup, command=submit_and_get_data, text="Submit")
-                submit_button.pack(side='bottom', pady=10)
-                self.wait_window(date_and_time_popup)
-                if self.hour and self.minutes:
-                    task_name, task_source, task_link = task_popup_form.data
-                    original_format_string = '%m/%d/%y %H:%M'
-                    desired_format_string = '%m-%d-%Y-%H-%M'
-                    parsed_date = datetime.datetime.strptime(
-                        f"{due_date_calendar.get_date()} {self.hour}:{self.minutes}",
-                        original_format_string)
-                    formatted_date = parsed_date.strftime(desired_format_string)
-                    new_check_box_id = check_box_manager.load_last_id()
-                    new_check_box = TaskCheckBox(tasks_scrollable_frame, text=task_name, source=task_source,
-                                                 link=task_link,
-                                                 details_frame=task_info_frame, checkbox_manager=check_box_manager,
-                                                 due_date=formatted_date,
-                                                 uid=new_check_box_id)
-                    check_box_manager.add_checkbox(CheckBoxData.from_checkbox(new_check_box,
-                                                                              new_check_box_id))
-                    new_check_box.pack(fill='both', expand=True, pady=(0, 10))
+            task_name = task_popup_form.get_data(task_name_entry)
+            task_source = task_popup_form.get_data(task_source_entry)
+            task_link = task_popup_form.get_data(task_link_entry)
+            original_format_string = '%m/%d/%y %H:%M'
+            desired_format_string = '%m-%d-%Y-%H-%M'
+            parsed_date = datetime.datetime.strptime(
+                f"{due_date_calendar.get_date()} "
+                f"{task_popup_form.get_data(hour_drop_down)}:{task_popup_form.get_data(minute_drop_down)}",
+                original_format_string)
+            formatted_date = parsed_date.strftime(desired_format_string)
+            new_check_box_id = check_box_manager.load_last_id()
+            new_check_box = TaskCheckBox(tasks_scrollable_frame, text=task_name, source=task_source,
+                                         link=task_link,
+                                         details_frame=task_info_frame, checkbox_manager=check_box_manager,
+                                         due_date=formatted_date,
+                                         uid=new_check_box_id)
+            check_box_manager.add_checkbox(CheckBoxData.from_checkbox(new_check_box,
+                                                                      new_check_box_id))
+            new_check_box.pack(fill='both', expand=True, pady=(0, 10))
 
         def clear_tasks_callback():
             for child in tasks_scrollable_frame.winfo_children():

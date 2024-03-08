@@ -39,8 +39,9 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
         self.task_info_frame.pack(side='bottom', anchor='w')
 
         def delete():
-            # Check if the current selected checkbox is ours if it is clear the details frame
-            if self.check_box_manager.get_active() == CheckBoxData.CheckBoxData.from_checkbox(self, self.id):
+            # Check if the current selected checkbox id matches with our checkbox id
+            active_checkbox = self.check_box_manager.get_active()
+            if active_checkbox and active_checkbox.id == self.id:
                 # Destroy all items in details frame
                 for child in self.details_frame.winfo_children():
                     child.destroy()

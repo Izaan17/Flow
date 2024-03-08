@@ -41,7 +41,8 @@ class CheckBoxManager:
         return last_id
 
     def reset_ids(self):
-        os.remove(self.id_file)
+        if os.path.exists(self.id_file):
+            os.remove(self.id_file)
 
     def add_checkbox(self, check_box_data: CheckBoxData):
         self.check_boxes_data[check_box_data.id] = check_box_data
@@ -68,7 +69,7 @@ class CheckBoxManager:
         self.active_checkbox = None
 
     def save_to_file(self):
-        data_to_save = {str(id): checkbox_data.get_data() for id, checkbox_data in self.check_boxes_data.items()}
+        data_to_save = {str(uid): checkbox_data.get_data() for uid, checkbox_data in self.check_boxes_data.items()}
         with open(self.filename, 'w') as file_handler:
             json.dump(data_to_save, file_handler, indent=4)
 
@@ -76,7 +77,7 @@ class CheckBoxManager:
         try:
             with open(self.filename, 'r') as file_handler:
                 data = json.load(file_handler)
-                return {int(id): CheckBoxData.from_dict(values) for id, values in data.items()}
+                return {int(uid): CheckBoxData.from_dict(values) for uid, values in data.items()}
         except FileNotFoundError:
             print("File not found.")
         except json.JSONDecodeError:

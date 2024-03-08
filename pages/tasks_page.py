@@ -51,7 +51,7 @@ class TasksPage(Page):
         check_box_manager = CheckBoxManager('saved-checkboxes')
 
         # Load checkboxes
-        for uid, checkbox_data in check_box_manager.load_from_file().items():
+        for checkbox_data in check_box_manager.load_from_file().values():
             check_box = TaskCheckBox(tasks_scrollable_frame, text=checkbox_data.task_name,
                                      source=checkbox_data.task_source,
                                      link=checkbox_data.task_link,
@@ -86,7 +86,7 @@ class TasksPage(Page):
                 date_and_time_popup = customtkinter.CTkToplevel(self)
                 date_and_time_popup.wm_title("Time")
                 hour_drop_down = customtkinter.CTkOptionMenu(date_and_time_popup,
-                                                             values=[str(i) for i in range(1, 25)])
+                                                             values=[str(i) for i in range(1, 24)])
                 hour_drop_down.pack(padx=5, pady=10)
                 minute_drop_down = customtkinter.CTkOptionMenu(date_and_time_popup,
                                                                values=[str(i) for i in range(60)])

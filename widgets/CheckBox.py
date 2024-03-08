@@ -32,8 +32,7 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
 
         self.difference_from_now = days_between_dates(datetime.datetime.now().strftime('%m-%d-%Y-%H-%M'), self.due_date)
 
-        self.due_date_label = customtkinter.CTkLabel(self.task_info_frame,
-                                                     text=f"{parse_days_difference(self.difference_from_now)}")
+        self.due_date_label = customtkinter.CTkLabel(self.task_info_frame)
         self.due_date_label.pack(side='right', padx=10)
 
         self.task_item_frame.pack(anchor='w')
@@ -95,7 +94,10 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
                                                      text_color=task_header_color)
             due_date_header.pack(anchor='w')
 
-            task_due_date = customtkinter.CTkLabel(self.details_frame, text=self.due_date)
+            task_due_date = customtkinter.CTkLabel(self.details_frame, text=f"{get_day_of_week_string(self.due_date)}, "
+                                                                            f"{get_month_abbreviation(self.due_date)} "
+                                                                            f"{get_day(self.due_date)}, "
+                                                                            f"{get_time_suffix(self.due_date)}")
             task_due_date.pack(anchor='w')
 
         self.task_item_frame.bind("<Button-1>", display_details)
@@ -111,7 +113,8 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
 
         def update_due_date_label():
             difference_from_now = days_between_dates(datetime.datetime.now().strftime('%m-%d-%Y-%H-%M'), self.due_date)
-            self.due_date_label.configure(text=parse_days_difference(difference_from_now))
+            self.due_date_label.configure(text=f"{parse_days_difference(difference_from_now)}, "
+                                               f"{get_time_suffix(self.due_date)}")
             # Schedule the update after 5 seconds (5000 milliseconds)
             self.after(3000, update_due_date_label)
 
@@ -148,3 +151,23 @@ def parse_days_difference(days_difference):
         return f"Due {-days_difference} days ago"
     else:
         return f"In {days_difference} days"
+
+
+def convert_str_to_datetime(date_str):
+    return datetime.datetime.strptime(date_str, '%m-%d-%Y-%H-%M')
+
+
+def get_day_of_week_string(date_str):
+    return convert_str_to_datetime(date_str).strftime("%a")
+
+
+def get_day(date_str):
+    return convert_str_to_datetime(date_str).day
+
+
+def get_month_abbreviation(date_str):
+    return convert_str_to_datetime(date_str).strftime("%b")
+
+
+def get_time_suffix(date_str):
+    return convert_str_to_datetime(date_str).strftime("%I:%M %p")

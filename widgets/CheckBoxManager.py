@@ -3,7 +3,6 @@ import os
 from typing import Optional
 
 from CheckBoxData import CheckBoxData
-from widgets.CheckBox import TaskCheckBox
 
 
 class CheckBoxManager:

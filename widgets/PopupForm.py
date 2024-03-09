@@ -13,6 +13,10 @@ class PopupForm(customtkinter.CTkToplevel):
         self.submit_button.pack(side='bottom', pady=10)
         self.data_ready = False
         self.data = {}
+        # Make the window always on top
+        self.transient(master)
+        # Only capture events for this popup
+        self.grab_set()
 
     def add_widget(self, widget: customtkinter.CTkBaseClass):
         self.widgets.append(widget)

@@ -43,6 +43,11 @@ if __name__ == '__main__':
     p.add_widget(tasks_name_text_box)
     p.add_widget(tasks_name_text_box2)
     root.wait_window(p)
-    print(f'Task Name Data: {p.get_data(tasks_name_text_box)}')
-    print(f'Task Name 2 Data: {p.get_data(tasks_name_text_box2)}')
+    # If we got data
+    if p.data_ready:
+        print(f'Task Name Data: {p.get_data(tasks_name_text_box)}')
+        print(f'Task Name 2 Data: {p.get_data(tasks_name_text_box2)}')
+    # User clicked the exit button
+    else:
+        print('User cancelled action')
     root.mainloop()

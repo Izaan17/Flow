@@ -106,10 +106,12 @@ class CurriculumPage(Page):
         for name in files:
             file_path = os.path.join(self.current_directory, name)
             if os.path.isdir(file_path):
+                # Creates a folder button
                 button = FolderObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
                 button.bind("<Double-Button-1>", command=lambda event, path=file_path: self.open_directory(path))
                 button.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
             else:
+                # Creates a file object button
                 file = FileObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
                 file.bind("<Double-Button-1>", command=lambda event, path=file_path: self.open_file(path))
                 file.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")

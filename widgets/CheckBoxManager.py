@@ -13,7 +13,6 @@ class CheckBoxManager:
         self.filename = filename
         self.check_boxes_data: dict[int, CheckBoxData] = self.load_from_file() if self.load_from_file() else {}
         self.active_checkbox: Optional[CheckBoxData] = None
-        self.last_id = self.load_last_id()
 
     def load_last_id(self):
         if self.filename:

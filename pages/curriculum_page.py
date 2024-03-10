@@ -150,8 +150,11 @@ class CurriculumPage(Page):
             new_folder_name = tkinter.simpledialog.askstring("Add Folder", "Enter folder name:")
             if new_folder_name:
                 new_folder_path = os.path.join(self.current_directory, new_folder_name)
-                shutil.copytree(template_folder_path, new_folder_path)
-                self.refresh_grid()
+                try:
+                    shutil.copytree(template_folder_path, new_folder_path)
+                    self.refresh_grid()
+                except Exception as error:
+                    ErrorPopup(self.content_scrollable_frame, f"Error copying folder: {error}")
 
     def add_file(self):
         file_to_copy = tkinter.filedialog.askopenfilenames()

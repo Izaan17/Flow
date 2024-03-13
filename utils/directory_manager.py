@@ -1,9 +1,10 @@
 import os
+from pathlib import Path
 
 
 def get_project_root():
-    """Get the absolute content_path of the project master directory."""
-    return os.path.dirname(os.path.abspath(__file__))
+    """Get the path of the project master directory."""
+    return Path(__file__).parent.parent
 
 
 def get_app_dir():

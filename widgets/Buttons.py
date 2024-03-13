@@ -8,7 +8,7 @@ import customtkinter
 from PIL import Image
 
 import settings
-from directory_manager import get_icon_dir
+from utils.directory_manager import get_icon_dir
 from widgets.Popups import ErrorPopup
 
 

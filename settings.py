@@ -1,5 +1,5 @@
 import json
-from directory_manager import get_app_dir
+from utils.directory_manager import get_app_dir
 
 
 class Settings:

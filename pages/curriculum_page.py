@@ -7,7 +7,7 @@ import tkinter.simpledialog
 import customtkinter
 from PIL import Image
 
-from directory_manager import get_icon_dir, get_storage_dir
+from utils.directory_manager import get_icon_dir, get_storage_dir
 from settings import settings
 from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
 from widgets.Page import Page

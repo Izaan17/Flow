@@ -4,7 +4,7 @@ import os
 import customtkinter
 from PIL import Image
 
-from CheckBoxData import CheckBoxData
+from widget_data import CheckBoxData
 from utils.directory_manager import get_icon_dir
 from widgets.Buttons import DefaultButton
 from widgets.CheckBox import TaskCheckBox

@@ -4,7 +4,7 @@ from typing import Any
 
 import customtkinter
 
-import CheckBoxData
+from widget_data import CheckBoxData
 from widgets.HyperLink import HyperLink
 
 
@@ -65,7 +65,7 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
 
         def display_details(event):
             # Set selected checkbox to current
-            self.check_box_manager.set_active(CheckBoxData.CheckBoxData.from_checkbox(self, self.id))
+            self.check_box_manager.set_active(CheckBoxData.from_checkbox(self, self.id))
             # Clear details frame
             for child in self.details_frame.winfo_children():
                 child.destroy()
@@ -105,7 +105,7 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
 
         def toggle_state():
             old_data = checkbox_manager.check_boxes_data.pop(self.id)
-            new_data = CheckBoxData.CheckBoxData.from_checkbox(self, self.id)
+            new_data = CheckBoxData.from_checkbox(self, self.id)
             new_data.completion_status = 1 if old_data.completion_status == 0 else 0
             checkbox_manager.check_boxes_data[self.id] = new_data
             checkbox_manager.save_to_file()

@@ -2,7 +2,7 @@ import json
 import os
 from typing import Optional
 
-from CheckBoxData import CheckBoxData
+from widget_data import CheckBoxData
 
 
 class CheckBoxManager:

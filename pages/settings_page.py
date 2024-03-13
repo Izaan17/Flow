@@ -1,6 +1,6 @@
 import customtkinter
 
-from settings import settings
+from utils.settings import settings
 from widgets.Dropdown import DefaultDropDown
 from widgets.Page import Page
 

@@ -8,7 +8,7 @@ import customtkinter
 from PIL import Image
 
 from utils.directory_manager import get_icon_dir, get_storage_dir
-from settings import settings
+from utils.settings import settings
 from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
 from widgets.Page import Page
 from widgets.Popups import ErrorPopup, SuccessPopup

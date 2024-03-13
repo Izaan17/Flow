@@ -7,7 +7,7 @@ from typing import Any
 import customtkinter
 from PIL import Image
 
-import settings
+from utils import settings
 from utils.directory_manager import get_icon_dir
 from widgets.Popups import ErrorPopup
 

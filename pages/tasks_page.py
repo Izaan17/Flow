@@ -12,6 +12,8 @@ from widgets.CheckBoxManager import CheckBoxManager
 from widgets.Page import Page
 from widgets.PopupForm import PopupForm
 from tkcalendar import Calendar
+from utils.settings import settings
+from widgets.Popups import SuccessPopup
 
 ALL_TASK_SOURCES = ["MyOpenMath", "BlackBoard", "Achieve"]
 
@@ -64,6 +66,7 @@ class TasksPage(Page):
                 check_box.select()
             check_box.pack(fill='both', expand=True, pady=(0, 10))
 
+        # Command call backs
         def add_task_callback():
             task_popup_form = PopupForm(self)
             task_popup_form.wm_title("Add Task")
@@ -131,5 +134,55 @@ class TasksPage(Page):
             for child in task_info_frame.winfo_children():
                 child.destroy()
 
+        def import_tasks_callback():
+            # Create a new toplevel
+            new_top_level = customtkinter.CTkToplevel(self, fg_color='white')
+            new_top_level.wm_title("Import Tasks")
+
+            # Source Sections Frame
+            # ==BB==
+            bb_header_label = customtkinter.CTkLabel(new_top_level, text='BlackBoard', font=('Roboto', 18, 'bold'))
+            bb_header_label.pack(anchor='w', padx=10)
+
+            bb_section = customtkinter.CTkFrame(new_top_level, fg_color='transparent', corner_radius=0)
+            bb_section.pack(fill='both')
+
+            bb_calendar_url_label = customtkinter.CTkLabel(bb_section, text="iCalendar URL",
+                                                           font=('Roboto', 14))
+            bb_calendar_url_label.pack(anchor='w', padx=12)
+
+            bb_calendar_url_entry = customtkinter.CTkEntry(bb_section, width=250,
+                                                           placeholder_text='iCalendar URL')
+            bb_calendar_url_entry.pack(anchor='w', padx=10, pady=(5, 10))
+            # Set the url from the settings
+            bb_calendar_url_entry.insert(0, settings.get_setting("bb_url", ""))
+
+            bb_button_layout = customtkinter.CTkFrame(bb_section, fg_color='transparent')
+            bb_button_layout.pack(anchor='w', padx=10)
+
+            bb_calendar_url_save_button = DefaultButton(bb_button_layout, text="Save URL")
+            bb_calendar_url_save_button.pack(side='left', padx=(0, 5))
+
+            def save_url():
+                settings.add_setting("bb_url", bb_calendar_url_entry.get())
+                # Show success popup
+                SuccessPopup(new_top_level, "Successfully saved url")
+
+            bb_calendar_url_save_button.configure(command=save_url)
+
+            bb_load_button = DefaultButton(bb_button_layout, text="Load Tasks")
+            bb_load_button.pack(side='right', padx=10)
+
+            black_board_scrollable_frame = customtkinter.CTkScrollableFrame(master=bb_section,
+                                                                            fg_color='transparent')
+            black_board_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+
+            # ==BB==
+
+            # Add all button
+            add_all_tasks_button = DefaultButton(new_top_level, text="Add Selected Tasks")
+            add_all_tasks_button.pack(pady=10)
+
         add_task_button.configure(command=add_task_callback)
         clear_all_tasks_button.configure(command=clear_tasks_callback)
+        import_tasks_button.configure(command=import_tasks_callback)

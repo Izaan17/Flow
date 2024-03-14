@@ -1,25 +1,22 @@
 import datetime
-import tkinter
 from typing import Any
 
 import customtkinter
 
-from widget_data import CheckBoxData
+from widget_data.CheckBoxData import CheckBoxData
 from widgets.HyperLink import HyperLink
 
 
 class TaskCheckBox(customtkinter.CTkCheckBox):
-    def __init__(self, master: Any, source, link, details_frame: customtkinter.CTkFrame, checkbox_manager, uid,
+    def __init__(self, master: Any, task_id, source, link,
                  due_date=None, **kwargs):
+        self.task_id = task_id
         self.task_item_frame = customtkinter.CTkFrame(master, fg_color='transparent')
         self.task_info_frame = customtkinter.CTkFrame(self.task_item_frame, fg_color='transparent')
         super().__init__(self.task_item_frame, fg_color='#00BF62', hover_color='grey', border_color='light grey',
                          border_width=2, corner_radius=3, font=('Roboto', 15, 'bold'), **kwargs)
 
-        self.details_frame = details_frame
-        self.check_box_manager = checkbox_manager
         self.due_date = due_date if due_date else datetime.datetime.now().strftime('%m-%d-%Y-%H-%M')
-        self.id = uid
 
         self.source_text_var = customtkinter.StringVar(self.task_item_frame, value=source)
         self.link_text_var = customtkinter.StringVar(self.task_item_frame, value=link)
@@ -38,80 +35,6 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
         self.task_item_frame.pack(anchor='w')
         self.task_info_frame.pack(side='bottom', anchor='w')
 
-        def delete():
-            # Check if the current selected checkbox id matches with our checkbox id
-            active_checkbox = self.check_box_manager.get_active()
-            if active_checkbox and active_checkbox.id == self.id:
-                # Destroy all items in details frame
-                for child in self.details_frame.winfo_children():
-                    child.destroy()
-                # Unset active checkbox
-                self.check_box_manager.remove_active()
-
-            self.task_item_frame.destroy()
-            self.check_box_manager.remove_checkbox_data(self.id)
-            self.destroy()
-
-        # Right Click menu
-        right_click_menu = tkinter.Menu()
-        right_click_menu.add_command(label="Delete", command=delete)
-
-        def action_menu(event):
-            right_click_menu.tk_popup(event.x_root, event.y_root)
-
-        self.bind("<Button-2>", action_menu)
-        self.task_item_frame.bind("<Button-2>", action_menu)
-        self.task_info_frame.bind("<Button-2>", action_menu)
-
-        def display_details(event):
-            # Set selected checkbox to current
-            self.check_box_manager.set_active(CheckBoxData.from_checkbox(self, self.id))
-            # Clear details frame
-            for child in self.details_frame.winfo_children():
-                child.destroy()
-            task_header_font = ('Roboto', 12)
-            task_header_color = 'grey'
-            task_name = customtkinter.CTkLabel(self.details_frame, text=self.cget("text"), font=('Roboto', 26))
-            task_name.pack()
-
-            about_label = customtkinter.CTkLabel(self.details_frame, text="About", font=('Roboto bold', 14, 'bold'))
-            about_label.pack()
-
-            source_header_label = customtkinter.CTkLabel(self.details_frame, text="Source", font=task_header_font,
-                                                         text_color=task_header_color)
-            source_header_label.pack(anchor='w')
-
-            source_label = customtkinter.CTkLabel(self.details_frame, text=self.source_text_var.get())
-            source_label.pack(anchor='w')
-
-            link_header_label = customtkinter.CTkLabel(self.details_frame, text="Link", font=task_header_font,
-                                                       text_color=task_header_color)
-            link_header_label.pack(anchor='w')
-
-            link_hyperlink = HyperLink(self.details_frame, url=self.link_text_var.get())
-            link_hyperlink.pack(anchor='w')
-
-            due_date_header = customtkinter.CTkLabel(self.details_frame, text="Due Date", font=task_header_font,
-                                                     text_color=task_header_color)
-            due_date_header.pack(anchor='w')
-
-            task_due_date = customtkinter.CTkLabel(self.details_frame, text=f"{get_day_of_week_string(self.due_date)}, "
-                                                                            f"{get_month_abbreviation(self.due_date)} "
-                                                                            f"{get_day(self.due_date)}, "
-                                                                            f"{get_time_suffix(self.due_date)}")
-            task_due_date.pack(anchor='w')
-
-        self.task_item_frame.bind("<Button-1>", display_details)
-
-        def toggle_state():
-            old_data = checkbox_manager.check_boxes_data.pop(self.id)
-            new_data = CheckBoxData.from_checkbox(self, self.id)
-            new_data.completion_status = 1 if old_data.completion_status == 0 else 0
-            checkbox_manager.check_boxes_data[self.id] = new_data
-            checkbox_manager.save_to_file()
-
-        self.configure(command=toggle_state)
-
         def update_due_date_label():
             difference_from_now = days_between_dates(datetime.datetime.now().strftime('%m-%d-%Y-%H-%M'), self.due_date)
             self.due_date_label.configure(text=f"{parse_days_difference(difference_from_now)}, "
@@ -120,6 +43,25 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
             self.after(3000, update_due_date_label)
 
         update_due_date_label()
+
+    def get_task_name(self):
+        return self._text
+
+    def get_task_source(self):
+        return self.source_text_var.get()
+
+    def get_task_link(self):
+        return self.link_text_var.get()
+
+    def get_task_due_date(self):
+        return self.due_date
+
+    def get_task_id(self):
+        return self.task_id
+
+    def get_checkbox_data(self):
+        return CheckBoxData(self.task_id, self.cget("text"), self.source_text_var.get(), self.link_text_var.get(),
+                            self.due_date, self.get())
 
 
 def days_between_dates(date1_str, date2_str, date_format='%m-%d-%Y'):

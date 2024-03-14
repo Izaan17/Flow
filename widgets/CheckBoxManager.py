@@ -11,8 +11,9 @@ class CheckBoxManager:
 
     def __init__(self, filename: Optional[str] = None):
         self.filename = filename
-        self.check_boxes_data: dict[int, CheckBoxData] = self.load_from_file() if self.load_from_file() else {}
-        self.active_checkbox: Optional[CheckBoxData] = None
+        self.check_boxes_data: dict[
+            int, CheckBoxData.CheckBoxData] = self.load_from_file() if self.load_from_file() else {}
+        self.active_checkbox: Optional[CheckBoxData.CheckBoxData] = None
 
     def load_last_id(self):
         if self.filename:
@@ -42,25 +43,28 @@ class CheckBoxManager:
         if os.path.exists(self.id_file):
             os.remove(self.id_file)
 
-    def add_checkbox(self, check_box_data: CheckBoxData):
-        self.check_boxes_data[check_box_data.id] = check_box_data
+    def add_checkbox(self, uid, check_box_data: CheckBoxData.CheckBoxData):
+        self.check_boxes_data[uid] = check_box_data
         self.save_to_file()
 
-    def get_checkbox_data(self, uid: int) -> Optional[CheckBoxData]:
+    def create_checkbox(self, check_box_data: CheckBoxData.CheckBoxData):
+        self.add_checkbox(self.load_last_id(), check_box_data)
+
+    def get_checkbox_data(self, uid: int) -> Optional[CheckBoxData.CheckBoxData]:
         return self.check_boxes_data.get(uid)
 
-    def get_checkboxes(self) -> dict[int, CheckBoxData]:
+    def get_checkboxes(self) -> dict[int, CheckBoxData.CheckBoxData]:
         return self.check_boxes_data
 
-    def remove_checkbox_data(self, uid: int):
+    def remove_checkbox_data_by_id(self, uid: int):
         if uid in self.check_boxes_data:
             del self.check_boxes_data[uid]
             self.save_to_file()
 
-    def get_active(self) -> Optional[CheckBoxData]:
+    def get_active(self) -> Optional[CheckBoxData.CheckBoxData]:
         return self.active_checkbox
 
-    def set_active(self, checkbox: CheckBoxData):
+    def set_active(self, checkbox: CheckBoxData.CheckBoxData):
         self.active_checkbox = checkbox
 
     def remove_active(self):
@@ -71,11 +75,11 @@ class CheckBoxManager:
         with open(self.filename, 'w') as file_handler:
             json.dump(data_to_save, file_handler, indent=4)
 
-    def load_from_file(self) -> dict[int, CheckBoxData]:
+    def load_from_file(self) -> dict[int, CheckBoxData.CheckBoxData]:
         try:
             with open(self.filename, 'r') as file_handler:
                 data = json.load(file_handler)
-                return {int(uid): CheckBoxData.from_dict(values) for uid, values in data.items()}
+                return {int(uid): CheckBoxData.CheckBoxData.from_dict(values) for uid, values in data.items()}
         except FileNotFoundError:
             print("File not found.")
         except json.JSONDecodeError:

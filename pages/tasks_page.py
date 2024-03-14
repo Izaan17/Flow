@@ -1,19 +1,23 @@
 import datetime
 import os
+import tkinter
 
 import customtkinter
+import requests
 from PIL import Image
 
-from widget_data import CheckBoxData
 from utils.directory_manager import get_icon_dir
+from widgets import CheckBox
 from widgets.Buttons import DefaultButton
 from widgets.CheckBox import TaskCheckBox
 from widgets.CheckBoxManager import CheckBoxManager
+from widgets.HyperLink import HyperLink
 from widgets.Page import Page
 from widgets.PopupForm import PopupForm
-from tkcalendar import Calendar
+from tkcalendar import Calendar as tkCalendar
 from utils.settings import settings
 from widgets.Popups import SuccessPopup
+from icalendar import Calendar as iCalendar
 
 ALL_TASK_SOURCES = ["MyOpenMath", "BlackBoard", "Achieve"]
 
@@ -52,16 +56,96 @@ class TasksPage(Page):
         task_info_frame = customtkinter.CTkFrame(tasks_list_and_info_frame, fg_color='white', width=10)
         task_info_frame.pack(side='right', fill='both', expand=True)
 
-        check_box_manager = CheckBoxManager('saved-checkboxes')
+        check_box_manager = CheckBoxManager('tasks.json')
+
+        def clear_info_frame():
+            # Clear details frame
+            for child in task_info_frame.winfo_children():
+                child.destroy()
+
+        def init_checkbox(new_check_box: TaskCheckBox):
+
+            def display_details(event):
+                # Set selected checkbox to current
+                check_box_manager.set_active(new_check_box.get_checkbox_data())
+                clear_info_frame()
+                task_header_font = ('Roboto', 12)
+                task_header_color = 'grey'
+                display_task_name = customtkinter.CTkLabel(task_info_frame,
+                                                           text=new_check_box.get_task_name(), font=('Roboto', 26))
+                display_task_name.pack()
+
+                about_label = customtkinter.CTkLabel(task_info_frame, text="About",
+                                                     font=('Roboto bold', 14, 'bold'))
+                about_label.pack()
+
+                source_header_label = customtkinter.CTkLabel(task_info_frame, text="Source",
+                                                             font=task_header_font,
+                                                             text_color=task_header_color)
+                source_header_label.pack(anchor='w')
+
+                source_label = customtkinter.CTkLabel(task_info_frame, text=new_check_box.get_task_source())
+                source_label.pack(anchor='w')
+
+                link_header_label = customtkinter.CTkLabel(task_info_frame, text="Link", font=task_header_font,
+                                                           text_color=task_header_color)
+                link_header_label.pack(anchor='w')
+
+                link_hyperlink = HyperLink(task_info_frame, url=new_check_box.get_task_link())
+                link_hyperlink.pack(anchor='w')
+
+                due_date_header = customtkinter.CTkLabel(task_info_frame, text="Due Date", font=task_header_font,
+                                                         text_color=task_header_color)
+                due_date_header.pack(anchor='w')
+
+                task_due_date = customtkinter.CTkLabel(task_info_frame,
+                                                       text=f"{CheckBox.get_day_of_week_string(new_check_box.get_task_due_date())},"
+                                                            f"{CheckBox.get_month_abbreviation(new_check_box.get_task_due_date())} "
+                                                            f"{CheckBox.get_day(new_check_box.get_task_due_date())}, "
+                                                            f"{CheckBox.get_time_suffix(new_check_box.get_task_due_date())}")
+                task_due_date.pack(anchor='w')
+
+            def delete():
+                # Check if the current selected checkbox id matches with our checkbox id
+                active_checkbox = check_box_manager.get_active()
+                if active_checkbox == new_check_box.get_checkbox_data():
+                    # Destroy all items in details frame
+                    clear_info_frame()
+                    # Unset active checkbox
+                    check_box_manager.remove_active()
+
+                new_check_box.task_item_frame.destroy()
+                check_box_manager.remove_checkbox_data_by_id(new_check_box.get_task_id())
+                new_check_box.destroy()
+
+            # Right Click menu
+            right_click_menu = tkinter.Menu()
+            right_click_menu.add_command(label="Delete", command=delete)
+
+            def action_menu(event):
+                right_click_menu.tk_popup(event.x_root, event.y_root)
+
+            def toggle_state():
+                old_data = check_box_manager.check_boxes_data.pop(new_check_box.get_task_id())
+                new_data = new_check_box.get_checkbox_data()
+                new_data.completion_status = 1 if old_data.completion_status == 0 else 0
+                check_box_manager.check_boxes_data[new_check_box.task_id] = new_data
+                check_box_manager.save_to_file()
+
+            new_check_box.configure(command=toggle_state)
+
+            new_check_box.bind("<Button-2>", action_menu)
+            new_check_box.task_item_frame.bind("<Button-2>", action_menu)
+            new_check_box.task_info_frame.bind("<Button-2>", action_menu)
+
+            new_check_box.task_item_frame.bind("<Button-1>", display_details)
 
         # Load checkboxes
         for checkbox_data in check_box_manager.load_from_file().values():
-            check_box = TaskCheckBox(tasks_scrollable_frame, text=checkbox_data.task_name,
-                                     source=checkbox_data.task_source,
-                                     link=checkbox_data.task_link,
-                                     details_frame=task_info_frame, checkbox_manager=check_box_manager,
-                                     due_date=checkbox_data.task_due_date,
-                                     uid=checkbox_data.id)
+            check_box = TaskCheckBox(tasks_scrollable_frame, task_id=checkbox_data.task_id,
+                                     text=checkbox_data.task_name, source=checkbox_data.task_source,
+                                     link=checkbox_data.task_link, due_date=checkbox_data.task_due_date)
+            init_checkbox(check_box)
             if checkbox_data.completion_status == 1:
                 check_box.select()
             check_box.pack(fill='both', expand=True, pady=(0, 10))
@@ -80,7 +164,7 @@ class TasksPage(Page):
             minute_drop_down = customtkinter.CTkOptionMenu(task_popup_form,
                                                            values=[str(i) for i in range(60)])
 
-            due_date_calendar = Calendar(task_popup_form)
+            due_date_calendar = tkCalendar(task_popup_form)
             due_date_calendar.pack(padx=10)
 
             task_name_entry.pack(pady=10)
@@ -110,29 +194,27 @@ class TasksPage(Page):
                     f"{task_popup_form.get_data(hour_drop_down)}:{task_popup_form.get_data(minute_drop_down)}",
                     original_format_string)
                 formatted_date = parsed_date.strftime(desired_format_string)
-                new_check_box_id = check_box_manager.load_last_id()
-                new_check_box = TaskCheckBox(tasks_scrollable_frame, text=task_name, source=task_source,
-                                             link=task_link,
-                                             details_frame=task_info_frame, checkbox_manager=check_box_manager,
-                                             due_date=formatted_date,
-                                             uid=new_check_box_id)
-                check_box_manager.add_checkbox(CheckBoxData.from_checkbox(new_check_box,
-                                                                          new_check_box_id))
+                new_task_id = check_box_manager.load_last_id()
+                new_check_box = TaskCheckBox(tasks_scrollable_frame, task_id=new_task_id,
+                                             text=task_name, source=task_source,
+                                             link=task_link, due_date=formatted_date)
+
+                init_checkbox(new_check_box)
+                check_box_manager.add_checkbox(new_task_id, new_check_box.get_checkbox_data())
                 new_check_box.pack(fill='both', expand=True, pady=(0, 10))
 
         def clear_tasks_callback():
             for child in tasks_scrollable_frame.winfo_children():
                 # Delete from the checkbox manager
                 # TODO: FIND A NEW WAY TO DELETE THE TASK CHECKBOX
-                check_box_manager.remove_checkbox_data(child.winfo_children()[1].id)
+                check_box_manager.remove_checkbox_data_by_id(child.winfo_children()[1].task_id)
                 child.destroy()
             # Reset uid file
             check_box_manager.reset_ids()
             # Reset the checkbox active
             check_box_manager.remove_active()
             # Delete all children in tasks information
-            for child in task_info_frame.winfo_children():
-                child.destroy()
+            clear_info_frame()
 
         def import_tasks_callback():
             # Create a new toplevel
@@ -163,19 +245,37 @@ class TasksPage(Page):
             bb_calendar_url_save_button = DefaultButton(bb_button_layout, text="Save URL")
             bb_calendar_url_save_button.pack(side='left', padx=(0, 5))
 
-            def save_url():
+            def bb_save_url():
                 settings.add_setting("bb_url", bb_calendar_url_entry.get())
                 # Show success popup
                 SuccessPopup(new_top_level, "Successfully saved url")
 
-            bb_calendar_url_save_button.configure(command=save_url)
+            bb_calendar_url_save_button.configure(command=bb_save_url)
 
             bb_load_button = DefaultButton(bb_button_layout, text="Load Tasks")
             bb_load_button.pack(side='right', padx=10)
 
-            black_board_scrollable_frame = customtkinter.CTkScrollableFrame(master=bb_section,
-                                                                            fg_color='transparent')
-            black_board_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+            bb_scrollable_frame = customtkinter.CTkScrollableFrame(master=bb_section,
+                                                                   fg_color='transparent')
+            bb_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+
+            def bb_load_tasks():
+                # Clear the task frame
+                for child in bb_scrollable_frame.winfo_children():
+                    child.destroy()
+                SuccessPopup(new_top_level, "Loading BlackBoard Tasks...")
+                response = requests.get(bb_calendar_url_entry.get())
+                if response.status_code == 200:
+                    # Parse the iCalendar data
+                    ical_data = response.text
+                    cal = iCalendar.from_ical(ical_data)
+                    for event in cal.walk('VEVENT'):
+                        task_name = event.get("SUMMARY")
+                        new_bb_task = TaskCheckBox(bb_scrollable_frame, text=task_name, source=None, link=None,
+                                                   task_id=0)
+                        new_bb_task.pack(anchor='w')
+
+            bb_load_button.configure(command=bb_load_tasks)
 
             # ==BB==
 

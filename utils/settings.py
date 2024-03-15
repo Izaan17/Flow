@@ -32,13 +32,6 @@ class Settings:
             del self.settings[key]
             self.save_settings()
 
-    def update_setting(self, key, value):
-        if key in self.settings:
-            self.settings[key] = value
-            self.save_settings()
-        else:
-            print("Error: Key not found")
-
     def list_settings(self):
         return self.settings
 

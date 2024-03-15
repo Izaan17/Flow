@@ -88,14 +88,10 @@ class FolderObjectButton(PathObjectButton):
 class FileObjectButton(PathObjectButton):
     def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
         super().__init__(master, path, refresh_grid_func, **kwargs)
-        picture_formats = [".png", ".jpg", "jpeg"]
-        is_picture = [True for format_ in picture_formats if path.endswith(format_)]
-        is_picture = bool(is_picture)
+        picture_formats = (".png", ".jpg", "jpeg")
+        is_picture = path.endswith(picture_formats)
         if is_picture:
-            preview_image = self.load_image(path, (int(settings.settings.get_setting("icon_width", 50)),
-                                                   int(settings.settings.get_setting("icon_width", 50))))
-            if preview_image:
-                self.configure(image=preview_image)
+            self.after(0, self.load_image_preview(path))
 
     @staticmethod
     def load_image(path, size):
@@ -106,3 +102,9 @@ class FileObjectButton(PathObjectButton):
         except Exception as e:
             print(f"Error loading image: {e}")
             return None
+
+    def load_image_preview(self, path):
+        preview_image = self.load_image(path, (int(settings.settings.get_setting("icon_width", 50)),
+                                               int(settings.settings.get_setting("icon_width", 50))))
+        if preview_image:
+            self.configure(image=preview_image)

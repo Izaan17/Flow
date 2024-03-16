@@ -16,7 +16,7 @@ from widgets.Page import Page
 from widgets.PopupForm import PopupForm
 from tkcalendar import Calendar as tkCalendar
 from utils.settings import settings
-from widgets.Popups import SuccessPopup
+from widgets.Popups import SuccessPopup, ErrorPopup
 from icalendar import Calendar as iCalendar
 
 ALL_TASK_SOURCES = ["MyOpenMath", "BlackBoard", "Achieve"]
@@ -141,14 +141,20 @@ class TasksPage(Page):
             new_check_box.task_item_frame.bind("<Button-1>", display_details)
 
         # Load checkboxes
-        for checkbox_data in check_box_manager.load_from_file().values():
-            check_box = TaskCheckBox(tasks_scrollable_frame, task_id=checkbox_data.task_id,
-                                     text=checkbox_data.task_name, source=checkbox_data.task_source,
-                                     link=checkbox_data.task_link, due_date=checkbox_data.task_due_date)
-            init_checkbox(check_box)
-            if checkbox_data.completion_status == 1:
-                check_box.select()
-            check_box.pack(fill='both', expand=True, pady=(0, 10))
+        load_popup = SuccessPopup(self, "Loading saved tasks...", 100000)
+
+        def load_saved_checkboxes():
+            for checkbox_data in check_box_manager.load_from_file().values():
+                check_box = TaskCheckBox(tasks_scrollable_frame, task_id=checkbox_data.task_id,
+                                         text=checkbox_data.task_name, source=checkbox_data.task_source,
+                                         link=checkbox_data.task_link, due_date=checkbox_data.task_due_date)
+                init_checkbox(check_box)
+                if checkbox_data.completion_status == 1:
+                    check_box.select()
+                check_box.pack(fill='both', expand=True, pady=(0, 10))
+            load_popup.slide_up()
+
+        self.after(0, load_saved_checkboxes)
 
         # Command call backs
         def add_task_callback():
@@ -264,24 +270,44 @@ class TasksPage(Page):
                 for child in bb_scrollable_frame.winfo_children():
                     child.destroy()
                 SuccessPopup(new_top_level, "Loading BlackBoard Tasks...")
-                response = requests.get(bb_calendar_url_entry.get())
-                if response.status_code == 200:
-                    # Parse the iCalendar data
-                    ical_data = response.text
-                    cal = iCalendar.from_ical(ical_data)
-                    for event in cal.walk('VEVENT'):
-                        task_name = event.get("SUMMARY")
-                        new_bb_task = TaskCheckBox(bb_scrollable_frame, text=task_name, source=None, link=None,
-                                                   task_id=0)
-                        new_bb_task.pack(anchor='w')
+                try:
+                    response = requests.get(bb_calendar_url_entry.get())
+                    if response.status_code == 200:
+                        # Parse the iCalendar data
+                        ical_data = response.text
+                        cal = iCalendar.from_ical(ical_data)
+                        for event in cal.walk('VEVENT'):
+                            task_name = event.get("SUMMARY")
+                            task_due_date: datetime.datetime = event.get("DTEND").dt
+                            task_due_date_str = task_due_date.strftime("%m-%d-%Y-%H-%M")
+                            # Convert the date to usable format
+                            new_bb_task = TaskCheckBox(bb_scrollable_frame, text=task_name, source=None, link=None,
+                                                       task_id=0, due_date=task_due_date_str)
+                            new_bb_task.pack(anchor='w')
+                    else:
+                        ErrorPopup(new_top_level, f"Error loading tasks => {response.status_code}")
+                except Exception as error:
+                    ErrorPopup(new_top_level, f"Error => {error}")
 
-            bb_load_button.configure(command=bb_load_tasks)
+            bb_load_button.configure(command=lambda: self.after(0, bb_load_tasks()))
 
             # ==BB==
 
             # Add all button
             add_all_tasks_button = DefaultButton(new_top_level, text="Add Selected Tasks")
             add_all_tasks_button.pack(pady=10)
+
+            def add_all_tasks():
+                for children in bb_scrollable_frame.winfo_children():
+                    children = children.children.get("!taskcheckbox")
+                    # Generate new id for checkbox
+                    generated_id = check_box_manager.load_last_id()
+                    task_box: TaskCheckBox = children
+                    task_box_data = task_box.get_checkbox_data()
+                    task_box_data.task_id = generated_id
+                    check_box_manager.add_checkbox(generated_id, task_box_data)
+
+            add_all_tasks_button.configure(command=add_all_tasks)
 
         add_task_button.configure(command=add_task_callback)
         clear_all_tasks_button.configure(command=clear_tasks_callback)

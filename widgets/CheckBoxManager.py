@@ -2,11 +2,12 @@ import json
 import os
 from typing import Optional
 
+from utils.directory_manager import get_app_dir
 from widget_data import CheckBoxData
 
 
 class CheckBoxManager:
-    id_file = "checkbox_ids.json"
+    id_file = f"{get_app_dir()}{os.sep}checkbox_ids.json"
     max_id = 1000000  # Define a maximum ID value, adjust as needed
 
     def __init__(self, filename: Optional[str] = None):

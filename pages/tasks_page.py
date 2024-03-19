@@ -6,7 +6,7 @@ import customtkinter
 import requests
 from PIL import Image
 
-from utils.directory_manager import get_icon_dir
+from utils.directory_manager import get_icon_dir, get_app_dir
 from widgets import CheckBox
 from widgets.Buttons import DefaultButton
 from widgets.CheckBox import TaskCheckBox
@@ -56,7 +56,7 @@ class TasksPage(Page):
         task_info_frame = customtkinter.CTkFrame(tasks_list_and_info_frame, fg_color='white', width=10)
         task_info_frame.pack(side='right', fill='both', expand=True)
 
-        check_box_manager = CheckBoxManager('tasks.json')
+        check_box_manager = CheckBoxManager(f'{get_app_dir()}{os.sep}tasks.json')
 
         def clear_info_frame():
             # Clear details frame
@@ -99,7 +99,7 @@ class TasksPage(Page):
                 due_date_header.pack(anchor='w')
 
                 task_due_date = customtkinter.CTkLabel(task_info_frame,
-                                                       text=f"{CheckBox.get_day_of_week_string(new_check_box.get_task_due_date())},"
+                                                       text=f"{CheckBox.get_day_of_week_string(new_check_box.get_task_due_date())}, "
                                                             f"{CheckBox.get_month_abbreviation(new_check_box.get_task_due_date())} "
                                                             f"{CheckBox.get_day(new_check_box.get_task_due_date())}, "
                                                             f"{CheckBox.get_time_suffix(new_check_box.get_task_due_date())}")
@@ -281,8 +281,8 @@ class TasksPage(Page):
                             task_due_date: datetime.datetime = event.get("DTEND").dt
                             task_due_date_str = task_due_date.strftime("%m-%d-%Y-%H-%M")
                             # Convert the date to usable format
-                            new_bb_task = TaskCheckBox(bb_scrollable_frame, text=task_name, source=None, link=None,
-                                                       task_id=0, due_date=task_due_date_str)
+                            new_bb_task = TaskCheckBox(bb_scrollable_frame, text=task_name, source="BlackBoard",
+                                                       link=None, task_id=0, due_date=task_due_date_str)
                             new_bb_task.pack(anchor='w')
                     else:
                         ErrorPopup(new_top_level, f"Error loading tasks => {response.status_code}")

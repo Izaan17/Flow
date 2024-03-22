@@ -303,9 +303,16 @@ class TasksPage(Page):
                     # Generate new id for checkbox
                     generated_id = check_box_manager.load_last_id()
                     task_box: TaskCheckBox = children
-                    task_box_data = task_box.get_checkbox_data()
-                    task_box_data.task_id = generated_id
-                    check_box_manager.add_checkbox(generated_id, task_box_data)
+                    # If selected
+                    if task_box.get():
+                        # Unselect the checkbox
+                        task_box.deselect()
+                        task_box_data = task_box.get_checkbox_data()
+                        task_box_data.task_id = generated_id
+                        check_box_manager.add_checkbox(generated_id, task_box_data)
+                # Close all
+                new_top_level.destroy()
+                SuccessPopup(self, "Successfully Loaded Tasks")
 
             add_all_tasks_button.configure(command=add_all_tasks)
 

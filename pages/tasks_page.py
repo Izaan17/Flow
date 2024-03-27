@@ -7,6 +7,7 @@ import requests
 from PIL import Image
 
 from utils.directory_manager import get_icon_dir, get_app_dir
+from widget_data.CheckBoxData import CheckBoxData
 from widgets import CheckBox
 from widgets.Buttons import DefaultButton
 from widgets.CheckBox import TaskCheckBox
@@ -99,7 +100,7 @@ class TasksPage(Page):
                 due_date_header.pack(anchor='w')
 
                 task_due_date = customtkinter.CTkLabel(task_info_frame,
-                                                       text=f"{CheckBox.get_day_of_week_string(new_check_box.get_task_due_date())}, "
+                                                       text=f"{CheckBox.get_day_of_week_string(new_check_box.get_task_due_date())},"
                                                             f"{CheckBox.get_month_abbreviation(new_check_box.get_task_due_date())} "
                                                             f"{CheckBox.get_day(new_check_box.get_task_due_date())}, "
                                                             f"{CheckBox.get_time_suffix(new_check_box.get_task_due_date())}")
@@ -264,8 +265,11 @@ class TasksPage(Page):
             bb_scrollable_frame = customtkinter.CTkScrollableFrame(master=bb_section,
                                                                    fg_color='transparent')
             bb_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+            self.loaded_tasks = []
 
             def bb_load_tasks():
+                # Set loaded to none
+                self.loaded_tasks = []
                 # Clear the task frame
                 for child in bb_scrollable_frame.winfo_children():
                     child.destroy()
@@ -284,12 +288,14 @@ class TasksPage(Page):
                             new_bb_task = TaskCheckBox(bb_scrollable_frame, text=task_name, source="BlackBoard",
                                                        link=None, task_id=0, due_date=task_due_date_str)
                             new_bb_task.pack(anchor='w')
+                            # Add to list
+                            self.loaded_tasks.append(new_bb_task)
                     else:
                         ErrorPopup(new_top_level, f"Error loading tasks => {response.status_code}")
                 except Exception as error:
                     ErrorPopup(new_top_level, f"Error => {error}")
 
-            bb_load_button.configure(command=lambda: self.after(0, bb_load_tasks()))
+            bb_load_button.configure(command=bb_load_tasks)
 
             # ==BB==
 
@@ -298,19 +304,25 @@ class TasksPage(Page):
             add_all_tasks_button.pack(pady=10)
 
             def add_all_tasks():
-                for children in bb_scrollable_frame.winfo_children():
-                    children = children.children.get("!taskcheckbox")
-                    # Generate new id for checkbox
-                    generated_id = check_box_manager.load_last_id()
-                    task_box: TaskCheckBox = children
+                while self.loaded_tasks:
+                    task_box: TaskCheckBox = self.loaded_tasks.pop()
                     # If selected
                     if task_box.get():
                         # Unselect the checkbox
                         task_box.deselect()
                         task_box_data = task_box.get_checkbox_data()
-                        task_box_data.task_id = generated_id
-                        check_box_manager.add_checkbox(generated_id, task_box_data)
-                # Close all
+                        # Generate new id and set id
+                        task_box_data.task_id = check_box_manager.load_last_id()
+                        # Add to checkbox manager
+                        check_box_manager.add_checkbox(task_box_data.task_id, task_box_data)
+                        # Pack the checkbox
+                        new_task_box = TaskCheckBox(tasks_scrollable_frame, task_box_data.task_id,
+                                                    task_box_data.task_source, task_box_data.task_link,
+                                                    task_box_data.task_due_date, text=task_box_data.task_name)
+                        init_checkbox(new_task_box)
+                        new_task_box.pack(fill='both', expand=True, pady=(0, 10))
+
+            # Close all
                 new_top_level.destroy()
                 SuccessPopup(self, "Successfully Loaded Tasks")
 

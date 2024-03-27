@@ -5,9 +5,11 @@ import tkinter
 import customtkinter
 import requests
 from PIL import Image
+from icalendar import Calendar as iCalendar
+from tkcalendar import Calendar as tkCalendar
 
 from utils.directory_manager import get_icon_dir, get_app_dir
-from widget_data.CheckBoxData import CheckBoxData
+from utils.settings import settings
 from widgets import CheckBox
 from widgets.Buttons import DefaultButton
 from widgets.CheckBox import TaskCheckBox
@@ -15,10 +17,7 @@ from widgets.CheckBoxManager import CheckBoxManager
 from widgets.HyperLink import HyperLink
 from widgets.Page import Page
 from widgets.PopupForm import PopupForm
-from tkcalendar import Calendar as tkCalendar
-from utils.settings import settings
 from widgets.Popups import SuccessPopup, ErrorPopup
-from icalendar import Calendar as iCalendar
 
 ALL_TASK_SOURCES = ["MyOpenMath", "BlackBoard", "Achieve"]
 

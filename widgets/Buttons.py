@@ -1,5 +1,6 @@
 import os.path
 import shutil
+import threading
 import tkinter
 import tkinter.simpledialog
 from typing import Any
@@ -91,7 +92,7 @@ class FileObjectButton(PathObjectButton):
         picture_formats = (".png", ".jpg", "jpeg")
         is_picture = path.endswith(picture_formats)
         if is_picture:
-            self.after(0, self.load_image_preview(path))
+            threading.Thread(target=self.load_image_preview, args=(path,)).start()
 
     @staticmethod
     def load_image(path, size):

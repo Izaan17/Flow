@@ -74,11 +74,11 @@ class CurriculumPage(Page):
         self.current_directory_label = customtkinter.CTkLabel(self.current_directory_frame,
                                                               textvariable=self.current_directory_var,
                                                               font=('Roboto', 14))
-        self.current_directory_frame.pack(padx=5, anchor='w')
+        self.current_directory_frame.pack(padx=10, anchor='w')
         self.current_directory_label.pack(padx=10, anchor='w')
 
-        self.content_scrollable_frame = customtkinter.CTkScrollableFrame(master=self, fg_color='#2c3e50')
-        self.content_scrollable_frame.pack(fill='both', expand=True, padx=5, pady=5)
+        self.content_scrollable_frame = customtkinter.CTkScrollableFrame(master=self, fg_color='white')
+        self.content_scrollable_frame.pack(fill='both', expand=True, padx=5, pady=0)
 
         self.refresh_grid()
 
@@ -109,12 +109,12 @@ class CurriculumPage(Page):
                 # Creates a folder button
                 button = FolderObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
                 button.bind("<Double-Button-1>", command=lambda event, path=file_path: self.open_directory(path))
-                button.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+                button.grid(row=row, column=column, padx=(0, 10), pady=10, sticky="nsew")
             else:
                 # Creates a file object button
                 file = FileObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
                 file.bind("<Double-Button-1>", command=lambda event, path=file_path: self.open_file(path))
-                file.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+                file.grid(row=row, column=column, padx=(0, 10), pady=10, sticky="nsew")
 
             column += 1
             if column == self.MAX_ITEMS_PER_ROW:

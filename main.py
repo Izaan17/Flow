@@ -30,7 +30,7 @@ book_icon = customtkinter.CTkImage(light_image=Image.open(f'{get_icon_dir()}{os.
 settings_icon = customtkinter.CTkImage(light_image=Image.open(f'{get_icon_dir()}{os.sep}settings.png'),
                                        size=default_icon_size)
 
-left_menu_frame = customtkinter.CTkFrame(master=root, fg_color='#17325B', width=150, corner_radius=0)
+left_menu_frame = customtkinter.CTkFrame(master=root, fg_color='#2B3950', width=150, corner_radius=0)
 left_menu_frame.pack(side='left', fill='y')
 
 content_frame = customtkinter.CTkFrame(master=root, fg_color='blue', corner_radius=0)

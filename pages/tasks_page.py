@@ -140,7 +140,6 @@ class TasksPage(Page):
 
             new_check_box.task_item_frame.bind("<Button-1>", display_details)
 
-        # Load checkboxes
         load_popup = SuccessPopup(self, "Loading saved tasks...", 100000)
 
         def load_saved_checkboxes():

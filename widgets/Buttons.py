@@ -22,7 +22,7 @@ class DefaultButton(customtkinter.CTkButton):
 class PathObjectButton(customtkinter.CTkButton):
     def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
         super().__init__(master, **kwargs,
-                         image=customtkinter.CTkImage(light_image=Image.open(f"{get_icon_dir()}/file.png"),
+                         image=customtkinter.CTkImage(light_image=Image.open(f"{get_icon_dir()}{os.sep}file.png"),
                                                       size=(32, 32)), fg_color='#A9A9A9', hover_color='#D3D3D3',
                          text_color='black', compound='top',
                          corner_radius=5)

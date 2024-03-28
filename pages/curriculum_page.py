@@ -149,7 +149,8 @@ class CurriculumPage(Page):
                 ErrorPopup(self.content_scrollable_frame, "Template folder not found!")
                 return
 
-            new_folder_name = tkinter.simpledialog.askstring("Add Folder", "Enter folder name:")
+            new_folder_name = tkinter.simpledialog.askstring("Add Folder", "Enter folder name:",
+                                                             initialvalue=folder_to_copy.split(os.sep)[-1])
             if new_folder_name:
                 new_folder_path = os.path.join(self.current_directory, new_folder_name)
                 try:

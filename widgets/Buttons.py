@@ -52,7 +52,8 @@ class PathObjectButton(customtkinter.CTkButton):
                 ErrorPopup(master, f"An error occurred: {e}")
 
         def rename():
-            new_renamed_file_name = tkinter.simpledialog.askstring("File Rename", "Enter new file name")
+            new_renamed_file_name = tkinter.simpledialog.askstring("File Rename", "Enter new file name",
+                                                                   initialvalue=self.item_name)
             old_path_split = self.path.split(os.sep)
             # Delete last file name
             del old_path_split[-1]

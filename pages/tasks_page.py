@@ -226,6 +226,9 @@ class TasksPage(Page):
             new_top_level = customtkinter.CTkToplevel(self, fg_color='white')
             new_top_level.wm_title("Import Tasks")
 
+            # Only capture events for this window
+            new_top_level.grab_set()
+
             # Source Sections Frame
             # ==BB==
             bb_header_label = customtkinter.CTkLabel(new_top_level, text='BlackBoard', font=('Roboto', 18, 'bold'))
@@ -320,7 +323,7 @@ class TasksPage(Page):
                         init_checkbox(new_task_box)
                         new_task_box.pack(fill='both', expand=True, pady=(0, 10))
 
-            # Close all
+                # Close all
                 new_top_level.destroy()
                 SuccessPopup(self, "Successfully Loaded Tasks")
 

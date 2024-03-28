@@ -47,17 +47,17 @@ curriculum_page.place(in_=content_frame, x=0, y=0, relwidth=1, relheight=1)
 settings_page.place(in_=content_frame, x=0, y=0, relwidth=1, relheight=1)
 
 # Default padding for buttons
-button_padx = (5, 10)
+button_padx = (5, 5)
 button_pady = (0, 10)
 tasks_button = MenuButton.MenuButton(left_menu_frame, check_mark_box_icon, "Tasks", command=tasks_page.show,
-                                     button_width=75)
-tasks_button.grid(padx=button_padx, pady=(10, button_pady[1]), sticky='w')
+                                     button_width=65)
+tasks_button.grid(padx=button_padx, pady=(10, button_pady[1]), sticky='nsew')
 curriculum_button = MenuButton.MenuButton(left_menu_frame, book_icon, "Education", command=curriculum_page.show,
-                                          button_width=75)
-curriculum_button.grid(padx=button_padx, pady=button_pady, sticky='w')
+                                          button_width=65)
+curriculum_button.grid(padx=button_padx, pady=button_pady, sticky='nsew')
 settings_button = MenuButton.MenuButton(left_menu_frame, settings_icon, "Settings", command=settings_page.show,
-                                        button_width=75)
-settings_button.grid(padx=button_padx, pady=button_pady, sticky='w')
+                                        button_width=65)
+settings_button.grid(padx=button_padx, pady=button_pady, sticky='nsew')
 
 # The first page to be shown is the tasks page
 tasks_page.show()

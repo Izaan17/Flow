@@ -18,6 +18,7 @@ from widgets.HyperLink import HyperLink
 from widgets.Page import Page
 from widgets.PopupForm import PopupForm
 from widgets.Popups import SuccessPopup, ErrorPopup
+from tkinter import messagebox
 
 ALL_TASK_SOURCES = ["MyOpenMath", "BlackBoard", "Achieve"]
 
@@ -98,11 +99,12 @@ class TasksPage(Page):
                                                          text_color=task_header_color)
                 due_date_header.pack(anchor='w')
 
-                task_due_date = customtkinter.CTkLabel(task_info_frame,
-                                                       text=f"{CheckBox.get_day_of_week_string(new_check_box.get_task_due_date())},"
-                                                            f"{CheckBox.get_month_abbreviation(new_check_box.get_task_due_date())} "
-                                                            f"{CheckBox.get_day(new_check_box.get_task_due_date())}, "
-                                                            f"{CheckBox.get_time_suffix(new_check_box.get_task_due_date())}")
+                task_due_date = customtkinter.CTkLabel(
+                    task_info_frame,
+                    text=f"{CheckBox.get_day_of_week_string(new_check_box.get_task_due_date())}, "
+                    f"{CheckBox.get_month_abbreviation(new_check_box.get_task_due_date())} "
+                    f"{CheckBox.get_day(new_check_box.get_task_due_date())}, "
+                    f"{CheckBox.get_time_suffix(new_check_box.get_task_due_date())}")
                 task_due_date.pack(anchor='w')
 
             def delete():
@@ -139,6 +141,7 @@ class TasksPage(Page):
             new_check_box.task_info_frame.bind("<Button-2>", action_menu)
 
             new_check_box.task_item_frame.bind("<Button-1>", display_details)
+            new_check_box.bind("<Button-1>", display_details)
 
         load_popup = SuccessPopup(self, "Loading saved tasks...", 100000)
 
@@ -209,17 +212,18 @@ class TasksPage(Page):
                 new_check_box.pack(fill='both', expand=True, pady=(0, 10))
 
         def clear_tasks_callback():
-            for child in tasks_scrollable_frame.winfo_children():
-                # Delete from the checkbox manager
-                # TODO: FIND A NEW WAY TO DELETE THE TASK CHECKBOX
-                check_box_manager.remove_checkbox_data_by_id(child.winfo_children()[1].task_id)
-                child.destroy()
-            # Reset uid file
-            check_box_manager.reset_ids()
-            # Reset the checkbox active
-            check_box_manager.remove_active()
-            # Delete all children in tasks information
-            clear_info_frame()
+            if messagebox.askyesno("Delete all tasks", "Are you sure you want to delete all of your tasks?"):
+                for child in tasks_scrollable_frame.winfo_children():
+                    # Delete from the checkbox manager
+                    # TODO: FIND A NEW WAY TO DELETE THE TASK CHECKBOX
+                    check_box_manager.remove_checkbox_data_by_id(child.winfo_children()[1].task_id)
+                    child.destroy()
+                # Reset uid file
+                check_box_manager.reset_ids()
+                # Reset the checkbox active
+                check_box_manager.remove_active()
+                # Delete all children in tasks information
+                clear_info_frame()
 
         def import_tasks_callback():
             # Create a new toplevel

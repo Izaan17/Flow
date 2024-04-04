@@ -82,12 +82,15 @@ class CurriculumPage(Page):
 
         self.refresh_grid()
 
-    @staticmethod
-    def open_file(file):
+    def open_file(self, file):
         if os.name == "nt":
-            os.system(f'start "" "{file}"')
+            command = f'start "" "{file}"'
         else:
-            os.system(f'open "" "{file}"')
+            command = f'open "" "{file}"'
+
+        if os.system(command) != 0:
+            # An error occurred
+            ErrorPopup(self, f"No Application knows how to open this file! -> {file}")
 
     def open_directory(self, directory):
         self.back_stack.append(self.current_directory)

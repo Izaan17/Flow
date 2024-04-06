@@ -17,6 +17,12 @@ class SettingsPage(Page):
         self.drop_downs_frame = customtkinter.CTkFrame(self, fg_color='white')
         self.drop_downs_frame.pack(fill='both', expand=True)
 
+        self.show_image_preview = DefaultDropDown(self.drop_downs_frame,
+                                                  label_text="Show Image Preview",
+                                                  values=["True", "False"], command=self.on_img_preview_change)
+        self.show_image_preview.pack(anchor='w')
+        self.show_image_preview.set(settings.get_setting("show_img_preview", "True"))
+
         self.icon_size_drop_down = DefaultDropDown(self.drop_downs_frame, label_text="Image Preview Size",
                                                    values=self.all_icon_sizes, command=self.on_icon_change)
         self.icon_size_drop_down.pack(anchor='w')
@@ -38,5 +44,8 @@ class SettingsPage(Page):
 
     @staticmethod
     def on_dir_delete(choice):
-        print(choice)
         settings.add_setting("allow_full_dir_deletion", choice)
+
+    @staticmethod
+    def on_img_preview_change(choice):
+        settings.add_setting("show_img_preview", choice)

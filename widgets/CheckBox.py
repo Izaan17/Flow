@@ -88,12 +88,10 @@ def parse_days_difference(days_difference):
         return "Yesterday"
     elif days_difference == 1:
         return "Tomorrow"
-    elif 7 >= days_difference > 0:
-        return "This week"
     elif days_difference <= 0:
         return f"Due {-days_difference} days ago"
     else:
-        return f"In {days_difference} days"
+        return f"Due in {days_difference} days"
 
 
 def convert_str_to_datetime(date_str):

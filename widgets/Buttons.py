@@ -35,7 +35,11 @@ class PathObjectButton(customtkinter.CTkButton):
                     raise FileNotFoundError(f"{path} does not exist!")
 
                 if os.path.isdir(path):
-                    os.rmdir(path)
+                    # Check settings
+                    if settings.settings.get_setting("allow_full_dir_deletion", "False") == "True":
+                        shutil.rmtree(path)
+                    else:
+                        os.rmdir(path)
                 else:
                     os.remove(path)
 

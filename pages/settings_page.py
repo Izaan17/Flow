@@ -24,8 +24,19 @@ class SettingsPage(Page):
         self.icon_size_drop_down.set(f"{settings.get_setting('icon_width', 50)}x"
                                      f"{settings.get_setting('icon_height', 50)}")
 
+        self.allow_full_directory_deletion = DefaultDropDown(self.drop_downs_frame,
+                                                             label_text="Full Directory Deletion",
+                                                             values=["True", "False"], command=self.on_dir_delete)
+        self.allow_full_directory_deletion.pack(anchor='w')
+        self.allow_full_directory_deletion.set(settings.get_setting("allow_full_dir_deletion", "False"))
+
     @staticmethod
     def on_icon_change(choice):
         icon_size = choice.split("x")
         settings.add_setting("icon_width", icon_size[0])
         settings.add_setting("icon_height", icon_size[1])
+
+    @staticmethod
+    def on_dir_delete(choice):
+        print(choice)
+        settings.add_setting("allow_full_dir_deletion", choice)

@@ -110,7 +110,7 @@ class FileObjectButton(PathObjectButton):
             return None
 
     def load_image_preview(self, path):
-        preview_image = self.load_image(path, (int(settings.settings.get_setting("icon_width", 50)),
+        preview_image = self.load_image(path, (int(settings.settings.get_setting("icon_height", 50)),
                                                int(settings.settings.get_setting("icon_width", 50))))
         if preview_image:
             self.configure(image=preview_image)

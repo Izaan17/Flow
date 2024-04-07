@@ -142,14 +142,14 @@ class CurriculumPage(Page):
                 os.mkdir(os.path.join(self.current_directory, new_folder_name))
                 self.refresh_grid()
             except OSError as error:
-                ErrorPopup(self.content_scrollable_frame, error)
+                ErrorPopup(self, error)
 
     def add_folder(self):
         folder_to_copy = tkinter.filedialog.askdirectory()
         if folder_to_copy:
             template_folder_path = os.path.join(os.getcwd(), folder_to_copy)
             if not os.path.exists(template_folder_path):
-                ErrorPopup(self.content_scrollable_frame, "Template folder not found!")
+                ErrorPopup(self, "Template folder not found!")
                 return
 
             new_folder_name = tkinter.simpledialog.askstring("Add Folder", "Enter folder name:",
@@ -160,7 +160,7 @@ class CurriculumPage(Page):
                     shutil.copytree(template_folder_path, new_folder_path)
                     self.refresh_grid()
                 except Exception as error:
-                    ErrorPopup(self.content_scrollable_frame, f"Error copying folder: {error}")
+                    ErrorPopup(self, f"Error copying folder: {error}")
 
     def add_file(self):
         file_to_copy = tkinter.filedialog.askopenfilenames()
@@ -171,7 +171,7 @@ class CurriculumPage(Page):
 
     def set_default_dir(self):
         settings.add_setting("default_dir", self.current_directory)
-        SuccessPopup(self.content_scrollable_frame, f"Success! '{self.current_directory}' is now the default!")
+        SuccessPopup(self, f"Success! '{self.current_directory}' is now the default!")
 
     def go_home(self):
         self.set_current_dir(directory=get_storage_dir())

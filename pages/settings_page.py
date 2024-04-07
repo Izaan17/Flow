@@ -9,7 +9,7 @@ class SettingsPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color='white')
 
-        self.all_icon_sizes = ["24x24", "50x50", "100x100", "125x125", "200x200"]
+        self.all_icon_sizes = ["24x24", "50x50", "100x100", "100x125", "125x100", "125x125", "200x200"]
 
         self.settings_label = customtkinter.CTkLabel(self, text="Settings", font=('Roboto', 36))
         self.settings_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
@@ -23,7 +23,7 @@ class SettingsPage(Page):
         self.show_image_preview.pack(anchor='w')
         self.show_image_preview.set(settings.get_setting("show_img_preview", "True"))
 
-        self.icon_size_drop_down = DefaultDropDown(self.drop_downs_frame, label_text="Image Preview Size",
+        self.icon_size_drop_down = DefaultDropDown(self.drop_downs_frame, label_text="Icon Size",
                                                    values=self.all_icon_sizes, command=self.on_icon_change)
         self.icon_size_drop_down.pack(anchor='w')
         # Set saved icon size or default

@@ -10,4 +10,4 @@ class DefaultDropDown(customtkinter.CTkOptionMenu):
         self.drop_down_label = customtkinter.CTkLabel(self.frame, text=label_text, font=('Roboto', 14))
         # Put frame on left side
         self.frame.pack(anchor='w', pady=(0, 10), padx=5)
-        self.drop_down_label.pack(side='top', pady=5)
+        self.drop_down_label.pack(side='top', pady=5, anchor='w')

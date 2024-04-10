@@ -13,6 +13,13 @@ from utils.directory_manager import get_icon_dir
 from widgets.Popups import ErrorPopup
 
 
+def shorten_text(text, max_length):
+    if len(text) <= max_length:
+        return text
+    else:
+        return text[:max_length - 3] + "..."  # truncate text and add ellipsis
+
+
 class DefaultButton(customtkinter.CTkButton):
     def __init__(self, master: Any, **kwargs):
         super().__init__(master, **kwargs, corner_radius=5, fg_color='#34495e', text_color='white',
@@ -61,7 +68,7 @@ class PathObjectButton(customtkinter.CTkButton):
             old_path_split = self.path.split(os.sep)
             # Delete last file name
             del old_path_split[-1]
-            current_dir = '/'.join(old_path_split)
+            current_dir = os.sep.join(old_path_split)
             if new_renamed_file_name:
                 new_file_name = os.path.join(current_dir, new_renamed_file_name)
                 if os.path.exists(new_file_name):
@@ -81,7 +88,8 @@ class PathObjectButton(customtkinter.CTkButton):
             right_click_menu.tk_popup(event.x_root, event.y_root)
 
         self.bind("<Button-2>", action_menu)
-        self.configure(text=self.item_name)
+        # Text name
+        self.configure(text=shorten_text(self.item_name, 30))
 
 
 class FolderObjectButton(PathObjectButton):

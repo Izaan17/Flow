@@ -88,7 +88,7 @@ class CurriculumPage(Page):
 
     def open_file(self, file):
         if os.name == "nt":
-            command = f'start "{file}"'
+            command = f'start "" "{file}"'
         else:
             command = f'open "{file}"'
 

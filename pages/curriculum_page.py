@@ -28,6 +28,11 @@ class CurriculumPage(Page):
         self.home_button = DefaultButton(self.top_buttons_frame, text="Home", image=customtkinter.CTkImage(
             Image.open(f'{get_icon_dir()}{os.sep}home.png')), command=self.go_home)
         self.home_button.pack(padx=(0, 10), side='left', anchor='nw')
+        self.create_folder_button = DefaultButton(self.top_buttons_frame, text="Create Folder",
+                                                  command=self.create_folder,
+                                                  image=customtkinter.CTkImage(
+                                                      Image.open(f'{get_icon_dir()}{os.sep}folder-plus.png')))
+        self.create_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.add_folder_button = DefaultButton(self.top_buttons_frame, text="Add Folder", command=self.add_folder,
                                                image=customtkinter.CTkImage(
@@ -39,27 +44,21 @@ class CurriculumPage(Page):
                                                  Image.open(f'{get_icon_dir()}{os.sep}file-plus.png')))
         self.add_file_button.pack(padx=(0, 10), side='left', anchor='nw')
 
-        self.create_folder_button = DefaultButton(self.top_buttons_frame, text="Create Folder",
-                                                  command=self.create_folder,
-                                                  image=customtkinter.CTkImage(
-                                                      Image.open(f'{get_icon_dir()}{os.sep}folder-plus.png')))
-        self.create_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
-
-        self.clear_grid_button = DefaultButton(self.top_buttons_frame, text="Clear", command=self.clear_grid,
-                                               image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'
-                                                                                       f'{os.sep}trash.png')))
-        self.clear_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
-
-        self.refresh_grid_button = DefaultButton(self.top_buttons_frame, text="Refresh", command=self.refresh_grid,
-                                                 image=customtkinter.CTkImage(
-                                                     Image.open(f'{get_icon_dir()}{os.sep}rotate-ccw.png')))
-        self.refresh_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
+        # self.clear_grid_button = DefaultButton(self.top_buttons_frame, text="Clear", command=self.clear_grid,
+        #                                        image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'
+        #                                                                                f'{os.sep}trash.png')))
+        # self.clear_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.set_default_directory_button = DefaultButton(self.top_buttons_frame, text="Make Default",
                                                           image=customtkinter.CTkImage(
                                                               Image.open(f'{get_icon_dir()}{os.sep}bookmark.png')),
                                                           command=self.set_default_dir)
         self.set_default_directory_button.pack(padx=(0, 10), side='left', anchor='nw')
+
+        self.refresh_grid_button = DefaultButton(self.top_buttons_frame, text="Refresh", command=self.refresh_grid,
+                                                 image=customtkinter.CTkImage(
+                                                     Image.open(f'{get_icon_dir()}{os.sep}rotate-ccw.png')))
+        self.refresh_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.back_button = DefaultButton(self.top_buttons_frame, text="Back", command=self.go_back,
                                          image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'

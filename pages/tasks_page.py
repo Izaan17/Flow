@@ -108,17 +108,20 @@ class TasksPage(Page):
                 task_due_date.pack(anchor='w')
 
             def delete():
-                # Check if the current selected checkbox id matches with our checkbox id
-                active_checkbox = check_box_manager.get_active()
-                if active_checkbox == new_check_box.get_checkbox_data():
-                    # Destroy all items in details frame
-                    clear_info_frame()
-                    # Unset active checkbox
-                    check_box_manager.remove_active()
+                if tkinter.messagebox.askyesno("Delete Task",
+                                               f"Are you sure you want to delete "
+                                               f"'{new_check_box.cget("text")}'?"):
+                    # Check if the current selected checkbox id matches with our checkbox id
+                    active_checkbox = check_box_manager.get_active()
+                    if active_checkbox == new_check_box.get_checkbox_data():
+                        # Destroy all items in details frame
+                        clear_info_frame()
+                        # Unset active checkbox
+                        check_box_manager.remove_active()
 
-                new_check_box.task_item_frame.destroy()
-                check_box_manager.remove_checkbox_data_by_id(new_check_box.get_task_id())
-                new_check_box.destroy()
+                    new_check_box.task_item_frame.destroy()
+                    check_box_manager.remove_checkbox_data_by_id(new_check_box.get_task_id())
+                    new_check_box.destroy()
 
             # Right Click menu
             right_click_menu = tkinter.Menu()

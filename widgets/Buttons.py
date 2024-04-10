@@ -88,7 +88,7 @@ class FolderObjectButton(PathObjectButton):
     def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
         super().__init__(master, path, refresh_grid_func, **kwargs)
         # change to folder icon
-        self.configure(image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}/folder.png'), size=(32, 32)))
+        self.configure(image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}{os.sep}folder.png'), size=(32, 32)))
 
 
 class FileObjectButton(PathObjectButton):

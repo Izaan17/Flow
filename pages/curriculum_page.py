@@ -28,6 +28,11 @@ class CurriculumPage(Page):
         self.home_button = DefaultButton(self.top_buttons_frame, text="Home", image=customtkinter.CTkImage(
             Image.open(f'{get_icon_dir()}{os.sep}home.png')), command=self.go_home)
         self.home_button.pack(padx=(0, 10), side='left', anchor='nw')
+
+        self.open_current_folder = DefaultButton(self.top_buttons_frame, text="Open", image=customtkinter.CTkImage(
+            Image.open(f'{get_icon_dir()}{os.sep}link-2.png')), command=lambda: self.open_file(self.current_directory))
+        self.open_current_folder.pack(padx=(0, 10), side='left', anchor='nw')
+
         self.create_folder_button = DefaultButton(self.top_buttons_frame, text="Create Folder",
                                                   command=self.create_folder,
                                                   image=customtkinter.CTkImage(
@@ -83,9 +88,9 @@ class CurriculumPage(Page):
 
     def open_file(self, file):
         if os.name == "nt":
-            command = f'start "" "{file}"'
+            command = f'start "{file}"'
         else:
-            command = f'open "" "{file}"'
+            command = f'open "{file}"'
 
         if os.system(command) != 0:
             # An error occurred

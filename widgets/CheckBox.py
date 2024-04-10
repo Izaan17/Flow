@@ -37,8 +37,19 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
 
         def update_due_date_label():
             difference_from_now = days_between_dates(datetime.datetime.now().strftime('%m-%d-%Y-%H-%M'), self.due_date)
+            text_color = 'black'
+            # Already due
+            if difference_from_now < 0:
+                text_color = 'red'
+            # Tomorrow
+            elif difference_from_now <= 3:
+                text_color = 'orange'
+            # Today
+            elif difference_from_now == 0:
+                text_color = 'blue'
             self.due_date_label.configure(text=f"{parse_days_difference(difference_from_now)}, "
-                                               f"{get_time_suffix(self.due_date)}")
+                                               f"{get_time_suffix(self.due_date)}",
+                                          text_color=text_color)
             # Schedule the update after 5 seconds (5000 milliseconds)
             self.after(3000, update_due_date_label)
 

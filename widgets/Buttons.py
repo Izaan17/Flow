@@ -89,7 +89,7 @@ class PathObjectButton(customtkinter.CTkButton):
 
         self.bind("<Button-2>", action_menu)
         # Text name
-        self.configure(text=shorten_text(self.item_name, 30))
+        self.configure(text=shorten_text(self.item_name, int(settings.settings.get_setting("max_text_length", 30))))
 
 
 class FolderObjectButton(PathObjectButton):

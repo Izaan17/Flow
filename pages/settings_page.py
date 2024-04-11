@@ -17,6 +17,19 @@ class SettingsPage(Page):
         self.drop_downs_frame = customtkinter.CTkFrame(self, fg_color='white')
         self.drop_downs_frame.pack(fill='both', expand=True)
 
+        self.max_items_per_row = DefaultDropDown(self.drop_downs_frame,
+                                                 label_text="Max Items Per Row",
+                                                 values=[str(i) for i in range(5, 11)], command=self.on_max_row_change)
+        self.max_items_per_row.pack(anchor='w')
+        self.max_items_per_row.set(settings.get_setting("max_items_per_row", 5))
+
+        self.max_text_length = DefaultDropDown(self.drop_downs_frame,
+                                               label_text="Max Text Length",
+                                               values=[str(i) for i in range(10, 50)],
+                                               command=self.on_text_length_change)
+        self.max_text_length.pack(anchor='w')
+        self.max_text_length.set(settings.get_setting("max_text_length", 30))
+
         self.show_image_preview = DefaultDropDown(self.drop_downs_frame,
                                                   label_text="Show Image Preview",
                                                   values=["True", "False"], command=self.on_img_preview_change)
@@ -49,3 +62,11 @@ class SettingsPage(Page):
     @staticmethod
     def on_img_preview_change(choice):
         settings.add_setting("show_img_preview", choice)
+
+    @staticmethod
+    def on_max_row_change(choice):
+        settings.add_setting("max_items_per_row", choice)
+
+    @staticmethod
+    def on_text_length_change(choice):
+        settings.add_setting("max_text_length", choice)

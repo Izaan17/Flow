@@ -17,7 +17,6 @@ from widgets.Popups import ErrorPopup, SuccessPopup
 class CurriculumPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color='white')
-        self.MAX_ITEMS_PER_ROW = 7
 
         self.curriculum_label = customtkinter.CTkLabel(self, text="My Curriculum", font=('Roboto', 36))
         self.curriculum_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
@@ -124,7 +123,8 @@ class CurriculumPage(Page):
                 file.grid(row=row, column=column, padx=(0, 10), pady=10, sticky="nsew")
 
             column += 1
-            if column == self.MAX_ITEMS_PER_ROW:
+            # Get max items per row
+            if column == int(settings.get_setting("max_items_per_row", 5)):
                 row += 1
                 column = 0
 

@@ -16,7 +16,7 @@ customtkinter.set_default_color_theme('blue')
 
 root = customtkinter.CTk()
 root.wm_title('Flow')
-root.geometry("1300x650")
+root.geometry("1500x650")
 root.configure(fg_color='white')
 app_icon = PhotoImage(file=f'{get_icon_dir()}{os.sep}hat.png')
 root.wm_iconphoto(False, app_icon)

@@ -149,7 +149,7 @@ class CurriculumPage(Page):
                 ErrorPopup(self, error)
 
     def add_folder(self):
-        folder_to_copy = tkinter.filedialog.askdirectory()
+        folder_to_copy = tkinter.filedialog.askdirectory().replace('/', os.sep)
         if folder_to_copy:
             template_folder_path = os.path.join(os.getcwd(), folder_to_copy)
             if not os.path.exists(template_folder_path):

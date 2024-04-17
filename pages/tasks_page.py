@@ -317,7 +317,10 @@ class TasksPage(Page):
                 for child in bb_scrollable_frame.winfo_children():
                     task_check_box = child.winfo_children()[1]
                     if isinstance(task_check_box, TaskCheckBox):
-                        task_check_box.select()
+                        if not task_check_box.get():
+                            task_check_box.select()
+                        else:
+                            task_check_box.deselect()
 
             bb_select_all_button.configure(command=bb_select_all)
 

@@ -81,7 +81,7 @@ class CurriculumPage(Page):
         self.current_directory_label.pack(padx=10, anchor='w')
 
         self.content_scrollable_frame = customtkinter.CTkScrollableFrame(master=self, fg_color='white')
-        self.content_scrollable_frame.pack(fill='both', expand=True, padx=5, pady=0)
+        self.content_scrollable_frame.pack(fill='both', expand=True, padx=5, pady=3)
 
         self.refresh_grid()
 

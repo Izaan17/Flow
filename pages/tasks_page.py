@@ -102,9 +102,9 @@ class TasksPage(Page):
                 task_due_date = customtkinter.CTkLabel(
                     task_info_frame,
                     text=f"{CheckBox.get_day_of_week_string(new_check_box.get_task_due_date())}, "
-                    f"{CheckBox.get_month_abbreviation(new_check_box.get_task_due_date())} "
-                    f"{CheckBox.get_day(new_check_box.get_task_due_date())}, "
-                    f"{CheckBox.get_time_suffix(new_check_box.get_task_due_date())}")
+                         f"{CheckBox.get_month_abbreviation(new_check_box.get_task_due_date())} "
+                         f"{CheckBox.get_day(new_check_box.get_task_due_date())}, "
+                         f"{CheckBox.get_time_suffix(new_check_box.get_task_due_date())}")
                 task_due_date.pack(anchor='w')
 
             def delete():
@@ -219,8 +219,12 @@ class TasksPage(Page):
                 for child in tasks_scrollable_frame.winfo_children():
                     # Delete from the checkbox manager
                     # TODO: FIND A NEW WAY TO DELETE THE TASK CHECKBOX
-                    check_box_manager.remove_checkbox_data_by_id(child.winfo_children()[1].task_id)
-                    child.destroy()
+                    task_check_box = child.winfo_children()[1]
+                    if isinstance(task_check_box, TaskCheckBox):
+                        check_box_manager.remove_checkbox_data_by_id(task_check_box.task_id)
+                        child.destroy()
+                    else:
+                        ErrorPopup(self, f"Could not delete task {task_check_box}")
                 # Reset uid file
                 check_box_manager.reset_ids()
                 # Reset the checkbox active
@@ -248,14 +252,14 @@ class TasksPage(Page):
                                                            font=('Roboto', 14))
             bb_calendar_url_label.pack(anchor='w', padx=12)
 
-            bb_calendar_url_entry = customtkinter.CTkEntry(bb_section, width=250,
+            bb_calendar_url_entry = customtkinter.CTkEntry(bb_section, width=550,
                                                            placeholder_text='iCalendar URL')
             bb_calendar_url_entry.pack(anchor='w', padx=10, pady=(5, 10))
             # Set the url from the settings
             bb_calendar_url_entry.insert(0, settings.get_setting("bb_url", ""))
 
             bb_button_layout = customtkinter.CTkFrame(bb_section, fg_color='transparent')
-            bb_button_layout.pack(anchor='w', padx=10)
+            bb_button_layout.pack(anchor='w', padx=10, expand=True)
 
             bb_calendar_url_save_button = DefaultButton(bb_button_layout, text="Save URL")
             bb_calendar_url_save_button.pack(side='left', padx=(0, 5))
@@ -268,11 +272,15 @@ class TasksPage(Page):
             bb_calendar_url_save_button.configure(command=bb_save_url)
 
             bb_load_button = DefaultButton(bb_button_layout, text="Load Tasks")
-            bb_load_button.pack(side='right', padx=10)
+            bb_load_button.pack(side='left', padx=10)
 
             bb_scrollable_frame = customtkinter.CTkScrollableFrame(master=bb_section,
                                                                    fg_color='transparent')
             bb_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+
+            bb_select_all_button = DefaultButton(bb_button_layout, text="Select All")
+            bb_select_all_button.pack(anchor='e', padx=10)
+
             self.loaded_tasks = []
 
             def bb_load_tasks():
@@ -304,6 +312,14 @@ class TasksPage(Page):
                     ErrorPopup(new_top_level, f"Error => {error}")
 
             bb_load_button.configure(command=bb_load_tasks)
+
+            def bb_select_all():
+                for child in bb_scrollable_frame.winfo_children():
+                    task_check_box = child.winfo_children()[1]
+                    if isinstance(task_check_box, TaskCheckBox):
+                        task_check_box.select()
+
+            bb_select_all_button.configure(command=bb_select_all)
 
             # ==BB==
 

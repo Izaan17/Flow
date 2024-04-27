@@ -13,4 +13,5 @@ class HyperLink(customtkinter.CTkLabel):
 
     @staticmethod
     def open_url(url):
-        webbrowser.open_new(url)
+        if url:
+            webbrowser.open_new(url)

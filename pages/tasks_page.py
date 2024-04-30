@@ -20,7 +20,7 @@ from widgets.PopupForm import PopupForm
 from widgets.Popups import SuccessPopup, ErrorPopup
 from tkinter import messagebox
 
-ALL_TASK_SOURCES = ["MyOpenMath", "BlackBoard", "Achieve"]
+ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
 
 
 class TasksPage(Page):
@@ -289,7 +289,6 @@ class TasksPage(Page):
                 # Clear the task frame
                 for child in bb_scrollable_frame.winfo_children():
                     child.destroy()
-                SuccessPopup(new_top_level, "Loading BlackBoard Tasks...")
                 try:
                     online_icalendar = OnlineICalendar(bb_calendar_url_entry.get())
                     for event in online_icalendar.get_events():

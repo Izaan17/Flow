@@ -12,6 +12,8 @@ from utils import settings
 from utils.directory_manager import get_icon_dir
 from widgets.Popups import ErrorPopup
 
+FOLDER_ICON = customtkinter.CTkImage(Image.open(f'{get_icon_dir()}{os.sep}folder.png'), size=(32, 32))
+
 
 def shorten_text(text, max_length):
     if len(text) <= max_length:
@@ -96,7 +98,7 @@ class FolderObjectButton(PathObjectButton):
     def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
         super().__init__(master, path, refresh_grid_func, **kwargs)
         # change to folder icon
-        self.configure(image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}{os.sep}folder.png'), size=(32, 32)))
+        self.configure(image=FOLDER_ICON)
 
 
 class FileObjectButton(PathObjectButton):
@@ -105,7 +107,7 @@ class FileObjectButton(PathObjectButton):
         picture_formats = (".png", ".jpg", "jpeg")
         is_picture = path.endswith(picture_formats)
         if is_picture and settings.settings.get_setting("show_img_preview", "False") == "True":
-            threading.Thread(target=self.load_image_preview, args=(path,)).start()
+            threading.Thread(target=self.load_image_preview, args=(path,), daemon=True).start()
 
     @staticmethod
     def load_image(path, size):

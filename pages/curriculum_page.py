@@ -53,7 +53,7 @@ class CurriculumPage(Page):
         #                                                                                f'{os.sep}trash.png')))
         # self.clear_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
-        self.set_default_directory_button = DefaultButton(self.top_buttons_frame, text="Make Default",
+        self.set_default_directory_button = DefaultButton(self.top_buttons_frame, text="Set Default",
                                                           image=customtkinter.CTkImage(
                                                               Image.open(f'{get_icon_dir()}{os.sep}bookmark.png')),
                                                           command=self.set_default_dir)
@@ -77,6 +77,23 @@ class CurriculumPage(Page):
         self.current_directory_label = customtkinter.CTkLabel(self.current_directory_frame,
                                                               textvariable=self.current_directory_var,
                                                               font=('Roboto', 14))
+
+        # Current directory binding
+        def show_directory_menu(event):
+            try:
+                self.current_directory_menu.tk_popup(event.x_root, event.y_root)
+            finally:
+                self.current_directory_menu.grab_release()
+
+        self.current_directory_menu = tkinter.Menu(self.current_directory_frame)
+        self.current_directory_menu.add_command(label="Copy Directory",
+                                                command=lambda: self.clipboard_append(self.current_directory))
+        self.current_directory_menu.add_separator()
+        self.current_directory_menu.add_command(label="Open in Finder",
+                                                command=lambda: self.open_file(self.current_directory))
+
+        self.current_directory_label.bind("<Button-2>", show_directory_menu)
+
         self.current_directory_frame.pack(padx=10, anchor='w')
         self.current_directory_label.pack(padx=10, anchor='w')
 

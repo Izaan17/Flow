@@ -8,6 +8,7 @@ from typing import Any
 import customtkinter
 from PIL import Image
 
+from tkinter import messagebox
 from utils import settings
 from utils.directory_manager import get_icon_dir
 from widgets.Popups import ErrorPopup
@@ -39,30 +40,31 @@ class PathObjectButton(customtkinter.CTkButton):
         self.item_name = path.split(os.sep)[-1]
 
         def delete():
-            try:
-                if not os.path.exists(path):
-                    raise FileNotFoundError(f"{path} does not exist!")
+            if messagebox.askyesno("Delete", f"Are you sure you want to delete '{self.item_name}'?"):
+                try:
+                    if not os.path.exists(path):
+                        raise FileNotFoundError(f"{path} does not exist!")
 
-                if os.path.isdir(path):
-                    # Check settings
-                    if settings.settings.get_setting("allow_full_dir_deletion", "False") == "True":
-                        shutil.rmtree(path)
+                    if os.path.isdir(path):
+                        # Check settings
+                        if settings.settings.get_setting("allow_full_dir_deletion", "False") == "True":
+                            shutil.rmtree(path)
+                        else:
+                            os.rmdir(path)
                     else:
-                        os.rmdir(path)
-                else:
-                    os.remove(path)
+                        os.remove(path)
 
-                # If no exceptions were raised, destroy the widget
-                refresh_grid_func()
+                    # If no exceptions were raised, destroy the widget
+                    refresh_grid_func()
 
-            except FileNotFoundError as e:
-                ErrorPopup(master, str(e))
+                except FileNotFoundError as e:
+                    ErrorPopup(master, str(e))
 
-            except OSError as e:
-                ErrorPopup(master, f"{e}")
+                except OSError as e:
+                    ErrorPopup(master, f"{e}")
 
-            except Exception as e:
-                ErrorPopup(master, f"An error occurred: {e}")
+                except Exception as e:
+                    ErrorPopup(master, f"An error occurred: {e}")
 
         def rename():
             new_renamed_file_name = tkinter.simpledialog.askstring("File Rename", "Enter new file name",

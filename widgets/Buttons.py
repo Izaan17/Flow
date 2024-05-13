@@ -85,6 +85,7 @@ class PathObjectButton(customtkinter.CTkButton):
 
         # Right Click menu
         right_click_menu = tkinter.Menu()
+        right_click_menu.add_command(label="Copy Path", command=lambda: self.clipboard_append(self.path))
         right_click_menu.add_command(label="Rename", command=rename)
         right_click_menu.add_command(label="Delete", command=delete)
 
@@ -106,7 +107,7 @@ class FolderObjectButton(PathObjectButton):
 class FileObjectButton(PathObjectButton):
     def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
         super().__init__(master, path, refresh_grid_func, **kwargs)
-        picture_formats = (".png", ".jpg", "jpeg")
+        picture_formats = (".png", ".jpg", ".jpeg")
         is_picture = path.endswith(picture_formats)
         if is_picture and settings.settings.get_setting("show_img_preview", "False") == "True":
             threading.Thread(target=self.load_image_preview, args=(path,), daemon=True).start()
@@ -125,4 +126,7 @@ class FileObjectButton(PathObjectButton):
         preview_image = self.load_image(path, (int(settings.settings.get_setting("icon_height", 50)),
                                                int(settings.settings.get_setting("icon_width", 50))))
         if preview_image:
-            self.configure(image=preview_image)
+            try:
+                self.configure(image=preview_image)
+            except Exception:
+                pass

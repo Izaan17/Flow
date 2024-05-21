@@ -7,7 +7,7 @@
 - Import tasks from BlackBoard, MyOpenMath, and Achieve.
 - File organizer.
 
-![An Image showcasing flows UI](Flow.png)
+![An Image showcasing flows UI](flow.jpeg)
 
 # Setup
 Setting up Flow is easy! Just run the app.

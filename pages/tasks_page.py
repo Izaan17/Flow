@@ -16,8 +16,9 @@ from widgets.CheckBox import TaskCheckBox
 from widgets.CheckBoxManager import CheckBoxManager
 from widgets.HyperLink import HyperLink
 from widgets.Page import Page
-from widgets.PopupForm import PopupForm
-from widgets.Popups import SuccessPopup, ErrorPopup
+from widgets.popups.PopupForm import PopupForm
+from widgets.popups.Popups import SuccessPopup, ErrorPopup
+from widgets.popups.validation.widget_data_validator import NonEmptyValidator, NumericValidator
 from tkinter import messagebox
 
 ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
@@ -170,10 +171,8 @@ class TasksPage(Page):
             task_source_entry = customtkinter.CTkComboBox(task_popup_form,
                                                           values=ALL_TASK_SOURCES)
             task_link_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Task Link')
-            hour_drop_down = customtkinter.CTkOptionMenu(task_popup_form,
-                                                         values=[str(i) for i in range(1, 24)])
-            minute_drop_down = customtkinter.CTkOptionMenu(task_popup_form,
-                                                           values=[str(i) for i in range(60)])
+            hour_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Hour')
+            minute_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Minutes')
 
             due_date_calendar = tkCalendar(task_popup_form)
             due_date_calendar.pack(padx=10)
@@ -181,14 +180,14 @@ class TasksPage(Page):
             task_name_entry.pack(pady=10)
             task_source_entry.pack(pady=10)
             task_link_entry.pack(pady=10)
-            hour_drop_down.pack(padx=5, pady=10)
-            minute_drop_down.pack(padx=5, pady=10)
+            hour_entry.pack(padx=5, pady=10)
+            minute_entry.pack(padx=5, pady=10)
 
-            task_popup_form.add_widget(task_name_entry)
+            task_popup_form.add_widget(task_name_entry, [NonEmptyValidator()])
             task_popup_form.add_widget(task_source_entry)
             task_popup_form.add_widget(task_link_entry)
-            task_popup_form.add_widget(hour_drop_down)
-            task_popup_form.add_widget(minute_drop_down)
+            task_popup_form.add_widget(hour_entry, [NumericValidator(1, 12)])
+            task_popup_form.add_widget(minute_entry, [NumericValidator(0, 60)])
 
             # Wait for window to be destroyed or submitted
             self.wait_window(task_popup_form)
@@ -202,7 +201,7 @@ class TasksPage(Page):
                 desired_format_string = '%m-%d-%Y-%H-%M'
                 parsed_date = datetime.datetime.strptime(
                     f"{due_date_calendar.get_date()} "
-                    f"{task_popup_form.get_data(hour_drop_down)}:{task_popup_form.get_data(minute_drop_down)}",
+                    f"{task_popup_form.get_data(hour_entry)}:{task_popup_form.get_data(minute_entry)}",
                     original_format_string)
                 formatted_date = parsed_date.strftime(desired_format_string)
                 new_task_id = check_box_manager.load_last_id()

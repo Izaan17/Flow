@@ -3,8 +3,10 @@ from typing import Any
 
 import customtkinter
 
+from utils.date import days_between_dates, parse_days_difference, get_time_suffix
 from widget_data.CheckBoxData import CheckBoxData
 from widgets.HyperLink import HyperLink
+from utils.string import shorten_text
 
 
 class TaskCheckBox(customtkinter.CTkCheckBox):
@@ -21,19 +23,20 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
         self.source_text_var = customtkinter.StringVar(self.task_item_frame, value=source)
         self.link_text_var = customtkinter.StringVar(self.task_item_frame, value=link)
 
-        self.source_label = customtkinter.CTkLabel(self.task_info_frame, text=f"Source: {self.source_text_var.get()}")
+        self.source_label = customtkinter.CTkLabel(self.task_info_frame, text=f"{self.source_text_var.get()}")
         self.source_label.pack(side='left', padx=(30, 10))
 
-        self.link_hyperlink = HyperLink(self.task_info_frame, text=f"Link: {self.link_text_var.get()}", url=link)
+        self.link_hyperlink = HyperLink(self.task_info_frame,
+                                        text=f"{shorten_text(self.link_text_var.get(), 30)}", url=link)
         self.link_hyperlink.pack(side='left', padx=10)
 
         self.difference_from_now = days_between_dates(datetime.datetime.now().strftime('%m-%d-%Y-%H-%M'), self.due_date)
 
         self.due_date_label = customtkinter.CTkLabel(self.task_info_frame)
-        self.due_date_label.pack(side='right', padx=10)
+        self.due_date_label.pack(side='right', padx=(10, 30))
 
-        self.task_item_frame.pack(anchor='w')
-        self.task_info_frame.pack(side='bottom', anchor='w')
+        self.task_item_frame.pack(anchor='w', expand=True, fill='both')
+        self.task_info_frame.pack(side='bottom', anchor='w', expand=True, fill='both')
 
         def update_due_date_label():
             difference_from_now = days_between_dates(datetime.datetime.now().strftime('%m-%d-%Y-%H-%M'), self.due_date)
@@ -73,53 +76,3 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
     def get_checkbox_data(self):
         return CheckBoxData(self.task_id, self.cget("text"), self.source_text_var.get(), self.link_text_var.get(),
                             self.due_date, self.get())
-
-
-def days_between_dates(date1_str, date2_str, date_format='%m-%d-%Y'):
-    # Convert date strings to datetime objects
-    date1 = datetime.datetime.strptime(date1_str, '%m-%d-%Y-%H-%M')
-    date2 = datetime.datetime.strptime(date2_str, '%m-%d-%Y-%H-%M')
-    # Convert strings to not include hours
-    date1 = date1.strftime('%m-%d-%Y')
-    date2 = date2.strftime('%m-%d-%Y')
-    # Convert them back into datetime objects
-    date1 = datetime.datetime.strptime(date1, date_format)
-    date2 = datetime.datetime.strptime(date2, date_format)
-
-    # Calculate the difference in days
-    delta = date2 - date1
-    return delta.days
-
-
-def parse_days_difference(days_difference):
-    # Parse the days between
-    if days_difference == 0:
-        return "Today"
-    elif days_difference == -1:
-        return "Yesterday"
-    elif days_difference == 1:
-        return "Tomorrow"
-    elif days_difference <= 0:
-        return f"Due {-days_difference} days ago"
-    else:
-        return f"Due in {days_difference} days"
-
-
-def convert_str_to_datetime(date_str):
-    return datetime.datetime.strptime(date_str, '%m-%d-%Y-%H-%M')
-
-
-def get_day_of_week_string(date_str):
-    return convert_str_to_datetime(date_str).strftime("%a")
-
-
-def get_day(date_str):
-    return convert_str_to_datetime(date_str).day
-
-
-def get_month_abbreviation(date_str):
-    return convert_str_to_datetime(date_str).strftime("%b")
-
-
-def get_time_suffix(date_str):
-    return convert_str_to_datetime(date_str).strftime("%I:%M %p")

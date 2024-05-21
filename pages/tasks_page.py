@@ -53,11 +53,11 @@ class TasksPage(Page):
         tasks_list_and_info_frame.pack(fill='both', expand=True)
 
         tasks_scrollable_frame = customtkinter.CTkScrollableFrame(master=tasks_list_and_info_frame,
-                                                                  fg_color='transparent')
+                                                                  fg_color='transparent', width=800,)
         tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
 
         task_info_frame = customtkinter.CTkFrame(tasks_list_and_info_frame, fg_color='white', width=10)
-        task_info_frame.pack(side='right', fill='both', expand=True)
+        close_task_info_frame_button = DefaultButton(task_info_frame, text="X")
 
         check_box_manager = CheckBoxManager(f'{get_app_dir()}{os.sep}tasks.json')
 
@@ -69,6 +69,9 @@ class TasksPage(Page):
         def init_checkbox(new_check_box: TaskCheckBox):
 
             def display_details(event):
+                # Show info only when user clicks on a checkbox
+                task_info_frame.pack(side='right', fill='both', expand=True)
+                close_task_info_frame_button.pack()
                 # Set selected checkbox to current
                 check_box_manager.set_active(new_check_box.get_checkbox_data())
                 clear_info_frame()
@@ -147,6 +150,7 @@ class TasksPage(Page):
             new_check_box.task_info_frame.bind("<Button-2>", action_menu)
 
             new_check_box.task_item_frame.bind("<Button-1>", display_details)
+            new_check_box.task_info_frame.bind("<Button-1>", display_details)
             new_check_box.bind("<Button-1>", display_details)
 
         load_popup = SuccessPopup(self, "Loading saved tasks...", 100000)
@@ -182,8 +186,8 @@ class TasksPage(Page):
             due_date_calendar = dateentry.Calendar(task_entries_frame)
             due_date_calendar.pack(padx=10, pady=10)
 
-            task_name_entry.pack(padx=20, pady=10,)
-            task_source_entry.pack(padx=20, pady=10,)
+            task_name_entry.pack(padx=20, pady=10, )
+            task_source_entry.pack(padx=20, pady=10, )
             task_link_entry.pack(padx=20, pady=10, )
             hour_entry.pack(padx=20, pady=10)
             minute_entry.pack(padx=20, pady=10)

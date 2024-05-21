@@ -1,16 +1,18 @@
 import datetime
 import os
 import tkinter
+from tkinter import messagebox
 
 import customtkinter
 import requests
 from PIL import Image
-from utils.online_icalendar import OnlineICalendar
 from tkcalendar import dateentry
 
+import utils.date
 from utils.directory_manager import get_icon_dir, get_app_dir
+from utils.online_icalendar import OnlineICalendar
 from utils.settings import settings
-from widgets import CheckBox
+from utils.string import remove_all_but_one_zero
 from widgets.Buttons import DefaultButton
 from widgets.CheckBox import TaskCheckBox
 from widgets.CheckBoxManager import CheckBoxManager
@@ -19,17 +21,8 @@ from widgets.Page import Page
 from widgets.popups.PopupForm import PopupForm
 from widgets.popups.Popups import SuccessPopup, ErrorPopup
 from widgets.popups.validation.widget_data_validator import NonEmptyValidator, NumericValidator
-from tkinter import messagebox
 
 ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
-
-
-def remove_all_but_one_zero(s):
-    if '0' not in s:
-        return s
-
-    first_zero_index = s.index('0')
-    return s[:first_zero_index + 1].replace('0', '') + '0' + s[first_zero_index + 1:].replace('0', '')
 
 
 class TasksPage(Page):
@@ -101,7 +94,8 @@ class TasksPage(Page):
                                                            text_color=task_header_color)
                 link_header_label.pack(anchor='w')
 
-                link_hyperlink = HyperLink(task_info_frame, url=new_check_box.get_task_link())
+                link_hyperlink = HyperLink(task_info_frame, text=new_check_box.get_task_link(),
+                                           url=new_check_box.get_task_link())
                 link_hyperlink.pack(anchor='w')
 
                 due_date_header = customtkinter.CTkLabel(task_info_frame, text="Due Date", font=task_header_font,
@@ -110,10 +104,10 @@ class TasksPage(Page):
 
                 task_due_date = customtkinter.CTkLabel(
                     task_info_frame,
-                    text=f"{CheckBox.get_day_of_week_string(new_check_box.get_task_due_date())}, "
-                         f"{CheckBox.get_month_abbreviation(new_check_box.get_task_due_date())} "
-                         f"{CheckBox.get_day(new_check_box.get_task_due_date())}, "
-                         f"{CheckBox.get_time_suffix(new_check_box.get_task_due_date())}")
+                    text=f"{utils.date.get_day_of_week_string(new_check_box.get_task_due_date())}, "
+                         f"{utils.date.get_month_abbreviation(new_check_box.get_task_due_date())} "
+                         f"{utils.date.get_day(new_check_box.get_task_due_date())}, "
+                         f"{utils.date.get_time_suffix(new_check_box.get_task_due_date())}")
                 task_due_date.pack(anchor='w')
 
             def delete():

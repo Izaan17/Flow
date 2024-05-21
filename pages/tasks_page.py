@@ -53,11 +53,10 @@ class TasksPage(Page):
         tasks_list_and_info_frame.pack(fill='both', expand=True)
 
         tasks_scrollable_frame = customtkinter.CTkScrollableFrame(master=tasks_list_and_info_frame,
-                                                                  fg_color='transparent', width=800,)
+                                                                  fg_color='transparent', width=800)
         tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
 
         task_info_frame = customtkinter.CTkFrame(tasks_list_and_info_frame, fg_color='white', width=10)
-        close_task_info_frame_button = DefaultButton(task_info_frame, text="X")
 
         check_box_manager = CheckBoxManager(f'{get_app_dir()}{os.sep}tasks.json')
 
@@ -70,11 +69,15 @@ class TasksPage(Page):
 
             def display_details(event):
                 # Show info only when user clicks on a checkbox
-                task_info_frame.pack(side='right', fill='both', expand=True)
-                close_task_info_frame_button.pack()
+                if task_info_frame.winfo_ismapped() and task_info_frame:
+                    task_info_frame.pack_forget()
+                else:
+                    task_info_frame.pack(side='right', fill='both', expand=True)
+
                 # Set selected checkbox to current
                 check_box_manager.set_active(new_check_box.get_checkbox_data())
                 clear_info_frame()
+
                 task_header_font = ('Roboto', 12)
                 task_header_color = 'grey'
                 display_task_name = customtkinter.CTkLabel(task_info_frame,

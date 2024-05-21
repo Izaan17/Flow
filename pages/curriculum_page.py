@@ -11,7 +11,7 @@ from utils.directory_manager import get_icon_dir, get_storage_dir
 from utils.settings import settings
 from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
 from widgets.Page import Page
-from widgets.Popups import ErrorPopup, SuccessPopup
+from widgets.popups.Popups import ErrorPopup, SuccessPopup
 
 
 class CurriculumPage(Page):
@@ -88,8 +88,9 @@ class CurriculumPage(Page):
         self.current_directory_menu = tkinter.Menu(self.current_directory_frame)
         self.current_directory_menu.add_command(label="Copy Directory",
                                                 command=lambda: self.clipboard_append(self.current_directory))
+        file_system_app_name = "Explorer" if os.name == "nt" else "Finder"
         self.current_directory_menu.add_separator()
-        self.current_directory_menu.add_command(label="Open in Finder",
+        self.current_directory_menu.add_command(label=f"Open in {file_system_app_name}",
                                                 command=lambda: self.open_file(self.current_directory))
 
         self.current_directory_label.bind("<Button-2>", show_directory_menu)

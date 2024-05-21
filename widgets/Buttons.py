@@ -11,7 +11,7 @@ from PIL import Image
 from tkinter import messagebox
 from utils import settings
 from utils.directory_manager import get_icon_dir
-from widgets.Popups import ErrorPopup
+from widgets.popups.Popups import ErrorPopup
 
 FOLDER_ICON = customtkinter.CTkImage(Image.open(f'{get_icon_dir()}{os.sep}folder.png'), size=(32, 32))
 

@@ -10,17 +10,11 @@ from PIL import Image
 
 from tkinter import messagebox
 from utils import settings
+from utils.string import shorten_text
 from utils.directory_manager import get_icon_dir
 from widgets.popups.Popups import ErrorPopup
 
 FOLDER_ICON = customtkinter.CTkImage(Image.open(f'{get_icon_dir()}{os.sep}folder.png'), size=(32, 32))
-
-
-def shorten_text(text, max_length):
-    if len(text) <= max_length:
-        return text
-    else:
-        return text[:max_length - 3] + "..."  # truncate text and add ellipsis
 
 
 class DefaultButton(customtkinter.CTkButton):

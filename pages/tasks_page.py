@@ -197,7 +197,7 @@ class TasksPage(Page):
             task_popup_form.add_widget(task_name_entry, [NonEmptyValidator()])
             task_popup_form.add_widget(task_source_entry)
             task_popup_form.add_widget(task_link_entry)
-            task_popup_form.add_widget(hour_entry, [NonEmptyValidator(), NumericValidator(1, 12)])
+            task_popup_form.add_widget(hour_entry, [NonEmptyValidator(), NumericValidator(1, 23)])
             task_popup_form.add_widget(minute_entry, [NonEmptyValidator(), NumericValidator(0, 60)])
 
             # Wait for window to be destroyed or submitted
@@ -212,7 +212,8 @@ class TasksPage(Page):
                 desired_format_string = '%m-%d-%Y-%H-%M'
                 parsed_date = datetime.datetime.strptime(
                     f"{due_date_calendar.get_date()} "
-                    f"{task_popup_form.get_data(hour_entry)}:{remove_all_but_one_zero(task_popup_form.get_data(minute_entry))}",
+                    f"{task_popup_form.get_data(hour_entry)}:"
+                    f"{remove_all_but_one_zero(task_popup_form.get_data(minute_entry))}",
                     original_format_string)
                 formatted_date = parsed_date.strftime(desired_format_string)
                 new_task_id = check_box_manager.load_last_id()

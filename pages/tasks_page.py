@@ -189,8 +189,8 @@ class TasksPage(Page):
             task_popup_form.add_widget(task_name_entry, [NonEmptyValidator()])
             task_popup_form.add_widget(task_source_entry)
             task_popup_form.add_widget(task_link_entry)
-            task_popup_form.add_widget(hour_entry, [NumericValidator(1, 12)])
-            task_popup_form.add_widget(minute_entry, [NumericValidator(0, 60)])
+            task_popup_form.add_widget(hour_entry, [NonEmptyValidator(), NumericValidator(1, 12)])
+            task_popup_form.add_widget(minute_entry, [NonEmptyValidator(), NumericValidator(0, 60)])
 
             # Wait for window to be destroyed or submitted
             self.wait_window(task_popup_form)

@@ -9,7 +9,6 @@ class HyperLink(customtkinter.CTkLabel):
         super().__init__(master, text_color='blue', font=('Roboto', 14, 'underline'), **kwargs)
         self.url = url
         self.bind("<Button-1>", lambda e: self.open_url(url))
-        self.configure(text=self.url)
 
     @staticmethod
     def open_url(url):

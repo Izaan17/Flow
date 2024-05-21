@@ -6,7 +6,7 @@ import customtkinter
 import requests
 from PIL import Image
 from utils.online_icalendar import OnlineICalendar
-from tkcalendar import Calendar as tkCalendar
+from tkcalendar import dateentry
 
 from utils.directory_manager import get_icon_dir, get_app_dir
 from utils.settings import settings
@@ -164,24 +164,27 @@ class TasksPage(Page):
 
         # Command call backs
         def add_task_callback():
-            task_popup_form = PopupForm(self)
+            task_popup_form = PopupForm(self, fg_color='white')
             task_popup_form.wm_title("Add Task")
 
-            task_name_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Task Name')
-            task_source_entry = customtkinter.CTkComboBox(task_popup_form,
+            task_entries_frame = customtkinter.CTkFrame(task_popup_form)
+            task_entries_frame.pack(fill='both', expand=True, padx=10, pady=10)
+
+            task_name_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Task Name')
+            task_source_entry = customtkinter.CTkComboBox(task_entries_frame,
                                                           values=ALL_TASK_SOURCES)
-            task_link_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Task Link')
-            hour_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Hour')
-            minute_entry = customtkinter.CTkEntry(task_popup_form, placeholder_text='Minutes')
+            task_link_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Task Link')
+            hour_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Hour')
+            minute_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Minutes')
 
-            due_date_calendar = tkCalendar(task_popup_form)
-            due_date_calendar.pack(padx=10)
+            due_date_calendar = dateentry.Calendar(task_entries_frame)
+            due_date_calendar.pack(padx=10, pady=10)
 
-            task_name_entry.pack(pady=10)
-            task_source_entry.pack(pady=10)
-            task_link_entry.pack(pady=10)
-            hour_entry.pack(padx=5, pady=10)
-            minute_entry.pack(padx=5, pady=10)
+            task_name_entry.pack(padx=20, pady=10,)
+            task_source_entry.pack(padx=20, pady=10,)
+            task_link_entry.pack(padx=20, pady=10, )
+            hour_entry.pack(padx=20, pady=10)
+            minute_entry.pack(padx=20, pady=10)
 
             task_popup_form.add_widget(task_name_entry, [NonEmptyValidator()])
             task_popup_form.add_widget(task_source_entry)

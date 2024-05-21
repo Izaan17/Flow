@@ -45,7 +45,7 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
             if difference_from_now < 0:
                 text_color = 'red'
             # Tomorrow
-            elif difference_from_now <= 3:
+            elif difference_from_now <= 3 and difference_from_now != 0:
                 text_color = 'orange'
             # Today
             elif difference_from_now == 0:

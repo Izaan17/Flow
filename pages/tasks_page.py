@@ -24,6 +24,14 @@ from tkinter import messagebox
 ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
 
 
+def remove_all_but_one_zero(s):
+    if '0' not in s:
+        return s
+
+    first_zero_index = s.index('0')
+    return s[:first_zero_index + 1].replace('0', '') + '0' + s[first_zero_index + 1:].replace('0', '')
+
+
 class TasksPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color='white')
@@ -204,7 +212,7 @@ class TasksPage(Page):
                 desired_format_string = '%m-%d-%Y-%H-%M'
                 parsed_date = datetime.datetime.strptime(
                     f"{due_date_calendar.get_date()} "
-                    f"{task_popup_form.get_data(hour_entry)}:{task_popup_form.get_data(minute_entry)}",
+                    f"{task_popup_form.get_data(hour_entry)}:{remove_all_but_one_zero(task_popup_form.get_data(minute_entry))}",
                     original_format_string)
                 formatted_date = parsed_date.strftime(desired_format_string)
                 new_task_id = check_box_manager.load_last_id()

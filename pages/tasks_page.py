@@ -53,7 +53,9 @@ class TasksPage(Page):
         tasks_list_and_info_frame.pack(fill='both', expand=True)
 
         tasks_scrollable_frame = customtkinter.CTkScrollableFrame(master=tasks_list_and_info_frame,
-                                                                  fg_color='transparent', width=800)
+                                                                  fg_color='transparent', width=800,
+                                                                  scrollbar_button_color='white',
+                                                                  scrollbar_fg_color='white')
         tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
 
         task_info_frame = customtkinter.CTkFrame(tasks_list_and_info_frame, fg_color='white', width=10)

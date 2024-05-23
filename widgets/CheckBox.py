@@ -76,3 +76,6 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
     def get_checkbox_data(self):
         return CheckBoxData(self.task_id, self.cget("text"), self.source_text_var.get(), self.link_text_var.get(),
                             self.due_date, self.get())
+
+    def get_root_label(self):
+        return self._text_label

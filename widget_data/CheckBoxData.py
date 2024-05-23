@@ -24,3 +24,7 @@ class CheckBoxData:
     def from_dict(data):
         return CheckBoxData(data['task_id'], data['task_name'], data['task_source'], data['task_link'],
                             data['task_due_date'], data['completion_status'])
+
+    def __eq__(self, other):
+        if isinstance(other, CheckBoxData):
+            return self.task_id == other.task_id

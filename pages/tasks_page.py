@@ -68,6 +68,10 @@ class TasksPage(Page):
                 child.destroy()
 
         def init_checkbox(new_check_box: TaskCheckBox):
+            header_font = ('Roboto', 12)
+            header_color = 'grey'
+            default_wrap_length = 380
+            default_justification = 'left'
 
             def display_details(event):
                 # Show info only when user clicks on a checkbox
@@ -80,34 +84,41 @@ class TasksPage(Page):
                 check_box_manager.set_active(new_check_box.get_checkbox_data())
                 clear_info_frame()
 
-                task_header_font = ('Roboto', 12)
-                task_header_color = 'grey'
                 display_task_name = customtkinter.CTkLabel(task_info_frame,
-                                                           text=new_check_box.get_task_name(), font=('Roboto', 26))
+                                                           text=new_check_box.get_task_name(), font=('Roboto', 26),
+                                                           wraplength=default_wrap_length,
+                                                           justify=default_justification)
                 display_task_name.pack()
 
                 about_label = customtkinter.CTkLabel(task_info_frame, text="About",
-                                                     font=('Roboto bold', 14, 'bold'))
+                                                     font=('Roboto bold', 14, 'bold'), wraplength=default_wrap_length,
+                                                     justify=default_justification)
                 about_label.pack()
 
                 source_header_label = customtkinter.CTkLabel(task_info_frame, text="Source",
-                                                             font=task_header_font,
-                                                             text_color=task_header_color)
+                                                             font=header_font,
+                                                             text_color=header_color,
+                                                             wraplength=default_wrap_length,
+                                                             justify=default_justification)
                 source_header_label.pack(anchor='w')
 
-                source_label = customtkinter.CTkLabel(task_info_frame, text=new_check_box.get_task_source())
+                source_label = customtkinter.CTkLabel(task_info_frame, text=new_check_box.get_task_source(),
+                                                      wraplength=default_wrap_length, justify=default_justification)
                 source_label.pack(anchor='w')
 
-                link_header_label = customtkinter.CTkLabel(task_info_frame, text="Link", font=task_header_font,
-                                                           text_color=task_header_color)
+                link_header_label = customtkinter.CTkLabel(task_info_frame, text="Link", font=header_font,
+                                                           text_color=header_color, wraplength=default_wrap_length,
+                                                           justify=default_justification)
                 link_header_label.pack(anchor='w')
 
                 link_hyperlink = HyperLink(task_info_frame, text=new_check_box.get_task_link(),
-                                           url=new_check_box.get_task_link())
+                                           url=new_check_box.get_task_link(), wraplength=default_wrap_length,
+                                           justify=default_justification)
                 link_hyperlink.pack(anchor='w')
 
-                due_date_header = customtkinter.CTkLabel(task_info_frame, text="Due Date", font=task_header_font,
-                                                         text_color=task_header_color)
+                due_date_header = customtkinter.CTkLabel(task_info_frame, text="Due Date", font=header_font,
+                                                         text_color=header_color, wraplength=default_wrap_length,
+                                                         justify=default_justification)
                 due_date_header.pack(anchor='w')
 
                 task_due_date = customtkinter.CTkLabel(
@@ -115,7 +126,8 @@ class TasksPage(Page):
                     text=f"{utils.date.get_day_of_week_string(new_check_box.get_task_due_date())}, "
                          f"{utils.date.get_month_abbreviation(new_check_box.get_task_due_date())} "
                          f"{utils.date.get_day(new_check_box.get_task_due_date())}, "
-                         f"{utils.date.get_time_suffix(new_check_box.get_task_due_date())}")
+                         f"{utils.date.get_time_suffix(new_check_box.get_task_due_date())}",
+                    wraplength=default_wrap_length, justify=default_justification)
                 task_due_date.pack(anchor='w')
 
             def delete():
@@ -150,10 +162,18 @@ class TasksPage(Page):
 
             new_check_box.configure(command=toggle_state)
 
+            # Configure labels to have word wrapping and justification
+            new_check_box.get_root_label().configure(wraplength=default_wrap_length, justify=default_justification)
+            new_check_box.source_label.configure(wraplength=default_wrap_length, justify=default_justification)
+            new_check_box.link_hyperlink.configure(wraplength=default_wrap_length, justify=default_justification)
+            new_check_box.due_date_label.configure(wraplength=default_wrap_length, justify=default_justification)
+
+            # Assign action menu opening to right click
             new_check_box.bind("<Button-2>", action_menu)
             new_check_box.task_item_frame.bind("<Button-2>", action_menu)
             new_check_box.task_info_frame.bind("<Button-2>", action_menu)
 
+            # Assign opening details menu to left click
             new_check_box.task_item_frame.bind("<Button-1>", display_details)
             new_check_box.task_info_frame.bind("<Button-1>", display_details)
             new_check_box.bind("<Button-1>", display_details)

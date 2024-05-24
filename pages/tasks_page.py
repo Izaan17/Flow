@@ -291,7 +291,8 @@ class TasksPage(Page):
 
             # Source Sections Frame
             # ==BB==
-            bb_header_label = customtkinter.CTkLabel(new_top_level, text='BlackBoard', font=('Roboto', 18, 'bold'))
+            bb_header_label = customtkinter.CTkLabel(new_top_level, text='iCalendar Import',
+                                                     font=('Roboto', 18, 'bold'))
             bb_header_label.pack(anchor='w', padx=10)
 
             bb_section = customtkinter.CTkFrame(new_top_level, fg_color='transparent', corner_radius=0)
@@ -305,7 +306,7 @@ class TasksPage(Page):
                                                            placeholder_text='iCalendar URL')
             bb_calendar_url_entry.pack(anchor='w', padx=10, pady=(5, 10))
             # Set the url from the settings
-            bb_calendar_url_entry.insert(0, settings.get_setting("bb_url", ""))
+            bb_calendar_url_entry.insert(0, settings.get_setting("ical_url", ""))
 
             bb_button_layout = customtkinter.CTkFrame(bb_section, fg_color='transparent')
             bb_button_layout.pack(anchor='w', padx=10, expand=True)
@@ -314,7 +315,7 @@ class TasksPage(Page):
             bb_calendar_url_save_button.pack(side='left', padx=(0, 5))
 
             def bb_save_url():
-                settings.add_setting("bb_url", bb_calendar_url_entry.get())
+                settings.add_setting("ical_url", bb_calendar_url_entry.get())
                 # Show success popup
                 SuccessPopup(new_top_level, "Successfully saved url")
 

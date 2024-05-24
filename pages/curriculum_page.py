@@ -35,24 +35,24 @@ class CurriculumPage(Page):
                                          command=self.go_home)
         self.home_button.pack(padx=(0, 10), side='left', anchor='nw')
 
-        self.open_current_folder = DefaultButton(self.top_buttons_frame, text="Open",
-                                                 image=customtkinter.CTkImage(
-                                                     Image.open(f'{get_icon_dir()}{os.sep}link-2.png')),
-                                                 command=lambda: self.open_file(self.current_directory))
-        self.open_current_folder.pack(padx=(0, 10), side='left', anchor='nw')
+        # self.open_current_folder = DefaultButton(self.top_buttons_frame, text="Open",
+        #                                          image=customtkinter.CTkImage(
+        #                                              Image.open(f'{get_icon_dir()}{os.sep}folder.png')),
+        #                                          command=lambda: self.open_file(self.current_directory))
+        # self.open_current_folder.pack(padx=(0, 10), side='left', anchor='nw')
 
-        self.create_folder_button = DefaultButton(self.top_buttons_frame, text="Create Folder",
+        self.create_folder_button = DefaultButton(self.top_buttons_frame, text="New Folder",
                                                   command=self.create_folder,
                                                   image=customtkinter.CTkImage(
                                                       Image.open(f'{get_icon_dir()}{os.sep}folder-plus.png')))
         self.create_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
-        self.add_folder_button = DefaultButton(self.top_buttons_frame, text="Add Folder", command=self.add_folder,
+        self.add_folder_button = DefaultButton(self.top_buttons_frame, text="Import Folder", command=self.add_folder,
                                                image=customtkinter.CTkImage(
                                                    Image.open(f'{get_icon_dir()}{os.sep}folder-plus.png')))
         self.add_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
-        self.add_file_button = DefaultButton(self.top_buttons_frame, text="Add File", command=self.add_file,
+        self.add_file_button = DefaultButton(self.top_buttons_frame, text="Import File", command=self.add_file,
                                              image=customtkinter.CTkImage(
                                                  Image.open(f'{get_icon_dir()}{os.sep}file-plus.png')))
         self.add_file_button.pack(padx=(0, 10), side='left', anchor='nw')

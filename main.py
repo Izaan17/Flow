@@ -55,7 +55,7 @@ button_pady = (0, 10)
 tasks_button = MenuButton(left_menu_frame, check_mark_box_icon, "Tasks", command=tasks_page.show, button_width=65)
 tasks_button.grid(padx=button_padx, pady=(10, button_pady[1]), sticky='nsew')
 
-curriculum_button = MenuButton(left_menu_frame, book_icon, "Education", command=curriculum_page.show, button_width=65)
+curriculum_button = MenuButton(left_menu_frame, book_icon, "Curriculum", command=curriculum_page.show, button_width=65)
 curriculum_button.grid(padx=button_padx, pady=button_pady, sticky='nsew')
 
 settings_button = MenuButton(left_menu_frame, settings_icon, "Settings", command=settings_page.show, button_width=65)

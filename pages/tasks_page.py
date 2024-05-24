@@ -25,6 +25,11 @@ from widgets.popups.validation.widget_data_validator import NonEmptyValidator, N
 ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
 
 
+# Todo: Add ability to select multiple tasks to delete or do other operations.
+#  Option 1: Add a button that will replace toggle_state function to now keep track of selected checkboxes to perform
+#  operations
+#  Option 2: TBD
+
 class TasksPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color='white')
@@ -74,8 +79,9 @@ class TasksPage(Page):
             default_justification = 'left'
 
             def display_details(event):
-                # Show info only when user clicks on a checkbox
-                if task_info_frame.winfo_ismapped() and task_info_frame:
+                # Show info only when user clicks on a checkbox and hide it if clicked on same one.
+                if (task_info_frame.winfo_ismapped() and
+                        check_box_manager.get_active() == new_check_box.get_checkbox_data()):
                     task_info_frame.pack_forget()
                 else:
                     task_info_frame.pack(side='right', fill='both', expand=True)
@@ -130,7 +136,7 @@ class TasksPage(Page):
                     wraplength=default_wrap_length, justify=default_justification)
                 task_due_date.pack(anchor='w')
 
-            def delete():
+            def delete_callback():
                 if tkinter.messagebox.askyesno("Delete Task",
                                                f"Are you sure you want to delete "
                                                f"'{new_check_box.cget("text")}'?"):
@@ -148,7 +154,7 @@ class TasksPage(Page):
 
             # Right Click menu
             right_click_menu = tkinter.Menu()
-            right_click_menu.add_command(label="Delete", command=delete)
+            right_click_menu.add_command(label="Delete", command=delete_callback)
 
             def action_menu(event):
                 right_click_menu.tk_popup(event.x_root, event.y_root)

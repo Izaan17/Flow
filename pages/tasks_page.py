@@ -98,11 +98,11 @@ class TasksPage(Page):
                 check_box_manager.set_active(new_check_box.get_checkbox_data())
                 clear_info_frame()
 
-                display_task_name = customtkinter.CTkLabel(task_info_frame,
-                                                           text=new_check_box.get_task_name(), font=('Roboto', 26),
-                                                           wraplength=default_wrap_length,
-                                                           justify=default_justification)
-                display_task_name.pack()
+                task_name_label = customtkinter.CTkLabel(task_info_frame,
+                                                         text=new_check_box.get_task_name(), font=('Roboto', 26),
+                                                         wraplength=default_wrap_length,
+                                                         justify=default_justification)
+                task_name_label.pack()
 
                 about_label = customtkinter.CTkLabel(task_info_frame, text="About",
                                                      font=('Roboto bold', 14, 'bold'), wraplength=default_wrap_length,

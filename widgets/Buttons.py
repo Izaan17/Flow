@@ -20,14 +20,14 @@ FOLDER_ICON = customtkinter.CTkImage(Image.open(os.path.join(get_icon_dir(), 'fo
 class DefaultButton(customtkinter.CTkButton):
     def __init__(self, master: Any, **kwargs):
         super().__init__(master, **kwargs, corner_radius=5, fg_color='#34495e', text_color='white',
-                         hover_color='#596275', width=90, font=('Roboto', 12), compound='top')
+                         hover_color='#155A8A', width=90, font=('Roboto', 12), compound='top')
 
 
 class PathObjectButton(customtkinter.CTkButton):
     def __init__(self, master: Any, path: str, refresh_grid_func, **kwargs):
         super().__init__(master, **kwargs,
                          image=customtkinter.CTkImage(light_image=Image.open(os.path.join(get_icon_dir(), "file.png")),
-                                                      size=(32, 32)), fg_color='#A9A9A9', hover_color='#D3D3D3',
+                                                      size=(32, 32)), fg_color='#D3D3D3', hover_color='#BFBFBF',
                          text_color='black', compound='top', corner_radius=5)
         self.path = path
         self.item_name = os.path.basename(path)

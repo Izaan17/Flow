@@ -7,6 +7,7 @@ class DefaultDropDown(customtkinter.CTkOptionMenu):
     def __init__(self, master: Any, label_text, **kwargs):
         self.frame = customtkinter.CTkFrame(master, fg_color='transparent')
         super().__init__(self.frame, **kwargs)
+        self.configure(fg_color="#155A8A", button_color="#155A8A")
         self.drop_down_label = customtkinter.CTkLabel(self.frame, text=label_text, font=('Roboto', 14))
         # Put frame on left side
         self.frame.pack(anchor='w', pady=(0, 10), padx=5)

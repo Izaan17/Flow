@@ -9,9 +9,11 @@ from typing import Any
 import customtkinter
 from PIL import Image
 
+import utils.system
 from utils import settings
 from utils.string import shorten_text
 from utils.directory_manager import get_icon_dir
+from utils.system import get_file_system_app_name
 from widgets.popups.Popups import ErrorPopup
 
 FOLDER_ICON = customtkinter.CTkImage(Image.open(os.path.join(get_icon_dir(), 'folder.png')), size=(32, 32))
@@ -40,6 +42,8 @@ class PathObjectButton(customtkinter.CTkButton):
     def _configure_right_click_menu(self):
         right_click_menu = tkinter.Menu()
         right_click_menu.add_command(label="Copy Path", command=lambda: self.clipboard_append(self.path))
+        right_click_menu.add_command(label=f"Open in {get_file_system_app_name()}",
+                                     command=lambda: utils.system.open_file(self.path))
         right_click_menu.add_command(label="Rename", command=self._rename)
         right_click_menu.add_command(label="Delete", command=self._delete)
 

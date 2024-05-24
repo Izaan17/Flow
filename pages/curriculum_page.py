@@ -7,6 +7,7 @@ import tkinter.simpledialog
 import customtkinter
 from PIL import Image
 
+import utils.system
 from utils.directory_manager import get_icon_dir, get_storage_dir
 from utils.settings import settings
 from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
@@ -85,15 +86,16 @@ class CurriculumPage(Page):
         self.current_directory_menu = tkinter.Menu(self.current_directory_frame)
         self.current_directory_menu.add_command(label="Copy Directory",
                                                 command=lambda: self.clipboard_append(self.current_directory))
-        file_system_app_name = "Explorer" if os.name == "nt" else "Finder"
+
         self.current_directory_menu.add_separator()
-        self.current_directory_menu.add_command(label=f"Open in {file_system_app_name}",
+        self.current_directory_menu.add_command(label=f"Open in {utils.system.get_file_system_app_name()}",
                                                 command=lambda: self.open_file(self.current_directory))
 
         self.current_directory_frame.pack(padx=10, anchor='w')
         self.current_directory_label.pack(padx=10, anchor='w')
 
-        self.content_scrollable_frame = customtkinter.CTkScrollableFrame(master=self, fg_color='white')
+        self.content_scrollable_frame = customtkinter.CTkScrollableFrame(master=self, fg_color='white',
+                                                                         scrollbar_button_color='white')
         self.content_scrollable_frame.pack(fill='both', expand=True, padx=5, pady=3)
 
         self.refresh_grid()
@@ -105,8 +107,7 @@ class CurriculumPage(Page):
             self.current_directory_menu.grab_release()
 
     def open_file(self, file):
-        command = f'start "" "{file}"' if os.name == "nt" else f'open "{file}"'
-        if os.system(command) != 0:
+        if utils.system.open_file(file) != 0:
             ErrorPopup(self, f"No Application knows how to open this file! -> {file}")
 
     def open_directory(self, directory):

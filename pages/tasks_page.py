@@ -33,8 +33,16 @@ ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
 class TasksPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color='white')
-        tasks_label = customtkinter.CTkLabel(self, text="My Tasks", font=('Roboto', 36))
-        tasks_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
+
+        # Page title
+        tasks_label = customtkinter.CTkLabel(self, text="My Tasks", font=('Roboto', 36, 'bold'))
+        tasks_label.pack(padx=10, pady=(50, 0), side='top', anchor='nw')
+        current_date = datetime.datetime.now().strftime("%m-%d-%Y-%H-%M")
+        current_day_label = customtkinter.CTkLabel(self, text=f"{utils.date.get_day_of_week_string(current_date)}, "
+                                                              f"{utils.date.get_month_string(current_date)} "
+                                                              f"{utils.date.get_day_string(current_date)}",
+                                                   font=('Roboto', 18))
+        current_day_label.pack(padx=10, pady=(0, 10), anchor='w')
 
         top_buttons_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         top_buttons_frame.pack(padx=10, pady=(0, 5), side='top', anchor='nw')
@@ -131,9 +139,9 @@ class TasksPage(Page):
                 task_due_date_label = customtkinter.CTkLabel(
                     task_info_frame,
                     text=f"{utils.date.get_day_of_week_string(task_due_date)}, "
-                         f"{utils.date.get_month_abbreviation(task_due_date)} "
-                         f"{utils.date.get_day(task_due_date)}, "
-                         f"{utils.date.get_time_suffix(task_due_date)}",
+                         f"{utils.date.get_month_string(task_due_date)} "
+                         f"{utils.date.get_day_string(task_due_date)}, "
+                         f"{utils.date.get_time_suffix_string(task_due_date)}",
                     wraplength=default_wrap_length, justify=default_justification)
                 task_due_date_label.pack(anchor='w')
 

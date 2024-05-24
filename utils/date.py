@@ -35,17 +35,25 @@ def convert_str_to_datetime(date_str):
     return datetime.datetime.strptime(date_str, '%m-%d-%Y-%H-%M')
 
 
-def get_day_of_week_string(date_str):
+def get_abbreviated_day_of_week_string(date_str):
     return convert_str_to_datetime(date_str).strftime("%a")
 
 
-def get_day(date_str):
+def get_day_of_week_string(date_str):
+    return convert_str_to_datetime(date_str).strftime("%A")
+
+
+def get_day_string(date_str):
     return convert_str_to_datetime(date_str).day
 
 
-def get_month_abbreviation(date_str):
+def get_month_abbreviation_string(date_str):
     return convert_str_to_datetime(date_str).strftime("%b")
 
 
-def get_time_suffix(date_str):
+def get_month_string(date_str):
+    return convert_str_to_datetime(date_str).strftime("%B")
+
+
+def get_time_suffix_string(date_str):
     return convert_str_to_datetime(date_str).strftime("%I:%M %p")

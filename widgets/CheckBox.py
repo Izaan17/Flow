@@ -3,7 +3,7 @@ from typing import Any
 
 import customtkinter
 
-from utils.date import days_between_dates, parse_days_difference, get_time_suffix
+from utils.date import days_between_dates, parse_days_difference, get_time_suffix_string
 from widget_data.CheckBoxData import CheckBoxData
 from widgets.HyperLink import HyperLink
 from utils.string import shorten_text
@@ -52,7 +52,7 @@ class TaskCheckBox(customtkinter.CTkCheckBox):
             elif difference_from_now == 0:
                 text_color = 'blue'
             self.due_date_label.configure(text=f"{parse_days_difference(difference_from_now)}, "
-                                               f"{get_time_suffix(self.due_date)}", text_color=text_color)
+                                               f"{get_time_suffix_string(self.due_date)}", text_color=text_color)
             # Schedule the update after 5 seconds (5000 milliseconds)
             self.after(3000, update_due_date_label)
 

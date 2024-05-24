@@ -28,7 +28,7 @@ class SettingsPage(Page):
 
         self.all_icon_sizes = ["24x24", "50x50", "100x100", "100x125", "125x100", "125x125", "200x200"]
 
-        self.settings_label = customtkinter.CTkLabel(self, text="Settings", font=('Roboto', 36))
+        self.settings_label = customtkinter.CTkLabel(self, text="Settings", font=('Roboto', 36, 'bold'))
         self.settings_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
 
         self.drop_downs_frame = customtkinter.CTkFrame(self, fg_color='white')

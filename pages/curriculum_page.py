@@ -22,7 +22,8 @@ class CurriculumPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color='white')
 
-        self.curriculum_label = customtkinter.CTkLabel(self, text="My Curriculum", font=('Roboto', 36))
+        # Page title
+        self.curriculum_label = customtkinter.CTkLabel(self, text="Curriculum", font=('Roboto', 36, 'bold'))
         self.curriculum_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
 
         self.top_buttons_frame = customtkinter.CTkFrame(self, fg_color='transparent')

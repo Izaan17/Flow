@@ -127,14 +127,15 @@ class TasksPage(Page):
                                                          justify=default_justification)
                 due_date_header.pack(anchor='w')
 
-                task_due_date = customtkinter.CTkLabel(
+                task_due_date = new_check_box.get_task_due_date()
+                task_due_date_label = customtkinter.CTkLabel(
                     task_info_frame,
-                    text=f"{utils.date.get_day_of_week_string(new_check_box.get_task_due_date())}, "
-                         f"{utils.date.get_month_abbreviation(new_check_box.get_task_due_date())} "
-                         f"{utils.date.get_day(new_check_box.get_task_due_date())}, "
-                         f"{utils.date.get_time_suffix(new_check_box.get_task_due_date())}",
+                    text=f"{utils.date.get_day_of_week_string(task_due_date)}, "
+                         f"{utils.date.get_month_abbreviation(task_due_date)} "
+                         f"{utils.date.get_day(task_due_date)}, "
+                         f"{utils.date.get_time_suffix(task_due_date)}",
                     wraplength=default_wrap_length, justify=default_justification)
-                task_due_date.pack(anchor='w')
+                task_due_date_label.pack(anchor='w')
 
             def delete_callback():
                 if tkinter.messagebox.askyesno("Delete Task",

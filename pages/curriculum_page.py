@@ -14,6 +14,10 @@ from widgets.Page import Page
 from widgets.popups.Popups import ErrorPopup, SuccessPopup
 
 
+# Todo: Optimize big file copying when adding a folder.
+#  2 - Add a way to drag and drop folders both ways from the directory panel.
+#  3 - Optimize deleting big folders.
+
 class CurriculumPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, fg_color='white')
@@ -24,12 +28,15 @@ class CurriculumPage(Page):
         self.top_buttons_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.top_buttons_frame.pack(padx=10, pady=(0, 5), side='top', anchor='nw')
 
-        self.home_button = DefaultButton(self.top_buttons_frame, text="Home", image=customtkinter.CTkImage(
-            Image.open(f'{get_icon_dir()}{os.sep}home.png')), command=self.go_home)
+        self.home_button = DefaultButton(self.top_buttons_frame, text="Home",
+                                         image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}{os.sep}home.png')),
+                                         command=self.go_home)
         self.home_button.pack(padx=(0, 10), side='left', anchor='nw')
 
-        self.open_current_folder = DefaultButton(self.top_buttons_frame, text="Open", image=customtkinter.CTkImage(
-            Image.open(f'{get_icon_dir()}{os.sep}link-2.png')), command=lambda: self.open_file(self.current_directory))
+        self.open_current_folder = DefaultButton(self.top_buttons_frame, text="Open",
+                                                 image=customtkinter.CTkImage(
+                                                     Image.open(f'{get_icon_dir()}{os.sep}link-2.png')),
+                                                 command=lambda: self.open_file(self.current_directory))
         self.open_current_folder.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.create_folder_button = DefaultButton(self.top_buttons_frame, text="Create Folder",
@@ -48,11 +55,6 @@ class CurriculumPage(Page):
                                                  Image.open(f'{get_icon_dir()}{os.sep}file-plus.png')))
         self.add_file_button.pack(padx=(0, 10), side='left', anchor='nw')
 
-        # self.clear_grid_button = DefaultButton(self.top_buttons_frame, text="Clear", command=self.clear_grid,
-        #                                        image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'
-        #                                                                                f'{os.sep}trash.png')))
-        # self.clear_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
-
         self.set_default_directory_button = DefaultButton(self.top_buttons_frame, text="Set Default",
                                                           image=customtkinter.CTkImage(
                                                               Image.open(f'{get_icon_dir()}{os.sep}bookmark.png')),
@@ -65,8 +67,8 @@ class CurriculumPage(Page):
         self.refresh_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.back_button = DefaultButton(self.top_buttons_frame, text="Back", command=self.go_back,
-                                         image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'
-                                                                                 f'{os.sep}arrow-left.png')))
+                                         image=customtkinter.CTkImage(
+                                             Image.open(f'{get_icon_dir()}{os.sep}arrow-left.png')))
         self.back_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.current_directory = settings.get_setting("default_dir", get_storage_dir())
@@ -78,13 +80,7 @@ class CurriculumPage(Page):
                                                               textvariable=self.current_directory_var,
                                                               font=('Roboto', 14))
 
-        # Current directory binding
-        def show_directory_menu(event):
-            try:
-                self.current_directory_menu.tk_popup(event.x_root, event.y_root)
-            finally:
-                self.current_directory_menu.grab_release()
-
+        self.current_directory_label.bind("<Button-2>", self.show_directory_menu)
         self.current_directory_menu = tkinter.Menu(self.current_directory_frame)
         self.current_directory_menu.add_command(label="Copy Directory",
                                                 command=lambda: self.clipboard_append(self.current_directory))
@@ -92,8 +88,6 @@ class CurriculumPage(Page):
         self.current_directory_menu.add_separator()
         self.current_directory_menu.add_command(label=f"Open in {file_system_app_name}",
                                                 command=lambda: self.open_file(self.current_directory))
-
-        self.current_directory_label.bind("<Button-2>", show_directory_menu)
 
         self.current_directory_frame.pack(padx=10, anchor='w')
         self.current_directory_label.pack(padx=10, anchor='w')
@@ -103,14 +97,15 @@ class CurriculumPage(Page):
 
         self.refresh_grid()
 
-    def open_file(self, file):
-        if os.name == "nt":
-            command = f'start "" "{file}"'
-        else:
-            command = f'open "{file}"'
+    def show_directory_menu(self, event):
+        try:
+            self.current_directory_menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            self.current_directory_menu.grab_release()
 
+    def open_file(self, file):
+        command = f'start "" "{file}"' if os.name == "nt" else f'open "{file}"'
         if os.system(command) != 0:
-            # An error occurred
             ErrorPopup(self, f"No Application knows how to open this file! -> {file}")
 
     def open_directory(self, directory):
@@ -125,36 +120,29 @@ class CurriculumPage(Page):
     def refresh_grid(self):
         self.clear_grid()
         files = os.listdir(self.current_directory)
-        row = 0
-        column = 0
+        row, column = 0, 0
+        max_items_per_row = int(settings.get_setting("max_items_per_row", 5))
+
         for name in files:
             file_path = os.path.join(self.current_directory, name)
             if os.path.isdir(file_path):
-                # Creates a folder button
                 button = FolderObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
-                button.bind("<Double-Button-1>", command=lambda event, path=file_path: self.open_directory(path))
-                button.grid(row=row, column=column, padx=(0, 10), pady=10, sticky="nsew")
+                button.bind("<Double-Button-1>", lambda event, path=file_path: self.open_directory(path))
             else:
-                # Creates a file object button
-                file = FileObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
-                file.bind("<Double-Button-1>", command=lambda event, path=file_path: self.open_file(path))
-                file.grid(row=row, column=column, padx=(0, 10), pady=10, sticky="nsew")
+                button = FileObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
+                button.bind("<Double-Button-1>", lambda event, path=file_path: self.open_file(path))
 
+            button.grid(row=row, column=column, padx=(0, 10), pady=10, sticky="nsew")
             column += 1
-            # Get max items per row
-            if column == int(settings.get_setting("max_items_per_row", 5)):
+            if column == max_items_per_row:
                 row += 1
                 column = 0
 
-        # Update back button state
-        if len(self.back_stack) == 0:
-            self.back_button.configure(state=customtkinter.DISABLED)
-        else:
-            self.back_button.configure(state=customtkinter.NORMAL)
+        self.back_button.configure(state=customtkinter.NORMAL if self.back_stack else customtkinter.DISABLED)
 
     def go_back(self):
         if self.back_stack:
-            self.set_current_dir(directory=self.back_stack.pop())
+            self.set_current_dir(self.back_stack.pop())
             self.refresh_grid()
 
     def create_folder(self):
@@ -175,7 +163,7 @@ class CurriculumPage(Page):
                 return
 
             new_folder_name = tkinter.simpledialog.askstring("Add Folder", "Enter folder name:",
-                                                             initialvalue=folder_to_copy.split(os.sep)[-1])
+                                                             initialvalue=os.path.basename(folder_to_copy))
             if new_folder_name:
                 new_folder_path = os.path.join(self.current_directory, new_folder_name)
                 try:
@@ -185,18 +173,17 @@ class CurriculumPage(Page):
                     ErrorPopup(self, f"Error copying folder: {error}")
 
     def add_file(self):
-        file_to_copy = tkinter.filedialog.askopenfilenames()
-        if file_to_copy:
-            for file in file_to_copy:
-                shutil.copy(file, self.current_directory)
-                self.refresh_grid()
+        files_to_copy = tkinter.filedialog.askopenfilenames()
+        for file in files_to_copy:
+            shutil.copy(file, self.current_directory)
+        self.refresh_grid()
 
     def set_default_dir(self):
         settings.add_setting("default_dir", self.current_directory)
         SuccessPopup(self, f"Success! '{self.current_directory}' is now the default!")
 
     def go_home(self):
-        self.set_current_dir(directory=get_storage_dir())
+        self.set_current_dir(get_storage_dir())
         self.refresh_grid()
 
     def set_current_dir(self, directory):

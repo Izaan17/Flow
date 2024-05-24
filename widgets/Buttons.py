@@ -1,20 +1,20 @@
-import os.path
+import os
 import shutil
 import threading
 import tkinter
-import tkinter.simpledialog
+from tkinter import messagebox
+from tkinter.simpledialog import askstring
 from typing import Any
 
 import customtkinter
 from PIL import Image
 
-from tkinter import messagebox
 from utils import settings
 from utils.string import shorten_text
 from utils.directory_manager import get_icon_dir
 from widgets.popups.Popups import ErrorPopup
 
-FOLDER_ICON = customtkinter.CTkImage(Image.open(f'{get_icon_dir()}{os.sep}folder.png'), size=(32, 32))
+FOLDER_ICON = customtkinter.CTkImage(Image.open(os.path.join(get_icon_dir(), 'folder.png')), size=(32, 32))
 
 
 class DefaultButton(customtkinter.CTkButton):
@@ -24,90 +24,78 @@ class DefaultButton(customtkinter.CTkButton):
 
 
 class PathObjectButton(customtkinter.CTkButton):
-    def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
+    def __init__(self, master: Any, path: str, refresh_grid_func, **kwargs):
         super().__init__(master, **kwargs,
-                         image=customtkinter.CTkImage(light_image=Image.open(f"{get_icon_dir()}{os.sep}file.png"),
+                         image=customtkinter.CTkImage(light_image=Image.open(os.path.join(get_icon_dir(), "file.png")),
                                                       size=(32, 32)), fg_color='#A9A9A9', hover_color='#D3D3D3',
-                         text_color='black', compound='top',
-                         corner_radius=5)
+                         text_color='black', compound='top', corner_radius=5)
         self.path = path
-        self.item_name = path.split(os.sep)[-1]
+        self.item_name = os.path.basename(path)
+        self.refresh_grid_func = refresh_grid_func
+        self.master = master
 
-        def delete():
-            if messagebox.askyesno("Delete", f"Are you sure you want to delete '{self.item_name}'?"):
-                try:
-                    if not os.path.exists(path):
-                        raise FileNotFoundError(f"{path} does not exist!")
+        self._configure_right_click_menu()
+        self._configure_text()
 
-                    if os.path.isdir(path):
-                        # Check settings
-                        if settings.settings.get_setting("allow_full_dir_deletion", "False") == "True":
-                            shutil.rmtree(path)
-                        else:
-                            os.rmdir(path)
-                    else:
-                        os.remove(path)
-
-                    # If no exceptions were raised, destroy the widget
-                    refresh_grid_func()
-
-                except FileNotFoundError as e:
-                    ErrorPopup(master, str(e))
-
-                except OSError as e:
-                    ErrorPopup(master, f"{e}")
-
-                except Exception as e:
-                    ErrorPopup(master, f"An error occurred: {e}")
-
-        def rename():
-            new_renamed_file_name = tkinter.simpledialog.askstring("File Rename", "Enter new file name",
-                                                                   initialvalue=self.item_name)
-            old_path_split = self.path.split(os.sep)
-            # Delete last file name
-            del old_path_split[-1]
-            current_dir = os.sep.join(old_path_split)
-            if new_renamed_file_name:
-                new_file_name = os.path.join(current_dir, new_renamed_file_name)
-                if os.path.exists(new_file_name):
-                    ErrorPopup(master, "File already exists")
-                try:
-                    shutil.move(self.path, new_file_name)
-                    refresh_grid_func()
-                except Exception as error:
-                    ErrorPopup(master, f"Error renaming file: {error}")
-
-        # Right Click menu
+    def _configure_right_click_menu(self):
         right_click_menu = tkinter.Menu()
         right_click_menu.add_command(label="Copy Path", command=lambda: self.clipboard_append(self.path))
-        right_click_menu.add_command(label="Rename", command=rename)
-        right_click_menu.add_command(label="Delete", command=delete)
+        right_click_menu.add_command(label="Rename", command=self._rename)
+        right_click_menu.add_command(label="Delete", command=self._delete)
 
-        def action_menu(event):
-            right_click_menu.tk_popup(event.x_root, event.y_root)
+        self.bind("<Button-2>", lambda event: right_click_menu.tk_popup(event.x_root, event.y_root))
 
-        self.bind("<Button-2>", action_menu)
-        # Text name
-        self.configure(text=shorten_text(self.item_name, int(settings.settings.get_setting("max_text_length", 30))))
+    def _configure_text(self):
+        max_text_length = int(settings.settings.get_setting("max_text_length", 30))
+        self.configure(text=shorten_text(self.item_name, max_text_length))
+
+    def _delete(self):
+        if messagebox.askyesno("Delete", f"Are you sure you want to delete '{self.item_name}'?"):
+            try:
+                if not os.path.exists(self.path):
+                    raise FileNotFoundError(f"{self.path} does not exist!")
+
+                if os.path.isdir(self.path):
+                    if settings.settings.get_setting("allow_full_dir_deletion", "False") == "True":
+                        shutil.rmtree(self.path)
+                    else:
+                        os.rmdir(self.path)
+                else:
+                    os.remove(self.path)
+
+                self.destroy()
+            except Exception as e:
+                ErrorPopup(self.master, str(e))
+
+    def _rename(self):
+        new_item_name = askstring("File Rename", "Enter new file name", initialvalue=self.item_name)
+        if new_item_name:
+            new_item_path = os.path.join(os.path.dirname(self.path), new_item_name)
+            if os.path.exists(new_item_path):
+                ErrorPopup(self.master, "File already exists")
+                return
+            try:
+                shutil.move(self.path, new_item_path)
+                self.refresh_grid_func()
+            except Exception as e:
+                ErrorPopup(self.master, f"Error renaming file: {e}")
 
 
 class FolderObjectButton(PathObjectButton):
-    def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
+    def __init__(self, master: Any, path: str, refresh_grid_func, **kwargs):
         super().__init__(master, path, refresh_grid_func, **kwargs)
-        # change to folder icon
         self.configure(image=FOLDER_ICON)
 
 
 class FileObjectButton(PathObjectButton):
-    def __init__(self, master: Any, path, refresh_grid_func, **kwargs):
+    def __init__(self, master: Any, path: str, refresh_grid_func, **kwargs):
         super().__init__(master, path, refresh_grid_func, **kwargs)
-        picture_formats = (".png", ".jpg", ".jpeg")
-        is_picture = path.endswith(picture_formats)
-        if is_picture and settings.settings.get_setting("show_img_preview", "False") == "True":
-            threading.Thread(target=self.load_image_preview, args=(path,), daemon=True).start()
+        if path.lower().endswith(('.png', '.jpg', '.jpeg')) and settings.settings.get_setting("show_img_preview",
+                                                                                              "False") == "True":
+            threading.Thread(target=self._load_image_preview, args=(path,), daemon=True).start()
 
     @staticmethod
-    def load_image(path, size):
+    def _load_image(path: str, size: tuple[int, int]) -> customtkinter.CTkImage | None:
         try:
             image = Image.open(path)
             image.thumbnail(size, reducing_gap=1.0)
@@ -116,11 +104,9 @@ class FileObjectButton(PathObjectButton):
             print(f"Error loading image: {e}")
             return None
 
-    def load_image_preview(self, path):
-        preview_image = self.load_image(path, (int(settings.settings.get_setting("icon_height", 50)),
-                                               int(settings.settings.get_setting("icon_width", 50))))
+    def _load_image_preview(self, path: str):
+        icon_size = (int(settings.settings.get_setting("icon_height", 50)),
+                     int(settings.settings.get_setting("icon_width", 50)))
+        preview_image = self._load_image(path, icon_size)
         if preview_image:
-            try:
-                self.configure(image=preview_image)
-            except Exception:
-                pass
+            self.configure(image=preview_image)

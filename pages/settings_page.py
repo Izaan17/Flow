@@ -2,6 +2,7 @@ from functools import partial
 import customtkinter
 from utils.settings import settings
 from widgets.Dropdown import DefaultDropDown
+from widgets.Switch import DefaultSwitch
 from widgets.Page import Page
 
 
@@ -10,6 +11,21 @@ def create_dropdown(frame, label_text, values, command, setting_key, default_val
     dropdown.pack(anchor='w')
     dropdown.set(settings.get_setting(setting_key, default_value))
     return dropdown
+
+
+def create_switch(frame, label_text, setting_key, backup_default="False"):
+    current_value = settings.get_setting(setting_key, backup_default)  # Get current setting value
+    switch_var = customtkinter.StringVar(value=current_value)
+
+    def on_switch_toggle():
+        settings.add_setting(setting_key, switch_var.get())
+        # Auto change the text
+        ctk_switch.configure(text=settings.get_setting(setting_key, "Error"))
+
+    ctk_switch = DefaultSwitch(frame, label_text=label_text, command=on_switch_toggle,
+                               variable=switch_var, onvalue="True", offvalue="False", text=current_value)
+    ctk_switch.pack(anchor='w')
+    return ctk_switch
 
 
 def on_setting_change(setting_key, choice):
@@ -34,6 +50,12 @@ class SettingsPage(Page):
         self.drop_downs_frame = customtkinter.CTkFrame(self, fg_color='white')
         self.drop_downs_frame.pack(fill='both', expand=True)
 
+        self.show_image_preview = create_switch(self.drop_downs_frame, "Show Image Preview", "show_img_preview",
+                                                backup_default="True")
+
+        self.allow_full_directory_deletion = create_switch(self.drop_downs_frame, "Allow Full Directory Deletion",
+                                                           "allow_full_dir_deletion")
+
         # Create dropdowns with a generic handler
         self.max_items_per_row = create_dropdown(
             self.drop_downs_frame, "Max Items Per Row", [str(i) for i in range(5, 11)],
@@ -45,19 +67,9 @@ class SettingsPage(Page):
             partial(on_setting_change, "max_text_length"), "max_text_length", 30
         )
 
-        self.show_image_preview = create_dropdown(
-            self.drop_downs_frame, "Show Image Preview", ["True", "False"],
-            partial(on_setting_change, "show_img_preview"), "show_img_preview", "True"
-        )
-
         self.icon_size_drop_down = DefaultDropDown(
             self.drop_downs_frame, label_text="Icon Size", values=self.all_icon_sizes,
             command=on_icon_size_change)
         self.icon_size_drop_down.pack(anchor='w')
         self.icon_size_drop_down.set(
             f"{settings.get_setting('icon_width', 50)}x{settings.get_setting('icon_height', 50)}")
-
-        self.allow_full_directory_deletion = create_dropdown(
-            self.drop_downs_frame, "Full Directory Deletion", ["True", "False"],
-            partial(on_setting_change, "allow_full_dir_deletion"), "allow_full_dir_deletion", "False"
-        )

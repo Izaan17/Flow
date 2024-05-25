@@ -290,11 +290,11 @@ class TasksPage(Page):
             right_click_menu.tk_popup(event.x_root, event.y_root)
 
         def toggle_state():
-            old_data = self.check_box_manager.check_boxes_data.pop(new_check_box.get_task_id())
+            task_id = new_check_box.get_task_id()
+            old_data = self.check_box_manager.check_boxes_data[task_id]
             new_data = new_check_box.get_checkbox_data()
-            new_data.completion_status = 1 if old_data.completion_status == 0 else 0
-            self.check_box_manager.check_boxes_data[new_check_box.task_id] = new_data
-            self.check_box_manager.save_to_file()
+            new_data.completion_status = 1 - old_data.completion_status  # Toggles between 0 and 1
+            self.check_box_manager.check_boxes_data[task_id] = new_data
 
         new_check_box.configure(command=toggle_state)
 

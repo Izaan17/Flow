@@ -1,3 +1,4 @@
+import atexit
 import os
 from tkinter import PhotoImage
 
@@ -79,5 +80,8 @@ settings_button.grid(padx=button_padx, pady=button_pady, sticky='nsew')
 
 # Show the initial page
 tasks_page.show()
+
+# At exit save all checkbox states
+atexit.register(tasks_page.check_box_manager.save_to_file)
 
 root.mainloop()

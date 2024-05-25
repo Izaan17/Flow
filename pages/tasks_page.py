@@ -41,6 +41,7 @@ class TasksPage(Page):
                                        f"{utils.date.get_month_string(self.current_date)} "
                                        f"{utils.date.get_day_string(self.current_date)}")
 
+        # Setup page buttons
         self.top_buttons_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.top_buttons_frame.pack(padx=10, pady=(0, 5), side='top', anchor='nw')
 
@@ -382,11 +383,11 @@ class TasksPage(Page):
                     task_due_date: datetime.datetime = event.get("DTEND").dt
                     task_due_date_str = task_due_date.strftime("%m-%d-%Y-%H-%M")
                     # Convert the date to usable format
-                    new_bb_task = TaskCheckBox(ical_scrollable_frame, text=task_name, source="iCalendar",
-                                               link=None, task_id=0, due_date=task_due_date_str)
-                    new_bb_task.pack(anchor='w')
+                    new_ical_task = TaskCheckBox(ical_scrollable_frame, text=task_name, source="iCalendar",
+                                                 link=None, task_id=0, due_date=task_due_date_str)
+                    new_ical_task.pack(anchor='w')
                     # Add to list
-                    loaded_tasks.append(new_bb_task)
+                    loaded_tasks.append(new_ical_task)
             except requests.HTTPError as request_error:
                 ErrorPopup(new_top_level, f"{request_error}")
             except Exception as error:

@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     p.add_widget(tasks_name_text_box, [NonEmptyValidator()])
     p.add_widget(tasks_name_text_box2)
-    p.add_widget(age_text_box, [NumericValidator(0,    100)])
+    p.add_widget(age_text_box, [NumericValidator(0, 100)])
     root.wait_window(p)
     # If we got data
     if p.data_ready:

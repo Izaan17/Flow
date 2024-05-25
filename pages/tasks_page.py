@@ -12,7 +12,7 @@ import utils.date
 from utils.directory_manager import get_icon_dir, get_app_dir
 from utils.online_icalendar import OnlineICalendar
 from utils.settings import settings
-from utils.string import remove_all_but_one_zero
+from utils.string import isolate_string
 from widgets.Buttons import DefaultButton
 from widgets.CheckBox import TaskCheckBox
 from widgets.CheckBoxManager import CheckBoxManager
@@ -251,7 +251,7 @@ class TasksPage(Page):
                 parsed_date = datetime.datetime.strptime(
                     f"{due_date_calendar.get_date()} "
                     f"{task_popup_form.get_data(hour_entry)}:"
-                    f"{remove_all_but_one_zero(task_popup_form.get_data(minute_entry))}",
+                    f"{isolate_string('0', task_popup_form.get_data(minute_entry))}",
                     original_format_string)
                 formatted_date = parsed_date.strftime(desired_format_string)
                 new_task_id = check_box_manager.load_last_id()
@@ -321,7 +321,7 @@ class TasksPage(Page):
 
             icalendar_url_save_button.configure(command=ical_save_url)
 
-            ical_load_button = DefaultButton(ical_button_layout, text="Load Tasks")
+            ical_load_button = DefaultButton(ical_button_layout, text="Load From URL")
             ical_load_button.pack(side='left', padx=10)
 
             ical_scrollable_frame = customtkinter.CTkScrollableFrame(master=ical_section,

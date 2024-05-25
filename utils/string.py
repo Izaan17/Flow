@@ -5,9 +5,9 @@ def shorten_text(text, max_length):
         return text[:max_length - 3] + "..."  # truncate text and add ellipsis
 
 
-def remove_all_but_one_zero(s):
-    if '0' not in s:
-        return s
+def isolate_string(isolation_string, input_string):
+    if isolation_string not in input_string:
+        return input_string
 
-    first_zero_index = s.index('0')
-    return s[:first_zero_index + 1].replace('0', '') + '0' + s[first_zero_index + 1:].replace('0', '')
+    first_string_index = input_string.index(isolation_string)
+    return input_string[:first_string_index + 1].replace(isolation_string, '') + isolation_string + input_string[first_string_index + 1:].replace(isolation_string, '')

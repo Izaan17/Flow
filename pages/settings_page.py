@@ -20,7 +20,7 @@ def create_switch(frame, label_text, setting_key, backup_default="False"):
     def on_switch_toggle():
         settings.add_setting(setting_key, switch_var.get())
         # Auto change the text
-        ctk_switch.configure(text=settings.get_setting(setting_key, "Error"))
+        ctk_switch.configure(text=switch_var.get())
 
     ctk_switch = DefaultSwitch(frame, label_text=label_text, command=on_switch_toggle,
                                variable=switch_var, onvalue="True", offvalue="False", text=current_value)

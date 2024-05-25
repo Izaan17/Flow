@@ -21,11 +21,8 @@ from widgets.popups.Popups import ErrorPopup, SuccessPopup
 
 class CurriculumPage(Page):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, fg_color='white')
-
-        # Page title
-        self.curriculum_label = customtkinter.CTkLabel(self, text="Curriculum", font=('Roboto', 36, 'bold'))
-        self.curriculum_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
+        super().__init__(*args, **kwargs, fg_color='white', page_title="Curriculum",
+                         subheading="Store all of your course work here.")
 
         self.top_buttons_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.top_buttons_frame.pack(padx=10, pady=(0, 5), side='top', anchor='nw')
@@ -34,12 +31,6 @@ class CurriculumPage(Page):
                                          image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}{os.sep}home.png')),
                                          command=self.go_home)
         self.home_button.pack(padx=(0, 10), side='left', anchor='nw')
-
-        # self.open_current_folder = DefaultButton(self.top_buttons_frame, text="Open",
-        #                                          image=customtkinter.CTkImage(
-        #                                              Image.open(f'{get_icon_dir()}{os.sep}folder.png')),
-        #                                          command=lambda: self.open_file(self.current_directory))
-        # self.open_current_folder.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.create_folder_button = DefaultButton(self.top_buttons_frame, text="New Folder",
                                                   command=self.create_folder,

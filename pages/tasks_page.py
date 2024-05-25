@@ -290,63 +290,63 @@ class TasksPage(Page):
             new_top_level.grab_set()
 
             # Source Sections Frame
-            # ==BB==
-            bb_header_label = customtkinter.CTkLabel(new_top_level, text='iCalendar Import',
-                                                     font=('Roboto', 18, 'bold'))
-            bb_header_label.pack(anchor='w', padx=10)
+            # --ICAL--
+            ical_header_label = customtkinter.CTkLabel(new_top_level, text='iCalendar Import',
+                                                       font=('Roboto', 18, 'bold'))
+            ical_header_label.pack(anchor='w', padx=10)
 
-            bb_section = customtkinter.CTkFrame(new_top_level, fg_color='transparent', corner_radius=0)
-            bb_section.pack(fill='both')
+            ical_section = customtkinter.CTkFrame(new_top_level, fg_color='transparent', corner_radius=0)
+            ical_section.pack(fill='both')
 
-            bb_calendar_url_label = customtkinter.CTkLabel(bb_section, text="iCalendar URL",
-                                                           font=('Roboto', 14))
-            bb_calendar_url_label.pack(anchor='w', padx=12)
+            icalendar_url_label = customtkinter.CTkLabel(ical_section, text="iCalendar URL",
+                                                         font=('Roboto', 14))
+            icalendar_url_label.pack(anchor='w', padx=12)
 
-            bb_calendar_url_entry = customtkinter.CTkEntry(bb_section, width=550,
-                                                           placeholder_text='iCalendar URL')
-            bb_calendar_url_entry.pack(anchor='w', padx=10, pady=(5, 10))
+            icalendar_url_entry = customtkinter.CTkEntry(ical_section, width=550,
+                                                         placeholder_text='iCalendar URL')
+            icalendar_url_entry.pack(anchor='w', padx=10, pady=(5, 10))
             # Set the url from the settings
-            bb_calendar_url_entry.insert(0, settings.get_setting("ical_url", ""))
+            icalendar_url_entry.insert(0, settings.get_setting("ical_url", ""))
 
-            bb_button_layout = customtkinter.CTkFrame(bb_section, fg_color='transparent')
-            bb_button_layout.pack(anchor='w', padx=10, expand=True)
+            ical_button_layout = customtkinter.CTkFrame(ical_section, fg_color='transparent')
+            ical_button_layout.pack(anchor='w', padx=10, expand=True)
 
-            bb_calendar_url_save_button = DefaultButton(bb_button_layout, text="Save URL")
-            bb_calendar_url_save_button.pack(side='left', padx=(0, 5))
+            icalendar_url_save_button = DefaultButton(ical_button_layout, text="Save URL")
+            icalendar_url_save_button.pack(side='left', padx=(0, 5))
 
-            def bb_save_url():
-                settings.add_setting("ical_url", bb_calendar_url_entry.get())
+            def ical_save_url():
+                settings.add_setting("ical_url", icalendar_url_entry.get())
                 # Show success popup
                 SuccessPopup(new_top_level, "Successfully saved url")
 
-            bb_calendar_url_save_button.configure(command=bb_save_url)
+            icalendar_url_save_button.configure(command=ical_save_url)
 
-            bb_load_button = DefaultButton(bb_button_layout, text="Load Tasks")
-            bb_load_button.pack(side='left', padx=10)
+            ical_load_button = DefaultButton(ical_button_layout, text="Load Tasks")
+            ical_load_button.pack(side='left', padx=10)
 
-            bb_scrollable_frame = customtkinter.CTkScrollableFrame(master=bb_section,
-                                                                   fg_color='transparent')
-            bb_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+            ical_scrollable_frame = customtkinter.CTkScrollableFrame(master=ical_section,
+                                                                     fg_color='transparent')
+            ical_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
 
-            bb_select_all_button = DefaultButton(bb_button_layout, text="Select All")
-            bb_select_all_button.pack(anchor='e', padx=10)
+            ical_select_all_button = DefaultButton(ical_button_layout, text="Select All")
+            ical_select_all_button.pack(anchor='e', padx=10)
 
             self.loaded_tasks = []
 
-            def bb_load_tasks():
+            def ical_load_tasks():
                 # Set loaded to none
                 self.loaded_tasks = []
                 # Clear the task frame
-                for child in bb_scrollable_frame.winfo_children():
+                for child in ical_scrollable_frame.winfo_children():
                     child.destroy()
                 try:
-                    online_icalendar = OnlineICalendar(bb_calendar_url_entry.get())
+                    online_icalendar = OnlineICalendar(icalendar_url_entry.get())
                     for event in online_icalendar.get_events():
                         task_name = event.get("SUMMARY")
                         task_due_date: datetime.datetime = event.get("DTEND").dt
                         task_due_date_str = task_due_date.strftime("%m-%d-%Y-%H-%M")
                         # Convert the date to usable format
-                        new_bb_task = TaskCheckBox(bb_scrollable_frame, text=task_name, source="BlackBoard",
+                        new_bb_task = TaskCheckBox(ical_scrollable_frame, text=task_name, source="iCalendar",
                                                    link=None, task_id=0, due_date=task_due_date_str)
                         new_bb_task.pack(anchor='w')
                         # Add to list
@@ -356,10 +356,10 @@ class TasksPage(Page):
                 except Exception as error:
                     ErrorPopup(new_top_level, f"Error => {error}")
 
-            bb_load_button.configure(command=bb_load_tasks)
+            ical_load_button.configure(command=ical_load_tasks)
 
-            def bb_select_all():
-                for child in bb_scrollable_frame.winfo_children():
+            def ical_select_all():
+                for child in ical_scrollable_frame.winfo_children():
                     task_check_box = child.winfo_children()[1]
                     if isinstance(task_check_box, TaskCheckBox):
                         if not task_check_box.get():
@@ -367,9 +367,9 @@ class TasksPage(Page):
                         else:
                             task_check_box.deselect()
 
-            bb_select_all_button.configure(command=bb_select_all)
+            ical_select_all_button.configure(command=ical_select_all)
 
-            # ==BB==
+            # --ICAL--
 
             # Add all button
             add_all_tasks_button = DefaultButton(new_top_level, text="Add Selected Tasks")

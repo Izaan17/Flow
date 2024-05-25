@@ -40,12 +40,10 @@ def on_icon_size_change(choice):
 
 class SettingsPage(Page):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, fg_color='white')
+        super().__init__(*args, **kwargs, fg_color='white', page_title="Settings",
+                         subheading="Edit all your settings here.")
 
         self.all_icon_sizes = ["24x24", "50x50", "100x100", "100x125", "125x100", "125x125", "200x200"]
-
-        self.settings_label = customtkinter.CTkLabel(self, text="Settings", font=('Roboto', 36, 'bold'))
-        self.settings_label.pack(padx=10, pady=(50, 10), side='top', anchor='nw')
 
         self.drop_downs_frame = customtkinter.CTkFrame(self, fg_color='white')
         self.drop_downs_frame.pack(fill='both', expand=True)

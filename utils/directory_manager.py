@@ -29,3 +29,4 @@ if __name__ == '__main__':
     print(get_project_root())
     print(get_app_dir())
     print(get_storage_dir())
+    print(get_icon_dir())

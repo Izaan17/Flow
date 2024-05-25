@@ -9,6 +9,7 @@ from PIL import Image
 from tkcalendar import dateentry
 
 import utils.date
+import utils.system
 from utils.directory_manager import get_icon_dir, get_app_dir
 from utils.online_icalendar import OnlineICalendar
 from utils.settings import settings
@@ -162,7 +163,7 @@ class TasksPage(Page):
                     new_check_box.destroy()
 
             # Right Click menu
-            right_click_menu = tkinter.Menu()
+            right_click_menu = tkinter.Menu(tearoff=0)
             right_click_menu.add_command(label="Delete", command=delete_callback)
 
             def action_menu(event):
@@ -184,9 +185,10 @@ class TasksPage(Page):
             new_check_box.due_date_label.configure(wraplength=default_wrap_length, justify=default_justification)
 
             # Assign action menu opening to right click
-            new_check_box.bind("<Button-2>", action_menu)
-            new_check_box.task_item_frame.bind("<Button-2>", action_menu)
-            new_check_box.task_info_frame.bind("<Button-2>", action_menu)
+            system_right_click_bind_key = utils.system.get_button_binding_key()
+            new_check_box.bind(system_right_click_bind_key, action_menu)
+            new_check_box.task_item_frame.bind(system_right_click_bind_key, action_menu)
+            new_check_box.task_info_frame.bind(system_right_click_bind_key, action_menu)
 
             # Assign opening details menu to left click
             new_check_box.task_item_frame.bind("<Button-1>", display_details)

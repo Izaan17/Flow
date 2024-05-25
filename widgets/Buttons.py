@@ -40,7 +40,7 @@ class PathObjectButton(customtkinter.CTkButton):
         self._configure_text()
 
     def _configure_right_click_menu(self):
-        right_click_menu = tkinter.Menu()
+        right_click_menu = tkinter.Menu(tearoff=0)
         right_click_menu.add_command(label="Copy Path", command=lambda: self.clipboard_append(self.path))
         right_click_menu.add_command(label="Rename", command=self._rename)
         right_click_menu.add_command(label="Delete", command=self._delete)
@@ -48,7 +48,8 @@ class PathObjectButton(customtkinter.CTkButton):
         right_click_menu.add_command(label=f"Reveal in {get_file_system_app_name()}",
                                      command=lambda: utils.system.open_file_or_folder(self.path, True))
 
-        self.bind("<Button-2>", lambda event: right_click_menu.tk_popup(event.x_root, event.y_root))
+        self.bind(utils.system.get_button_binding_key(),
+                  lambda event: right_click_menu.tk_popup(event.x_root, event.y_root))
 
     def _configure_text(self):
         max_text_length = int(settings.settings.get_setting("max_text_length", 30))

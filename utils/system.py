@@ -11,3 +11,7 @@ def open_file_or_folder(file, reveal=False):
         arg = '-R'
     command = f'start "" "{file}"' if os.name == "nt" else f'open {arg} "{file}"'
     return os.system(command)
+
+
+def get_button_binding_key():
+    return "<Button-3>" if os.name == "nt" else "<Button-2>"

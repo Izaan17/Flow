@@ -96,7 +96,7 @@ class FileObjectButton(PathObjectButton):
     def __init__(self, master: Any, path: str, refresh_grid_func, **kwargs):
         super().__init__(master, path, refresh_grid_func, **kwargs)
         if path.lower().endswith(('.png', '.jpg', '.jpeg')) and settings.settings.get_setting("show_img_preview",
-                                                                                              "False") == "True":
+                                                                                              "True") == "True":
             threading.Thread(target=self._load_image_preview, args=(path,), daemon=True).start()
 
     @staticmethod

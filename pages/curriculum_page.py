@@ -107,7 +107,7 @@ class CurriculumPage(Page):
             self.current_directory_menu.grab_release()
 
     def open_file(self, file):
-        if utils.system.open_file(file) != 0:
+        if utils.system.open_file_or_folder(file) != 0:
             ErrorPopup(self, f"No Application knows how to open this file! -> {file}")
 
     def open_directory(self, directory):

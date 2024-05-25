@@ -45,8 +45,8 @@ class PathObjectButton(customtkinter.CTkButton):
         right_click_menu.add_command(label="Rename", command=self._rename)
         right_click_menu.add_command(label="Delete", command=self._delete)
         right_click_menu.add_separator()
-        right_click_menu.add_command(label=f"Open in {get_file_system_app_name()}",
-                                     command=lambda: utils.system.open_file(self.path))
+        right_click_menu.add_command(label=f"Reveal in {get_file_system_app_name()}",
+                                     command=lambda: utils.system.open_file_or_folder(self.path, True))
 
         self.bind("<Button-2>", lambda event: right_click_menu.tk_popup(event.x_root, event.y_root))
 

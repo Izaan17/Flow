@@ -216,9 +216,9 @@ class TasksPage(Page):
             task_link_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Task Link')
             task_link_entry.insert(0, new_check_box.get_task_link())
 
-            task_date = utils.date.get_time_suffix_string(new_check_box.get_task_due_date()).split(":")
-            task_hour = task_date[0]
-            task_minute = task_date[1].split(" ")[0]
+            task_date = new_check_box.get_task_due_date().split("-")
+            task_hour = task_date[3]
+            task_minute = task_date[4]
             hour_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Hour')
             hour_entry.insert(0, task_hour)
             minute_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Minutes')
@@ -258,6 +258,8 @@ class TasksPage(Page):
                                                     task_id=new_check_box.get_task_id(),
                                                     text=task_name, source=task_source,
                                                     link=task_link, due_date=formatted_date)
+                # Reset notification flag since it was edited.
+                new_edited_check_box.notification_shown = False
 
                 self.init_checkbox(new_edited_check_box)
                 self.check_box_manager.add_checkbox(new_check_box.get_task_id(),
@@ -305,10 +307,9 @@ class TasksPage(Page):
         new_check_box.due_date_label.configure(wraplength=default_wrap_length, justify=default_justification)
 
         # Assign action menu opening to right click
-        system_right_click_bind_key = utils.system.get_button_binding_key()
-        new_check_box.bind(system_right_click_bind_key, action_menu)
-        new_check_box.task_item_frame.bind(system_right_click_bind_key, action_menu)
-        new_check_box.task_info_frame.bind(system_right_click_bind_key, action_menu)
+        new_check_box.bind(utils.system.right_click_binding_key_code, action_menu)
+        new_check_box.task_item_frame.bind(utils.system.right_click_binding_key_code, action_menu)
+        new_check_box.task_info_frame.bind(utils.system.right_click_binding_key_code, action_menu)
 
         # Assign opening details menu to left click
         new_check_box.task_item_frame.bind("<Button-1>", display_details)

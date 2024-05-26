@@ -10,7 +10,16 @@
 ![An Image showcasing flows UI](flow.jpeg)
 
 # Setup
-Setting up Flow is easy! Just run the app.
+Setting up Flow is easy! Run the following commands.
+1. Clone the repo.
+2. Use pip to install the packages.
+```shell
+pip install -r requirements.txt
+```  
+3. Run the file
+```shell
+python main.py
+```
 
 ## Importing tasks from blackboard
 

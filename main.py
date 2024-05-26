@@ -1,30 +1,30 @@
 import os
-import tkinter
 from tkinter import PhotoImage
 
 import customtkinter
 from PIL import Image
 
 from pages.curriculum_page import CurriculumPage
+from pages.notes_page import NotesPage
 from pages.settings_page import SettingsPage
 from pages.tasks_page import TasksPage
-from pages.notes_page import NotesPage
-from widgets.MenuButton import MenuButton
 from utils.directory_manager import get_icon_dir
+from widgets.MenuButton import MenuButton
 
 
-class Flow(tkinter.Tk):
+class Flow(customtkinter.CTk):
     def __init__(self):
         # Set light mode
         super().__init__()
         customtkinter.set_appearance_mode('light')
         customtkinter.set_default_color_theme('blue')
+        self.icon_dir = f'{get_icon_dir()}{os.sep}'
 
-        # Initialize main window
+        # Initialize window
         self.wm_title('Flow')
         self.geometry("1300x650")
-        self.configure(bg='white')
-        self.app_icon = PhotoImage(file=f'{get_icon_dir()}{os.sep}app_icon.png')
+        self.configure(fg_color='white')
+        self.app_icon = PhotoImage(file=f'{self.icon_dir}app_icon.png')
         self.wm_iconphoto(False, self.app_icon)
 
         # Create frames
@@ -50,7 +50,6 @@ class Flow(tkinter.Tk):
 
         # Load icons
         self.default_icon_size = (22, 22)
-        self.icon_dir = f'{get_icon_dir()}{os.sep}'
         self.check_mark_box_icon = customtkinter.CTkImage(light_image=Image.open(f'{self.icon_dir}check-square.png'),
                                                           size=self.default_icon_size)
         self.book_icon = customtkinter.CTkImage(light_image=Image.open(f'{self.icon_dir}file-text.png'),

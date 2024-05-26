@@ -93,4 +93,5 @@ class Flow(customtkinter.CTk):
 
 if __name__ == '__main__':
     app = Flow()
+    app.createcommand("::tk::mac::Quit", app.on_close)
     app.mainloop()

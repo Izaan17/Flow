@@ -2,10 +2,27 @@
 
 ## TO-DO Manager X Classwork Organizer
 
-### Features
-- Add tasks to organize your workflow.
-- Import tasks from BlackBoard, MyOpenMath, and Achieve.
-- File organizer.
+### Key Features:
+
+#### 1. To-Do List Management:
+
+- Create, edit, and delete tasks.
+- Set due dates and times for tasks. 
+- Categorize tasks by subject or priority.
+- Mark tasks as completed.
+- File Organization:
+
+#### 2. Notifications:
+
+- Receive reminders for upcoming tasks and due dates.
+
+### 3. User-Friendly Interface:
+
+- Intuitive design tailored for students.
+- Easy navigation between tasks and files.
+
+Upload and organize files related to different subjects or projects.
+
 
 ![An Image showcasing flows UI](flow.jpeg)
 
@@ -16,7 +33,7 @@ Setting up Flow is easy! Run the following commands.
 ```shell
 pip install -r requirements.txt
 ```  
-3. Run the file
+3. Run the file.
 ```shell
 python main.py
 ```

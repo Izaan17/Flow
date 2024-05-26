@@ -14,8 +14,8 @@ from widgets.MenuButton import MenuButton
 
 class Flow(customtkinter.CTk):
     def __init__(self):
-        # Set light mode
         super().__init__()
+        # Set light mode
         customtkinter.set_appearance_mode('light')
         customtkinter.set_default_color_theme('blue')
         self.icon_dir = f'{get_icon_dir()}{os.sep}'

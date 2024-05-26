@@ -13,7 +13,6 @@ import utils.system
 from utils import settings
 from utils.string import shorten_text
 from utils.directory_manager import get_icon_dir
-from utils.system import get_file_system_app_name
 from widgets.popups.Popups import ErrorPopup
 
 FOLDER_ICON = customtkinter.CTkImage(Image.open(os.path.join(get_icon_dir(), 'folder.png')), size=(32, 32))
@@ -45,10 +44,10 @@ class PathObjectButton(customtkinter.CTkButton):
         right_click_menu.add_command(label="Rename", command=self._rename)
         right_click_menu.add_command(label="Delete", command=self._delete)
         right_click_menu.add_separator()
-        right_click_menu.add_command(label=f"Reveal in {get_file_system_app_name()}",
+        right_click_menu.add_command(label=f"Reveal in {utils.system.file_system_app_name}",
                                      command=lambda: utils.system.open_file_or_folder(self.path, True))
 
-        self.bind(utils.system.get_button_binding_key(),
+        self.bind(utils.system.right_click_binding_key_code,
                   lambda event: right_click_menu.tk_popup(event.x_root, event.y_root))
 
     def _configure_text(self):

@@ -79,7 +79,7 @@ class CurriculumPage(Page):
                                                 command=lambda: self.clipboard_append(self.current_directory))
 
         self.current_directory_menu.add_separator()
-        self.current_directory_menu.add_command(label=f"Open in {utils.system.get_file_system_app_name()}",
+        self.current_directory_menu.add_command(label=f"Open in {utils.system.file_system_app_name}",
                                                 command=lambda: self.open_file(self.current_directory))
 
         self.current_directory_frame.pack(padx=10, anchor='w')

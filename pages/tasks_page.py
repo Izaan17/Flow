@@ -264,6 +264,15 @@ class TasksPage(Page):
                 new_check_box.task_item_frame.destroy()
                 new_edited_check_box.pack(fill='both', expand=True, pady=(0, 10))
 
+        def duplicate_callback():
+            new_id = self.check_box_manager.load_last_id()
+            new_duped_check_box = TaskCheckBox(self.tasks_scrollable_frame, new_id,
+                                               new_check_box.get_task_source(), new_check_box.get_task_link(),
+                                               new_check_box.get_task_due_date(), text=new_check_box.get_task_name())
+            self.check_box_manager.add_checkbox(new_id, new_duped_check_box.get_checkbox_data())
+            self.init_checkbox(new_duped_check_box)
+            new_duped_check_box.pack(fill='both', expand=True, pady=(0, 10))
+
         def delete_callback():
             if tkinter.messagebox.askyesno("Delete Task",
                                            f"Are you sure you want to delete "
@@ -283,6 +292,7 @@ class TasksPage(Page):
         # Right Click menu
         right_click_menu = tkinter.Menu(tearoff=0)
         right_click_menu.add_command(label="Edit", command=edit_callback)
+        right_click_menu.add_command(label="Duplicate", command=duplicate_callback)
         right_click_menu.add_command(label="Delete", command=delete_callback)
 
         def action_menu(event):

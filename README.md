@@ -1,7 +1,5 @@
 # Flow
 
-## TO-DO Manager X Classwork Organizer
-
 ### Key Features:
 
 #### 1. To-Do List Management:

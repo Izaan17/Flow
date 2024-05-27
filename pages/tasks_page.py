@@ -5,12 +5,12 @@ from tkinter import messagebox
 
 import customtkinter
 import requests
-from PIL import Image
 from tkcalendar import dateentry
 
 import utils.date
 import utils.system
-from utils.directory_manager import get_icon_dir, get_app_dir
+from utils.directory_manager import get_app_dir
+from utils.icon import load_icon
 from utils.online_icalendar import OnlineICalendar
 from utils.settings import settings
 from utils.string import isolate_string
@@ -33,7 +33,7 @@ ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
 
 class TasksPage(Page):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, fg_color='white', page_title="My Tasks")
+        super().__init__(*args, **kwargs, page_title="My Tasks")
 
         self.current_date = datetime.datetime.now().strftime("%m-%d-%Y-%H-%M")
         # Change subheading
@@ -47,19 +47,16 @@ class TasksPage(Page):
 
         self.import_tasks_button = DefaultButton(self.top_buttons_frame, text="Import Tasks",
                                                  command=self.import_tasks_callback,
-                                                 image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'
-                                                                                         f'{os.sep}download.png')))
+                                                 image=load_icon("download.png"))
         self.import_tasks_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.add_task_button = DefaultButton(self.top_buttons_frame, text="Add Task", command=self.add_task_callback,
-                                             image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'
-                                                                                     f'{os.sep}plus-square.png')))
+                                             image=load_icon("plus-square.png"))
         self.add_task_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.clear_all_tasks_button = DefaultButton(self.top_buttons_frame, text="Clear All",
                                                     command=self.clear_tasks_callback,
-                                                    image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}'
-                                                                                            f'{os.sep}trash.png')))
+                                                    image=load_icon("trash.png"))
         self.clear_all_tasks_button.pack(padx=(0, 10))
 
         self.tasks_list_and_info_frame = customtkinter.CTkFrame(self, fg_color='transparent')

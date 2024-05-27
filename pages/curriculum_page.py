@@ -38,11 +38,11 @@ class CurriculumPage(Page):
         self.create_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.add_folder_button = DefaultButton(self.top_buttons_frame, text="Import Folder", command=self.add_folder,
-                                               image=load_icon("folder-plus.png"))
+                                               image=load_icon("folder.png"))
         self.add_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.add_file_button = DefaultButton(self.top_buttons_frame, text="Import File", command=self.add_file,
-                                             image=load_icon("file-plus.png"))
+                                             image=load_icon("file.png"))
         self.add_file_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.set_default_directory_button = DefaultButton(self.top_buttons_frame, text="Set Default",

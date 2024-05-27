@@ -40,7 +40,7 @@ def on_icon_size_change(choice):
 
 class SettingsPage(Page):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, fg_color='white', page_title="Settings",
+        super().__init__(*args, **kwargs, page_title="Settings",
                          subheading="Edit all your settings here.")
 
         self.all_icon_sizes = ["24x24", "50x50", "100x100", "100x125", "125x100", "125x125", "200x200"]

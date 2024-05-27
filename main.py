@@ -2,13 +2,14 @@ import os
 from tkinter import PhotoImage
 
 import customtkinter
-from PIL import Image
 
+import utils.directory_manager
 from pages.curriculum_page import CurriculumPage
 from pages.notes_page import NotesPage
 from pages.settings_page import SettingsPage
 from pages.tasks_page import TasksPage
-from utils.directory_manager import get_icon_dir
+from pages.utilities_page import UtilitiesPage
+from utils.icon import load_icon
 from widgets.MenuButton import MenuButton
 
 
@@ -18,13 +19,12 @@ class Flow(customtkinter.CTk):
         # Set light mode
         customtkinter.set_appearance_mode('light')
         customtkinter.set_default_color_theme('blue')
-        self.icon_dir = f'{get_icon_dir()}{os.sep}'
 
         # Initialize window
         self.wm_title('Flow')
         self.geometry("1300x650")
         self.configure(fg_color='white')
-        self.app_icon = PhotoImage(file=f'{self.icon_dir}app_icon.png')
+        self.app_icon = PhotoImage(file=f'{utils.directory_manager.get_icon_dir()}{os.sep}app_icon.png')
         self.wm_iconphoto(False, self.app_icon)
 
         # Create frames
@@ -43,21 +43,23 @@ class Flow(customtkinter.CTk):
         self.curriculum_page = CurriculumPage(self.content_frame)
         self.settings_page = SettingsPage(self.content_frame)
         self.notes_page = NotesPage(self.content_frame)
+        self.utilities_page = UtilitiesPage(self.content_frame)
 
         # Place all pages in the same area
-        for page in (self.tasks_page, self.curriculum_page, self.settings_page, self.notes_page):
+        for page in (self.tasks_page, self.curriculum_page, self.settings_page, self.notes_page, self.utilities_page):
             page.place(in_=self.content_frame, x=0, y=0, relwidth=1, relheight=1)
 
         # Load icons
         self.default_icon_size = (22, 22)
-        self.check_mark_box_icon = customtkinter.CTkImage(light_image=Image.open(f'{self.icon_dir}check-square.png'),
-                                                          size=self.default_icon_size)
-        self.book_icon = customtkinter.CTkImage(light_image=Image.open(f'{self.icon_dir}file-text.png'),
-                                                size=self.default_icon_size)
-        self.settings_icon = customtkinter.CTkImage(light_image=Image.open(f'{self.icon_dir}settings.png'),
-                                                    size=self.default_icon_size)
-        self.notes_icon = customtkinter.CTkImage(light_image=Image.open(f'{self.icon_dir}edit.png'),
-                                                 size=self.default_icon_size)
+        self.check_mark_box_icon = load_icon("check-square.png", self.default_icon_size)
+
+        self.book_icon = load_icon("file-text.png", self.default_icon_size)
+
+        self.settings_icon = load_icon("settings.png", self.default_icon_size)
+
+        self.notes_icon = load_icon("edit.png", self.default_icon_size)
+
+        self.utilities_icon = load_icon("tool.png", self.default_icon_size)
 
         # Button padding
         self.button_padx = (5, 5)
@@ -75,6 +77,10 @@ class Flow(customtkinter.CTk):
         self.notes_button = MenuButton(self.left_menu_frame, self.notes_icon, "Notes",
                                        command=self.notes_page.show)
         self.notes_button.grid(padx=self.button_padx, pady=self.button_pady, sticky='nsew')
+
+        self.utilities_button = MenuButton(self.left_menu_frame, self.utilities_icon, "Utilities",
+                                           command=self.utilities_page.show)
+        self.utilities_button.grid(padx=self.button_padx, pady=self.button_pady, sticky='nsew')
 
         self.settings_button = MenuButton(self.left_menu_frame, self.settings_icon, "Settings",
                                           command=self.settings_page.show)

@@ -5,10 +5,10 @@ import tkinter.filedialog
 import tkinter.simpledialog
 
 import customtkinter
-from PIL import Image
 
 import utils.system
-from utils.directory_manager import get_icon_dir, get_storage_dir
+from utils.directory_manager import get_storage_dir
+from utils.icon import load_icon
 from utils.settings import settings
 from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
 from widgets.Page import Page
@@ -21,47 +21,41 @@ from widgets.popups.Popups import ErrorPopup, SuccessPopup
 
 class CurriculumPage(Page):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, fg_color='white', page_title="Curriculum",
+        super().__init__(*args, **kwargs, page_title="Curriculum",
                          subheading="Store all of your course work here.")
 
         self.top_buttons_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.top_buttons_frame.pack(padx=10, pady=(0, 5), side='top', anchor='nw')
 
         self.home_button = DefaultButton(self.top_buttons_frame, text="Home",
-                                         image=customtkinter.CTkImage(Image.open(f'{get_icon_dir()}{os.sep}home.png')),
+                                         image=load_icon("home.png"),
                                          command=self.go_home)
         self.home_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.create_folder_button = DefaultButton(self.top_buttons_frame, text="New Folder",
                                                   command=self.create_folder,
-                                                  image=customtkinter.CTkImage(
-                                                      Image.open(f'{get_icon_dir()}{os.sep}folder-plus.png')))
+                                                  image=load_icon("folder-plus.png"))
         self.create_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.add_folder_button = DefaultButton(self.top_buttons_frame, text="Import Folder", command=self.add_folder,
-                                               image=customtkinter.CTkImage(
-                                                   Image.open(f'{get_icon_dir()}{os.sep}folder-plus.png')))
+                                               image=load_icon("folder-plus.png"))
         self.add_folder_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.add_file_button = DefaultButton(self.top_buttons_frame, text="Import File", command=self.add_file,
-                                             image=customtkinter.CTkImage(
-                                                 Image.open(f'{get_icon_dir()}{os.sep}file-plus.png')))
+                                             image=load_icon("file-plus.png"))
         self.add_file_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.set_default_directory_button = DefaultButton(self.top_buttons_frame, text="Set Default",
-                                                          image=customtkinter.CTkImage(
-                                                              Image.open(f'{get_icon_dir()}{os.sep}bookmark.png')),
+                                                          image=load_icon("bookmark.png"),
                                                           command=self.set_default_dir)
         self.set_default_directory_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.refresh_grid_button = DefaultButton(self.top_buttons_frame, text="Refresh", command=self.refresh_grid,
-                                                 image=customtkinter.CTkImage(
-                                                     Image.open(f'{get_icon_dir()}{os.sep}rotate-ccw.png')))
+                                                 image=load_icon("rotate-ccw.png"))
         self.refresh_grid_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.back_button = DefaultButton(self.top_buttons_frame, text="Back", command=self.go_back,
-                                         image=customtkinter.CTkImage(
-                                             Image.open(f'{get_icon_dir()}{os.sep}arrow-left.png')))
+                                         image=load_icon("arrow-left.png"))
         self.back_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.current_directory = settings.get_setting("default_dir", get_storage_dir())

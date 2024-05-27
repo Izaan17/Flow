@@ -57,7 +57,11 @@ class TasksPage(Page):
         self.clear_all_tasks_button = DefaultButton(self.top_buttons_frame, text="Clear All",
                                                     command=self.clear_tasks_callback,
                                                     image=load_icon("trash.png"))
-        self.clear_all_tasks_button.pack(padx=(0, 10))
+        self.clear_all_tasks_button.pack(side='left', padx=(0, 10))
+
+        self.task_count_label = DefaultButton(self.top_buttons_frame, text=f"Count: N/A", state=customtkinter.DISABLED,
+                                              height=50, text_color_disabled="white")
+        self.task_count_label.pack(side='left', padx=(0, 10))
 
         self.tasks_list_and_info_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.tasks_list_and_info_frame.pack(fill='both', expand=True)
@@ -76,6 +80,7 @@ class TasksPage(Page):
 
         # Load checkboxes threaded
         self.after(0, self.load_saved_checkboxes)
+        self.update_count_label()
 
     def add_task_callback(self):
         task_popup_form = PopupForm(self, fg_color='white')
@@ -474,3 +479,7 @@ class TasksPage(Page):
             check_box.pack(fill='both', expand=True, pady=(0, 10))
 
         self.load_popup.slide_up()
+
+    def update_count_label(self):
+        self.task_count_label.configure(text=f"Count: {len(self.check_box_manager.check_boxes_data)}")
+        self.after(1, self.update_count_label)

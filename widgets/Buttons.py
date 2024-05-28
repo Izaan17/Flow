@@ -12,10 +12,10 @@ from PIL import Image
 import utils.system
 from utils import settings
 from utils.string_utils import shorten_text
-from utils.directory_manager import get_icon_dir
 from widgets.popups.Popups import ErrorPopup
+from utils.icon import load_icon
 
-FOLDER_ICON = customtkinter.CTkImage(Image.open(os.path.join(get_icon_dir(), 'folder.png')), size=(32, 32))
+FOLDER_ICON = load_icon("folder.png", size=(32, 32))
 
 
 class DefaultButton(customtkinter.CTkButton):
@@ -27,8 +27,8 @@ class DefaultButton(customtkinter.CTkButton):
 class PathObjectButton(customtkinter.CTkButton):
     def __init__(self, master: Any, path: str, refresh_grid_func, **kwargs):
         super().__init__(master, **kwargs,
-                         image=customtkinter.CTkImage(light_image=Image.open(os.path.join(get_icon_dir(), "file.png")),
-                                                      size=(32, 32)), fg_color='#D3D3D3', hover_color='#BFBFBF',
+                         image=load_icon("file.png",
+                                         size=(32, 32)), fg_color='#D3D3D3', hover_color='#BFBFBF',
                          text_color='black', compound='top', corner_radius=5)
         self.path = path
         self.item_name = os.path.basename(path)
@@ -116,3 +116,17 @@ class FileObjectButton(PathObjectButton):
         preview_image = self._load_image(path, icon_size)
         if preview_image:
             self.configure(image=preview_image)
+
+
+class NotesFolderObjectButton(customtkinter.CTkButton):
+    def __init__(self, master: Any, path: str, **kwargs):
+        super().__init__(master, **kwargs, image=load_icon("folder.png", (15, 15)))
+        self.path = path
+
+        self.action_menu = tkinter.Menu(self, tearoff=0)
+
+        self.bind(utils.system.right_click_binding_key_code,
+                  lambda event: self.action_menu.tk_popup(event.x_root, event.y_root))
+
+    def get_note_paths(self):
+        return [os.path.join(self.path, note_path) for note_path in os.listdir(self.path) if note_path.endswith('.json')]

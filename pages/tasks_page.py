@@ -323,7 +323,7 @@ class TasksPage(Page):
         utils.widget_utils.bind_all(new_check_box.master, utils.system.right_click_binding_key_code, action_menu)
 
         # Assign opening details menu to left click
-        utils.widget_utils.bind_all(new_check_box.master, "<Button-1>", display_details)
+        utils.widget_utils.bind_all(new_check_box.master, "<Double Button-1>", display_details)
 
     def clear_info_frame(self):
         # Clear details frame

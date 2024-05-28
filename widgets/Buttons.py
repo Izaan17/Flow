@@ -11,7 +11,7 @@ from PIL import Image
 
 import utils.system
 from utils import settings
-from utils.string import shorten_text
+from utils.string_utils import shorten_text
 from utils.directory_manager import get_icon_dir
 from widgets.popups.Popups import ErrorPopup
 
@@ -69,6 +69,7 @@ class PathObjectButton(customtkinter.CTkButton):
                     os.remove(self.path)
 
                 self.destroy()
+                self.refresh_grid_func()
             except Exception as e:
                 ErrorPopup(self.master, str(e))
 

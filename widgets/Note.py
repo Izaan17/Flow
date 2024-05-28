@@ -1,7 +1,7 @@
 from typing import Any
 
 import utils.widget_utils
-from widget_data.notes.note import Note
+from widget_data.note import Note
 
 import customtkinter
 

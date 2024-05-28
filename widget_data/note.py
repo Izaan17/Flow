@@ -21,7 +21,6 @@ class Note:
         return Note(
             data["title"],
             data["content"],
-            data["note_id"],
             datetime.datetime.fromisoformat(data["date_created"]),
             datetime.datetime.fromisoformat(data["date_modified"])
         )

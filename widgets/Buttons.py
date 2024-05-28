@@ -116,17 +116,3 @@ class FileObjectButton(PathObjectButton):
         preview_image = self._load_image(path, icon_size)
         if preview_image:
             self.configure(image=preview_image)
-
-
-class NotesFolderObjectButton(customtkinter.CTkButton):
-    def __init__(self, master: Any, path: str, **kwargs):
-        super().__init__(master, **kwargs, image=load_icon("folder.png", (15, 15)))
-        self.path = path
-
-        self.action_menu = tkinter.Menu(self, tearoff=0)
-
-        self.bind(utils.system.right_click_binding_key_code,
-                  lambda event: self.action_menu.tk_popup(event.x_root, event.y_root))
-
-    def get_note_paths(self):
-        return [os.path.join(self.path, note_path) for note_path in os.listdir(self.path) if note_path.endswith('.json')]

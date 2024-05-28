@@ -125,6 +125,12 @@ class CurriculumPage(Page):
                 row += 1
                 column = 0
 
+        # Configure the grid to expand
+        for r in range(row + 1):  # +1 to account for zero-based indexing
+            self.content_scrollable_frame.grid_rowconfigure(r, weight=1)
+        for c in range(max_items_per_row):
+            self.content_scrollable_frame.grid_columnconfigure(c, weight=1)
+
         self.back_button.configure(state=customtkinter.NORMAL if self.back_stack else customtkinter.DISABLED)
 
     def go_back(self):

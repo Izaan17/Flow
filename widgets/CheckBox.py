@@ -6,7 +6,7 @@ import customtkinter
 from utils.date import days_between_dates, parse_days_difference, get_time_suffix_string
 from widget_data.CheckBoxData import CheckBoxData
 from widgets.HyperLink import HyperLink
-from utils.string import shorten_text
+from utils.string_utils import shorten_text
 from utils.system import notify
 
 

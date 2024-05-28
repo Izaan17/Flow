@@ -7,6 +7,7 @@ import tkinter.simpledialog
 import customtkinter
 
 import utils.system
+import utils.widget_utils
 from utils.directory_manager import get_storage_dir
 from utils.icon import load_icon
 from utils.settings import settings
@@ -67,15 +68,6 @@ class CurriculumPage(Page):
                                                               textvariable=self.current_directory_var,
                                                               font=('Roboto', 14))
 
-        self.current_directory_label.bind("<Button-2>", self.show_directory_menu)
-        self.current_directory_menu = tkinter.Menu(self.current_directory_frame)
-        self.current_directory_menu.add_command(label="Copy Directory",
-                                                command=lambda: self.clipboard_append(self.current_directory))
-
-        self.current_directory_menu.add_separator()
-        self.current_directory_menu.add_command(label=f"Open in {utils.system.file_system_app_name}",
-                                                command=lambda: self.open_file(self.current_directory))
-
         self.current_directory_frame.pack(padx=10, anchor='w')
         self.current_directory_label.pack(padx=10, anchor='w')
 
@@ -83,13 +75,30 @@ class CurriculumPage(Page):
                                                                          scrollbar_button_color='white')
         self.content_scrollable_frame.pack(fill='both', expand=True, padx=5, pady=3)
 
+        # Load icons on first startup
         self.refresh_grid()
+
+        # Right click menu
+        self.right_click_menu = tkinter.Menu(tearoff=0)
+        self.right_click_menu.add_command(label="New Folder", command=self.create_folder)
+        self.right_click_menu.add_command(label="Import Folder", command=self.add_folder)
+        self.right_click_menu.add_command(label="Import File", command=self.add_file)
+        self.right_click_menu.add_separator()
+        self.right_click_menu.add_command(label="Copy Directory",
+                                          command=lambda: self.clipboard_append(self.current_directory))
+        self.right_click_menu.add_command(label="Set Default", command=self.set_default_dir)
+        self.right_click_menu.add_command(label=f"Open in {utils.system.file_system_app_name}",
+                                          command=lambda: self.open_file(self.current_directory))
+        self.right_click_menu.add_separator()
+        self.right_click_menu.add_command(label="Refresh", command=self.refresh_grid)
+
+        self.content_scrollable_frame.master.bind(utils.system.right_click_binding_key_code, self.show_directory_menu)
 
     def show_directory_menu(self, event):
         try:
-            self.current_directory_menu.tk_popup(event.x_root, event.y_root)
+            self.right_click_menu.tk_popup(event.x_root, event.y_root)
         finally:
-            self.current_directory_menu.grab_release()
+            self.right_click_menu.grab_release()
 
     def open_file(self, file):
         if utils.system.open_file_or_folder(file) != 0:

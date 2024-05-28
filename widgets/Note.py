@@ -6,6 +6,8 @@ from widget_data.notes.note import Note
 import customtkinter
 
 
+# Todo: Add label for folder containing note
+
 class NoteWidget(customtkinter.CTkFrame):
     def __init__(self, master: Any, note: Note, **kwargs):
         super().__init__(master, **kwargs, width=200, height=200, fg_color='transparent')

@@ -9,11 +9,12 @@ from tkcalendar import dateentry
 
 import utils.date
 import utils.system
+import utils.widget_utils
 from utils.directory_manager import get_app_dir
 from utils.icon import load_icon
 from utils.online_icalendar import OnlineICalendar
 from utils.settings import settings
-from utils.string import isolate_string
+from utils.string_utils import isolate_string
 from widgets.Buttons import DefaultButton
 from widgets.CheckBox import TaskCheckBox
 from widgets.CheckBoxManager import CheckBoxManager
@@ -319,14 +320,10 @@ class TasksPage(Page):
         new_check_box.due_date_label.configure(wraplength=default_wrap_length, justify=default_justification)
 
         # Assign action menu opening to right click
-        new_check_box.bind(utils.system.right_click_binding_key_code, action_menu)
-        new_check_box.task_item_frame.bind(utils.system.right_click_binding_key_code, action_menu)
-        new_check_box.task_info_frame.bind(utils.system.right_click_binding_key_code, action_menu)
+        utils.widget_utils.bind_all(new_check_box.master, utils.system.right_click_binding_key_code, action_menu)
 
         # Assign opening details menu to left click
-        new_check_box.task_item_frame.bind("<Button-1>", display_details)
-        new_check_box.task_info_frame.bind("<Button-1>", display_details)
-        new_check_box.bind("<Button-1>", display_details)
+        utils.widget_utils.bind_all(new_check_box.master, "<Button-1>", display_details)
 
     def clear_info_frame(self):
         # Clear details frame

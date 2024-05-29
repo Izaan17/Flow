@@ -60,9 +60,9 @@ class TasksPage(Page):
                                                     image=load_icon("trash.png"))
         self.clear_all_tasks_button.pack(side='left', padx=(0, 10))
 
-        self.task_count_label = DefaultButton(self.top_buttons_frame, text=f"Count: N/A", state=customtkinter.DISABLED,
-                                              height=50, text_color_disabled="white")
-        self.task_count_label.pack(side='left', padx=(0, 10))
+        self.task_count_label = customtkinter.CTkLabel(self.top_buttons_frame, text=f"Count: N/A",
+                                                       height=50)
+        self.task_count_label.pack(padx=(775, 10), anchor='e')
 
         self.tasks_list_and_info_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.tasks_list_and_info_frame.pack(fill='both', expand=True)

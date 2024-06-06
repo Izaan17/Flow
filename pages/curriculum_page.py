@@ -116,6 +116,7 @@ class CurriculumPage(Page):
     def refresh_grid(self):
         self.clear_grid()
         files = os.listdir(self.current_directory)
+        files.sort()
         row, column = 0, 0
         max_items_per_row = int(settings.get_setting("max_items_per_row", 5))
 

@@ -127,6 +127,10 @@ class CurriculumPage(Page):
                 button.bind("<Double-Button-1>", lambda event, path=file_path: self.open_directory(path))
             else:
                 button = FileObjectButton(self.content_scrollable_frame, file_path, self.refresh_grid)
+                if button.item_name == '.DS_Store':
+                    button.destroy()
+                    continue
+
                 button.bind("<Double-Button-1>", lambda event, path=file_path: self.open_file(path))
 
             button.grid(row=row, column=column, padx=(0, 10), pady=10, sticky="nsew")

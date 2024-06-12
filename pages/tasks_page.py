@@ -18,6 +18,7 @@ from utils.string_utils import isolate_string
 from widgets.Buttons import DefaultButton
 from widgets.CheckBox import TaskCheckBox
 from widgets.CheckBoxManager import CheckBoxManager
+from widgets.Entry import DefaultEntry
 from widgets.HyperLink import HyperLink
 from widgets.Page import Page
 from widgets.popups.PopupForm import PopupForm
@@ -90,12 +91,12 @@ class TasksPage(Page):
         task_entries_frame = customtkinter.CTkFrame(task_popup_form)
         task_entries_frame.pack(fill='both', expand=True, padx=10, pady=10)
 
-        task_name_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Task Name')
+        task_name_entry = DefaultEntry(task_entries_frame, placeholder_text='Task Name')
         task_source_entry = customtkinter.CTkComboBox(task_entries_frame,
                                                       values=ALL_TASK_SOURCES)
-        task_link_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Task Link')
-        hour_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Hour')
-        minute_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Minutes')
+        task_link_entry = DefaultEntry(task_entries_frame, placeholder_text='Task Link')
+        hour_entry = DefaultEntry(task_entries_frame, placeholder_text='Hour')
+        minute_entry = DefaultEntry(task_entries_frame, placeholder_text='Minutes')
 
         due_date_calendar = dateentry.Calendar(task_entries_frame)
         due_date_calendar.pack(padx=10, pady=10)
@@ -211,20 +212,20 @@ class TasksPage(Page):
             task_entries_frame = customtkinter.CTkFrame(edit_task_form)
             task_entries_frame.pack(fill='both', expand=True, padx=10, pady=10)
 
-            task_name_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Task Name')
+            task_name_entry = DefaultEntry(task_entries_frame, placeholder_text='Task Name')
             task_name_entry.insert(0, new_check_box.get_task_name())
             task_source_entry = customtkinter.CTkComboBox(task_entries_frame,
                                                           values=ALL_TASK_SOURCES)
             task_source_entry.set(new_check_box.get_task_source())
-            task_link_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Task Link')
+            task_link_entry = DefaultEntry(task_entries_frame, placeholder_text='Task Link')
             task_link_entry.insert(0, new_check_box.get_task_link())
 
             task_date = new_check_box.get_task_due_date().split("-")
             task_hour = task_date[3]
             task_minute = task_date[4]
-            hour_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Hour')
+            hour_entry = DefaultEntry(task_entries_frame, placeholder_text='Hour')
             hour_entry.insert(0, task_hour)
-            minute_entry = customtkinter.CTkEntry(task_entries_frame, placeholder_text='Minutes')
+            minute_entry = DefaultEntry(task_entries_frame, placeholder_text='Minutes')
             minute_entry.insert(0, task_minute)
 
             due_date_calendar = dateentry.Calendar(task_entries_frame)
@@ -351,8 +352,8 @@ class TasksPage(Page):
                                                      font=('Roboto', 14))
         icalendar_url_label.pack(anchor='w', padx=12)
 
-        icalendar_url_entry = customtkinter.CTkEntry(ical_section, width=550,
-                                                     placeholder_text='iCalendar URL')
+        icalendar_url_entry = DefaultEntry(ical_section, width=550,
+                                           placeholder_text='iCalendar URL')
         icalendar_url_entry.pack(anchor='w', padx=10, pady=(5, 10))
         # Set the url from the settings
         icalendar_url_entry.insert(0, settings.get_setting("ical_url", ""))
@@ -388,7 +389,11 @@ class TasksPage(Page):
                 child.destroy()
             try:
                 online_icalendar = OnlineICalendar(icalendar_url_entry.get())
-                for event in online_icalendar.get_events():
+                done = 0
+                events = online_icalendar.get_events()
+                length = len(events)
+                for event in events:
+                    print(f'[{done}/{length}]')
                     task_name = event.get("SUMMARY")
                     task_due_date: datetime.datetime = event.get("DTEND").dt
                     task_due_date_str = task_due_date.strftime("%m-%d-%Y-%H-%M")
@@ -398,6 +403,8 @@ class TasksPage(Page):
                     new_ical_task.pack(anchor='w')
                     # Add to list
                     loaded_tasks.append(new_ical_task)
+                    done += 1
+                    SuccessPopup(new_top_level, f"{done}/{length}")
             except requests.HTTPError as request_error:
                 ErrorPopup(new_top_level, f"{request_error}")
             except Exception as error:

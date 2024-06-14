@@ -99,13 +99,13 @@ class TasksPage(Page):
         minute_entry = DefaultEntry(task_entries_frame, placeholder_text='Minutes')
 
         due_date_calendar = dateentry.Calendar(task_entries_frame)
-        due_date_calendar.pack(padx=10, pady=10)
+        due_date_calendar.pack(padx=10, pady=15)
 
-        task_name_entry.pack(padx=20, pady=10, )
+        task_name_entry.pack(padx=20, pady=15, )
         task_source_entry.pack(padx=20, pady=10, )
         task_link_entry.pack(padx=20, pady=10, )
-        hour_entry.pack(padx=20, pady=10)
-        minute_entry.pack(padx=20, pady=10)
+        hour_entry.pack(padx=20, pady=15)
+        minute_entry.pack(padx=20, pady=15)
 
         task_popup_form.add_widget(task_name_entry, [NonEmptyValidator()])
         task_popup_form.add_widget(task_source_entry)
@@ -232,11 +232,11 @@ class TasksPage(Page):
             due_date_calendar.pack(padx=10, pady=10)
             due_date_calendar.selection_set(new_check_box.get_task_due_date())
 
-            task_name_entry.pack(padx=20, pady=10, )
+            task_name_entry.pack(padx=20, pady=15, )
             task_source_entry.pack(padx=20, pady=10, )
-            task_link_entry.pack(padx=20, pady=10, )
-            hour_entry.pack(padx=20, pady=10)
-            minute_entry.pack(padx=20, pady=10)
+            task_link_entry.pack(padx=20, pady=15, )
+            hour_entry.pack(padx=20, pady=15)
+            minute_entry.pack(padx=20, pady=15)
 
             edit_task_form.add_widget(task_name_entry, [NonEmptyValidator()])
             edit_task_form.add_widget(task_source_entry)
@@ -487,3 +487,12 @@ class TasksPage(Page):
     def update_count_label(self):
         self.task_count_label.configure(text=f"Count: {len(self.check_box_manager.check_boxes_data)}")
         self.after(1, self.update_count_label)
+
+
+if __name__ == '__main__':
+    app = customtkinter.CTk()
+
+    page = TasksPage(app)
+    page.pack(expand=True, fill='both')
+
+    app.mainloop()

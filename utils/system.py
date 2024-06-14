@@ -35,4 +35,3 @@ def notify(title, message):
                   """)
     elif os.name == "nt":
         ctypes.windll.user32.MessageBoxW(0, message, title, 0x40 | 0x1)
-

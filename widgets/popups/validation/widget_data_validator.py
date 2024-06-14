@@ -78,7 +78,8 @@ class NumericValidator(BaseValidator):
             return False
 
         num_value = int(widget_value)
-        if (self.min_value is not None and num_value < self.min_value) or (self.max_value is not None and num_value > self.max_value):
+        if ((self.min_value is not None and num_value < self.min_value) or
+                (self.max_value is not None and num_value > self.max_value)):
             self.indicate_error(widget, f"Value must be between {self.min_value} - {self.max_value}.")
             return False
 

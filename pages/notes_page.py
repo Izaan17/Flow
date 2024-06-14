@@ -20,3 +20,12 @@ class NotesPage(Page):
 
         self.note_widgets_scrollable_frame = customtkinter.CTkScrollableFrame(self.notes_page_frame, fg_color='white')
         self.note_widgets_scrollable_frame.pack(expand=True, fill='both', side='right')
+
+
+if __name__ == '__main__':
+    app = customtkinter.CTk()
+
+    page = NotesPage(app)
+    page.pack(expand=True, fill='both')
+
+    app.mainloop()

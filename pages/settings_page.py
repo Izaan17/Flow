@@ -71,3 +71,12 @@ class SettingsPage(Page):
         self.icon_size_drop_down.pack(anchor='w')
         self.icon_size_drop_down.set(
             f"{settings.get_setting('icon_width', 50)}x{settings.get_setting('icon_height', 50)}")
+
+
+if __name__ == '__main__':
+    app = customtkinter.CTk()
+
+    page = SettingsPage(app)
+    page.pack(expand=True, fill='both')
+
+    app.mainloop()

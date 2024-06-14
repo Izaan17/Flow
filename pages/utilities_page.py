@@ -44,7 +44,8 @@ class UtilitiesPage(Page):
                                              command=self.simulate_grade)
         self.simulate_button.pack(pady=10)
 
-        self.simulation_result = customtkinter.CTkLabel(self.final_grade_simulator_section, text="")
+        self.simulation_result = customtkinter.CTkLabel(self.final_grade_simulator_section, text="",
+                                                        font=('Roboto', 16))
 
         self.main_frame.pack(expand=True, fill='both', padx=5, pady=5)
 

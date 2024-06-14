@@ -15,7 +15,9 @@ from utils.string_utils import shorten_text
 from widgets.popups.Popups import ErrorPopup
 from utils.icon import load_icon
 
-FOLDER_ICON = load_icon("folder.png", size=(32, 32))
+ICON_SIZE = (36, 36)
+FOLDER_ICON = load_icon("folder.png", size=ICON_SIZE)
+FILE_ICON = load_icon("file.png", size=ICON_SIZE)
 
 
 class DefaultButton(customtkinter.CTkButton):
@@ -27,8 +29,7 @@ class DefaultButton(customtkinter.CTkButton):
 class PathObjectButton(customtkinter.CTkButton):
     def __init__(self, master: Any, path: str, refresh_grid_func, **kwargs):
         super().__init__(master, **kwargs,
-                         image=load_icon("file.png",
-                                         size=(32, 32)), fg_color='#D3D3D3', hover_color='#BFBFBF',
+                         image=FILE_ICON, fg_color='#D3D3D3', hover_color='#BFBFBF',
                          text_color='black', compound='top', corner_radius=5)
         self.path = path
         self.item_name = os.path.basename(path)

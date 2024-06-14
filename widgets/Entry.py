@@ -1,13 +1,15 @@
 import tkinter
 from typing import Any
 import utils
+from widgets.popups.validation.widget_data_validator import BaseValidator
 
 import customtkinter
 
 
 class DefaultEntry(customtkinter.CTkEntry):
-    def __init__(self, master: Any, **kwargs):
+    def __init__(self, master: Any, validators: None | list[BaseValidator] = None, **kwargs):
         super().__init__(master, **kwargs)
+        self.validators = validators
         self.right_click_menu = tkinter.Menu(self, tearoff=0)
         self.right_click_menu.add_command(label="Cut", command=self._cut_text)
         self.right_click_menu.add_command(label="Copy", command=self._copy_text)
@@ -41,7 +43,6 @@ class DefaultEntry(customtkinter.CTkEntry):
             self.insert(0, text)
 
     def on_key_press(self, event):
-        print(event.keysym)
         if event.keysym not in [utils.system.undo_button_name, utils.system.redo_button_name, "z", "y"]:
             self.undo_stack.append(self.get())
             self.redo_stack.clear()
@@ -78,3 +79,12 @@ class DefaultEntry(customtkinter.CTkEntry):
         except tkinter.TclError:
             # Catch any errors in case the menu item labels are not found
             pass
+
+    def validated_get(self):
+        if not self.validators:
+            return self.get()
+
+        for validator in self.validators:
+            if not validator.validate(self):
+                return False
+        return self.get()

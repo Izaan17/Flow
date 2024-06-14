@@ -1,9 +1,9 @@
 from typing import Any
+
 from widgets.popups.validation.widget_data_validator import NumericValidator
 from widgets.UtilitySection import UtilitySection
 from widgets.Entry import DefaultEntry
 from widgets.Buttons import DefaultButton
-from utils.icon import load_icon
 from widgets.Page import Page
 import customtkinter
 
@@ -14,30 +14,31 @@ class UtilitiesPage(Page):
 
         self.main_frame = customtkinter.CTkFrame(self, fg_color='transparent')
 
-        self.grade_calculator_page_section = UtilitySection(self.main_frame, "Grade Calculator",
-                                                            icon=load_icon('file-text.png', (35, 35)))
-        self.grade_calculator_page_section.pack(side='left', expand=True, fill='both')
-
         self.final_grade_simulator_section = UtilitySection(self.main_frame, section_title="Final Grade Simulator",
-                                                            section_subtitle="Use this tool to find out the grade "
-                                                                             "needed on the final exam in order to "
-                                                                             "get a desired grade in a course.")
+                                                            section_subtitle="Use this tool to find the grade "
+                                                                             "needed on the final exam to "
+                                                                             "get a desired grade in a course.",
+                                                            fg_color='transparent')
         self.final_grade_simulator_section.pack(side='right', expand=True, fill='both')
 
         self.entries_grid = customtkinter.CTkFrame(self.final_grade_simulator_section, fg_color='transparent')
-        self.entries_grid.pack(pady=20)
+        self.entries_grid.pack(pady=25)
+        entry_size = 115
 
         self.current_grade_entry = DefaultEntry(self.entries_grid, placeholder_text="Current Grade",
-                                                validators=[NumericValidator(0, 100)])
-        self.current_grade_entry.grid(row=0, column=0, padx=5, pady=5)
+                                                validators=[NumericValidator(0, 100)],
+                                                width=entry_size)
+        self.current_grade_entry.pack(side='left', padx=25, pady=5)
 
         self.desired_grade_entry = DefaultEntry(self.entries_grid, placeholder_text="Desired Grade",
-                                                validators=[NumericValidator(0, 100)])
-        self.desired_grade_entry.grid(row=0, column=1, padx=5, pady=5)
+                                                validators=[NumericValidator(0, 100)],
+                                                width=entry_size)
+        self.desired_grade_entry.pack(side='left', padx=25, pady=5)
 
         self.final_exam_weight_entry = DefaultEntry(self.entries_grid, placeholder_text="Final Weight",
-                                                    validators=[NumericValidator(0, 100)])
-        self.final_exam_weight_entry.grid(row=0, column=2, padx=5, pady=5)
+                                                    validators=[NumericValidator(0, 100)],
+                                                    width=entry_size)
+        self.final_exam_weight_entry.pack(side='left', padx=25, pady=5)
 
         self.simulate_button = DefaultButton(self.final_grade_simulator_section, text="Simulate",
                                              command=self.simulate_grade)
@@ -45,7 +46,7 @@ class UtilitiesPage(Page):
 
         self.simulation_result = customtkinter.CTkLabel(self.final_grade_simulator_section, text="")
 
-        self.main_frame.pack(expand=True, fill='both')
+        self.main_frame.pack(expand=True, fill='both', padx=5, pady=5)
 
     def simulate_grade(self):
         current_grade = int(self.current_grade_entry.validated_get())

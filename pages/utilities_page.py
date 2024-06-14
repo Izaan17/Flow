@@ -28,15 +28,15 @@ class UtilitiesPage(Page):
         self.entries_grid.pack(pady=20)
 
         self.current_grade_entry = DefaultEntry(self.entries_grid, placeholder_text="Current Grade",
-                                                validators=[NumericValidator()])
+                                                validators=[NumericValidator(0, 100)])
         self.current_grade_entry.grid(row=0, column=0, padx=5, pady=5)
 
         self.desired_grade_entry = DefaultEntry(self.entries_grid, placeholder_text="Desired Grade",
-                                                validators=[NumericValidator()])
+                                                validators=[NumericValidator(0, 100)])
         self.desired_grade_entry.grid(row=0, column=1, padx=5, pady=5)
 
         self.final_exam_weight_entry = DefaultEntry(self.entries_grid, placeholder_text="Final Weight",
-                                                    validators=[NumericValidator()])
+                                                    validators=[NumericValidator(0, 100)])
         self.final_exam_weight_entry.grid(row=0, column=2, padx=5, pady=5)
 
         self.simulate_button = DefaultButton(self.final_grade_simulator_section, text="Simulate",
@@ -44,7 +44,6 @@ class UtilitiesPage(Page):
         self.simulate_button.pack(pady=10)
 
         self.simulation_result = customtkinter.CTkLabel(self.final_grade_simulator_section, text="")
-        self.simulation_result.pack()
 
         self.main_frame.pack(expand=True, fill='both')
 
@@ -58,9 +57,11 @@ class UtilitiesPage(Page):
 
             # Calculate the grade needed on the final exam
             needed_final_exam_grade = (desired_grade - current_grade * (1 - final_exam_weight)) / final_exam_weight
-
+            self.simulation_result.pack()
             self.simulation_result.configure(text=f"You need to get a grade of {needed_final_exam_grade:.2f} or "
                                                   f"higher on your final.")
+        else:
+            self.simulation_result.pack_forget()
 
 
 if __name__ == "__main__":

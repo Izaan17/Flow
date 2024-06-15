@@ -10,7 +10,7 @@ class Page(customtkinter.CTkFrame):
         self.page_title = customtkinter.CTkLabel(self, text=page_title, font=('Roboto', 36, 'bold'))
         self.page_title.pack(padx=10, pady=(50, 0), side='top', anchor='nw')
 
-        self.subheading = customtkinter.CTkLabel(self, text=subheading, font=('Roboto', 18))
+        self.subheading = customtkinter.CTkLabel(self, text=subheading, font=('Roboto', 18), text_color='#9C9C9E')
         self.subheading.pack(padx=10, pady=(0, 10), anchor='w')
 
     def show(self):

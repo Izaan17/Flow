@@ -9,5 +9,5 @@ class UtilitySection(customtkinter.CTkFrame):
                                                     compound='left')
         self.section_title.pack()
         self.section_subtitle = customtkinter.CTkLabel(self, text=section_subtitle,
-                                                       font=('Roboto', 16))
+                                                       font=('Roboto', 16), text_color='#9C9C9E')
         self.section_subtitle.pack()

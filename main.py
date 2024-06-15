@@ -50,16 +50,15 @@ class Flow(customtkinter.CTk):
             page.place(in_=self.content_frame, x=0, y=0, relwidth=1, relheight=1)
 
         # Load icons
-        self.default_icon_size = (22, 22)
-        self.check_mark_box_icon = load_icon("check-square.png", self.default_icon_size)
+        self.check_mark_box_icon = load_icon("check-square.png")
 
-        self.book_icon = load_icon("file-text.png", self.default_icon_size)
+        self.book_icon = load_icon("file-text.png")
 
-        self.settings_icon = load_icon("settings.png", self.default_icon_size)
+        self.settings_icon = load_icon("settings.png")
 
-        self.notes_icon = load_icon("edit.png", self.default_icon_size)
+        self.notes_icon = load_icon("edit.png")
 
-        self.utilities_icon = load_icon("tool.png", self.default_icon_size)
+        self.utilities_icon = load_icon("tool.png")
 
         # Button padding
         self.button_padx = (5, 5)

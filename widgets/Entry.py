@@ -62,11 +62,7 @@ class DefaultEntry(customtkinter.CTkEntry):
 
     def _paste_text(self):
         self.delete(0, tkinter.END)
-        try:
-            clip_board_contents = self.clipboard_get()
-        except tkinter.TclError:
-            clip_board_contents = ""
-        self.insert(0, clip_board_contents)
+        self.insert(0, self.clipboard_get())
 
     def _select_all(self):
         self.focus_set()

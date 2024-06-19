@@ -66,18 +66,21 @@ class NonEmptyValidator(BaseValidator):
 
 
 class NumericValidator(BaseValidator):
-    def __init__(self, min_value=None, max_value=None):
+    def __init__(self, type_: [int | float] = int, min_value=None, max_value=None):
         super().__init__()
         self.min_value = min_value
         self.max_value = max_value
+        self.type = type_
 
     def validate(self, widget) -> bool:
         widget_value = widget.get()
-        if not widget_value.isdigit():
+        try:
+            self.type(widget_value)
+        except ValueError:
             self.indicate_error(widget, "Value must be an integer.")
             return False
 
-        num_value = int(widget_value)
+        num_value = self.type(widget_value)
         if ((self.min_value is not None and num_value < self.min_value) or
                 (self.max_value is not None and num_value > self.max_value)):
             self.indicate_error(widget, f"Value must be between {self.min_value} - {self.max_value}.")
@@ -91,9 +94,11 @@ class NumericValidator(BaseValidator):
 if __name__ == "__main__":
     app = customtkinter.CTk()
 
+
     def on_validate():
         non_empty_validator.validate(entry1)
         numeric_validator.validate(entry2)
+
 
     entry1 = customtkinter.CTkEntry(app, placeholder_text="Non-empty")
     entry1.pack(pady=10)

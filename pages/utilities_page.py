@@ -26,17 +26,17 @@ class UtilitiesPage(Page):
         entry_size = 115
 
         self.current_grade_entry = DefaultEntry(self.entries_grid, placeholder_text="Current Grade",
-                                                validators=[NumericValidator(0, 100)],
+                                                validators=[NumericValidator(float, 0, 100)],
                                                 width=entry_size)
         self.current_grade_entry.pack(side='left', padx=25, pady=5)
 
         self.desired_grade_entry = DefaultEntry(self.entries_grid, placeholder_text="Desired Grade",
-                                                validators=[NumericValidator(0, 100)],
+                                                validators=[NumericValidator(float, 0, 100)],
                                                 width=entry_size)
         self.desired_grade_entry.pack(side='left', padx=25, pady=5)
 
         self.final_exam_weight_entry = DefaultEntry(self.entries_grid, placeholder_text="Final Weight",
-                                                    validators=[NumericValidator(0, 100)],
+                                                    validators=[NumericValidator(float, 0, 100)],
                                                     width=entry_size)
         self.final_exam_weight_entry.pack(side='left', padx=25, pady=5)
 
@@ -50,9 +50,9 @@ class UtilitiesPage(Page):
         self.main_frame.pack(expand=True, fill='both', padx=5, pady=5)
 
     def simulate_grade(self):
-        current_grade = int(self.current_grade_entry.validated_get())
-        desired_grade = int(self.desired_grade_entry.validated_get())
-        final_exam_weight = int(self.final_exam_weight_entry.validated_get())
+        current_grade = float(self.current_grade_entry.validated_get())
+        desired_grade = float(self.desired_grade_entry.validated_get())
+        final_exam_weight = float(self.final_exam_weight_entry.validated_get())
         if current_grade and desired_grade and final_exam_weight:
             # Convert final grade to decimal
             final_exam_weight /= 100.0

@@ -65,7 +65,7 @@ class DefaultEntry(customtkinter.CTkEntry):
         try:
             clip_board_contents = self.clipboard_get()
         except tkinter.TclError:
-            clip_board_contents = ''
+            clip_board_contents = ""
         self.insert(0, clip_board_contents)
 
     def _select_all(self):

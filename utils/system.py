@@ -11,7 +11,7 @@ if os.name == "nt":
     undo_button_name = "Control_L"
     redo_button_name = "Control_R"
 
-elif os.name == "posix":
+else:
     right_click_binding_key_code = "<Button-2>"
     file_system_app_name = "Finder"
     undo_button_sequence = "<Command-z>"

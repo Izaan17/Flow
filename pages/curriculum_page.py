@@ -60,6 +60,9 @@ class CurriculumPage(Page):
         self.back_button.pack(padx=(0, 10), side='left', anchor='nw')
 
         self.current_directory = settings.get_setting("default_dir", get_storage_dir())
+        # If the default dir does not exist then the default dir is automatically the storage dir
+        if not os.path.exists(self.current_directory):
+            self.current_directory = get_storage_dir().__str__()
         self.current_directory_var = customtkinter.StringVar(self, value=self.current_directory)
         self.back_stack = []
 

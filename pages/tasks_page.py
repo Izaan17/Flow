@@ -393,7 +393,6 @@ class TasksPage(Page):
                 events = online_icalendar.get_events()
                 length = len(events)
                 for event in events:
-                    print(f'[{done}/{length}]')
                     task_name = event.get("SUMMARY")
                     task_due_date: datetime.datetime = event.get("DTEND").dt
                     task_due_date_str = task_due_date.strftime("%m-%d-%Y-%H-%M")

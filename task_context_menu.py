@@ -6,6 +6,7 @@ import customtkinter
 from tkcalendar import dateentry
 
 import utils
+from constants import ALL_TASK_SOURCES
 from database.task_manager import TaskManager
 from models import Task
 from utils.string_utils import isolate_string
@@ -53,7 +54,7 @@ class TaskContextMenu:
             task_name_entry.insert(0, self.selected_task_check_box.task.name)
 
             task_source_entry = customtkinter.CTkComboBox(task_entries_frame,
-                                                          values=['TEST'])
+                                                          values=ALL_TASK_SOURCES)
             task_source_entry.set(self.selected_task_check_box.task.source)
 
             task_link_entry = DefaultEntry(task_entries_frame, placeholder_text='Task Link')

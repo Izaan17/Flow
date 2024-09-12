@@ -9,6 +9,7 @@ from tkcalendar import dateentry
 import utils.date
 import utils.system
 import utils.widget_utils
+from constants import ALL_TASK_SOURCES
 from database.task_manager import TaskManager
 from models import Task
 from task_context_menu import TaskContextMenu
@@ -24,10 +25,6 @@ from widgets.popups.PopupForm import PopupForm
 from widgets.popups.Popups import SuccessPopup, ErrorPopup
 from widgets.popups.validation.widget_data_validator import NonEmptyValidator, NumericValidator
 from widgets.task_check_box import TaskCheckBox
-
-ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
-
-
 
 class TasksPage(Page):
     def __init__(self, *args, **kwargs):

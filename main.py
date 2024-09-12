@@ -10,7 +10,7 @@ from pages.settings_page import SettingsPage
 from pages.tasks_page import TasksPage
 from pages.utilities_page import UtilitiesPage
 from utils.icon import load_icon
-from widgets.MenuButton import MenuButton
+from widgets.menu_button import MenuButton
 
 
 class Flow(customtkinter.CTk):
@@ -88,15 +88,6 @@ class Flow(customtkinter.CTk):
         # Show the initial page
         self.tasks_page.show()
 
-        # At exit save all checkbox states
-        self.wm_protocol("WM_DELETE_WINDOW", self.on_close)
-
-    def on_close(self):
-        self.tasks_page.check_box_manager.save_to_file()
-        self.destroy()
-
-
 if __name__ == '__main__':
     app = Flow()
-    app.createcommand("::tk::mac::Quit", app.on_close)
     app.mainloop()

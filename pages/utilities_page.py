@@ -1,10 +1,10 @@
 from typing import Any
 
 from widgets.popups.validation.widget_data_validator import NumericValidator
-from widgets.UtilitySection import UtilitySection
-from widgets.Entry import DefaultEntry
-from widgets.Buttons import DefaultButton
-from widgets.Page import Page
+from widgets.utility_section import UtilitySection
+from widgets.entry import DefaultEntry
+from widgets.buttons import DefaultButton
+from widgets.page import Page
 import customtkinter
 
 

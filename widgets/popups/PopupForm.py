@@ -2,7 +2,7 @@ from typing import Any
 
 import customtkinter
 
-from widgets.Buttons import DefaultButton
+from widgets.buttons import DefaultButton
 from widgets.popups.validation.widget_data_validator import BaseValidator, NonEmptyValidator, NumericValidator
 
 

@@ -1,7 +1,7 @@
 import customtkinter
 
-from widgets.Page import Page
-from widgets.Buttons import DefaultButton
+from widgets.page import Page
+from widgets.buttons import DefaultButton
 
 
 class NotesPage(Page):

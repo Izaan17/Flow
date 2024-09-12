@@ -1,9 +1,9 @@
 from functools import partial
 import customtkinter
 from utils.settings import settings
-from widgets.Dropdown import DefaultDropDown
-from widgets.Switch import DefaultSwitch
-from widgets.Page import Page
+from widgets.dropdown import DefaultDropDown
+from widgets.switch import DefaultSwitch
+from widgets.page import Page
 
 
 def create_dropdown(frame, label_text, values, command, setting_key, default_value):

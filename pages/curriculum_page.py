@@ -11,8 +11,8 @@ import utils.widget_utils
 from utils.directory_manager import get_storage_dir
 from utils.icon import load_icon
 from utils.settings import settings
-from widgets.Buttons import DefaultButton, FolderObjectButton, FileObjectButton
-from widgets.Page import Page
+from widgets.buttons import DefaultButton, FolderObjectButton, FileObjectButton
+from widgets.page import Page
 from widgets.popups.Popups import ErrorPopup, SuccessPopup
 
 

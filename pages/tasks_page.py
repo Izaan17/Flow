@@ -10,20 +10,21 @@ from tkcalendar import dateentry
 import utils.date
 import utils.system
 import utils.widget_utils
+from database.task_manager import TaskManager
+from models import Task
 from utils.directory_manager import get_app_dir
 from utils.icon import load_icon
 from utils.online_icalendar import OnlineICalendar
 from utils.settings import settings
 from utils.string_utils import isolate_string
-from widgets.Buttons import DefaultButton
-from widgets.CheckBox import TaskCheckBox
-from widgets.CheckBoxManager import CheckBoxManager
-from widgets.Entry import DefaultEntry
-from widgets.HyperLink import HyperLink
-from widgets.Page import Page
+from widgets.buttons import DefaultButton
+from widgets.entry import DefaultEntry
+from widgets.hyper_link import HyperLink
+from widgets.page import Page
 from widgets.popups.PopupForm import PopupForm
 from widgets.popups.Popups import SuccessPopup, ErrorPopup
 from widgets.popups.validation.widget_data_validator import NonEmptyValidator, NumericValidator
+from widgets.task_check_box import TaskCheckBox
 
 ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
 
@@ -36,6 +37,9 @@ ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
 class TasksPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, page_title="My Tasks")
+
+        # Initialize DB
+        self.task_manager = TaskManager(f'{get_app_dir()}{os.sep}tasks.db')
 
         self.current_date = datetime.datetime.now().strftime("%m-%d-%Y-%H-%M")
         # Change subheading
@@ -76,12 +80,10 @@ class TasksPage(Page):
 
         self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white', width=10)
 
-        self.check_box_manager = CheckBoxManager(f'{get_app_dir()}{os.sep}tasks.json')
-
         self.load_popup = SuccessPopup(self, "Loading saved tasks...", 100000)
 
         # Load checkboxes threaded
-        self.after(0, self.load_saved_checkboxes)
+        self.after(0, self.load_saved_tasks)
         self.update_count_label()
 
     def add_task_callback(self):
@@ -101,9 +103,9 @@ class TasksPage(Page):
         due_date_calendar = dateentry.Calendar(task_entries_frame)
         due_date_calendar.pack(padx=10, pady=15)
 
-        task_name_entry.pack(padx=20, pady=15, )
-        task_source_entry.pack(padx=20, pady=10, )
-        task_link_entry.pack(padx=20, pady=10, )
+        task_name_entry.pack(padx=20, pady=15)
+        task_source_entry.pack(padx=20, pady=10)
+        task_link_entry.pack(padx=20, pady=10)
         hour_entry.pack(padx=20, pady=15)
         minute_entry.pack(padx=20, pady=15)
 
@@ -111,7 +113,7 @@ class TasksPage(Page):
         task_popup_form.add_widget(task_source_entry)
         task_popup_form.add_widget(task_link_entry)
         task_popup_form.add_widget(hour_entry, [NonEmptyValidator(), NumericValidator(1, 23)])
-        task_popup_form.add_widget(minute_entry, [NonEmptyValidator(), NumericValidator(0, 60)])
+        task_popup_form.add_widget(minute_entry, [NonEmptyValidator(), NumericValidator(0, 59)])
 
         # Wait for window to be destroyed or submitted
         self.wait_window(task_popup_form)
@@ -121,21 +123,34 @@ class TasksPage(Page):
             task_name = task_popup_form.get_data(task_name_entry)
             task_source = task_popup_form.get_data(task_source_entry)
             task_link = task_popup_form.get_data(task_link_entry)
-            original_format_string = '%m/%d/%y %H:%M'
-            desired_format_string = '%m-%d-%Y-%H-%M'
-            parsed_date = datetime.datetime.strptime(
-                f"{due_date_calendar.get_date()} "
-                f"{task_popup_form.get_data(hour_entry)}:"
-                f"{isolate_string('0', task_popup_form.get_data(minute_entry))}",
-                original_format_string)
-            formatted_date = parsed_date.strftime(desired_format_string)
-            new_task_id = self.check_box_manager.load_last_id()
-            new_check_box = TaskCheckBox(self.tasks_scrollable_frame, task_id=new_task_id,
-                                         text=task_name, source=task_source,
-                                         link=task_link, due_date=formatted_date)
 
+            # Get date from calendar and time from entries
+            due_date_str = due_date_calendar.get_date()  # e.g., '9/11/24'
+            hour_str = task_popup_form.get_data(hour_entry).zfill(2)  # Ensure two digits
+            minute_str = task_popup_form.get_data(minute_entry).zfill(2)  # Ensure two digits
+
+            # Combine date and time into one string
+            combined_date_time_str = f"{due_date_str} {hour_str}:{minute_str}"
+
+            # Define format strings
+            original_format_string = '%m/%d/%y %H:%M'  # Format used by dateentry.Calendar
+            desired_format_string = '%m-%d-%Y-%H-%M'
+
+            # Parse and format the date
+            try:
+                parsed_date = datetime.datetime.strptime(combined_date_time_str, original_format_string)
+                formatted_date = parsed_date.strftime(desired_format_string)
+            except ValueError as e:
+                print(f"Date parsing error: {e}")
+                return
+
+            # Create the task
+            created_task = Task(0, task_name, task_source, task_link, formatted_date)
+            task_id = self.task_manager.add_task(created_task)
+
+            # Create and pack the new checkbox
+            new_check_box = TaskCheckBox(self.tasks_scrollable_frame, created_task)
             self.init_checkbox(new_check_box)
-            self.check_box_manager.add_checkbox(new_task_id, new_check_box.get_checkbox_data())
             new_check_box.pack(fill='both', expand=True, pady=(0, 10))
 
     def init_checkbox(self, new_check_box: TaskCheckBox):
@@ -146,18 +161,12 @@ class TasksPage(Page):
 
         def display_details(event):
             # Show info only when user clicks on a checkbox and hide it if clicked on same one.
-            if (self.task_info_frame.winfo_ismapped() and
-                    self.check_box_manager.get_active() == new_check_box.get_checkbox_data()):
-                self.task_info_frame.pack_forget()
-            else:
-                self.task_info_frame.pack(side='right', fill='both', expand=True)
+            self.task_info_frame.pack(side='right', fill='both', expand=True)
 
-            # Set selected checkbox to current
-            self.check_box_manager.set_active(new_check_box.get_checkbox_data())
             self.clear_info_frame()
 
             self.task_name_label = customtkinter.CTkLabel(self.task_info_frame,
-                                                          text=new_check_box.get_task_name(), font=('Roboto', 26),
+                                                          text=new_check_box.task.name, font=('Roboto', 26),
                                                           wraplength=default_wrap_length,
                                                           justify=default_justification)
             self.task_name_label.pack()
@@ -175,7 +184,7 @@ class TasksPage(Page):
                                                               justify=default_justification)
             self.source_header_label.pack(anchor='w')
 
-            self.source_label = customtkinter.CTkLabel(self.task_info_frame, text=new_check_box.get_task_source(),
+            self.source_label = customtkinter.CTkLabel(self.task_info_frame, text=new_check_box.task.source,
                                                        wraplength=default_wrap_length,
                                                        justify=default_justification)
             self.source_label.pack(anchor='w')
@@ -185,8 +194,8 @@ class TasksPage(Page):
                                                             justify=default_justification)
             self.link_header_label.pack(anchor='w')
 
-            self.link_hyperlink = HyperLink(self.task_info_frame, text=new_check_box.get_task_link(),
-                                            url=new_check_box.get_task_link(), wraplength=default_wrap_length,
+            self.link_hyperlink = HyperLink(self.task_info_frame, text=new_check_box.task.link,
+                                            url=new_check_box.task.link, wraplength=default_wrap_length,
                                             justify=default_justification)
             self.link_hyperlink.pack(anchor='w')
 
@@ -195,7 +204,7 @@ class TasksPage(Page):
                                                           justify=default_justification)
             self.due_date_header.pack(anchor='w')
 
-            self.task_due_date = new_check_box.get_task_due_date()
+            self.task_due_date = new_check_box.task.due_date
             self.task_due_date_label = customtkinter.CTkLabel(
                 self.task_info_frame,
                 text=f"{utils.date.get_day_of_week_string(self.task_due_date)}, "
@@ -213,14 +222,14 @@ class TasksPage(Page):
             task_entries_frame.pack(fill='both', expand=True, padx=10, pady=10)
 
             task_name_entry = DefaultEntry(task_entries_frame, placeholder_text='Task Name')
-            task_name_entry.insert(0, new_check_box.get_task_name())
+            task_name_entry.insert(0, new_check_box.task.name)
             task_source_entry = customtkinter.CTkComboBox(task_entries_frame,
                                                           values=ALL_TASK_SOURCES)
-            task_source_entry.set(new_check_box.get_task_source())
+            task_source_entry.set(new_check_box.task.source)
             task_link_entry = DefaultEntry(task_entries_frame, placeholder_text='Task Link')
-            task_link_entry.insert(0, new_check_box.get_task_link())
+            task_link_entry.insert(0, new_check_box.task.link)
 
-            task_date = new_check_box.get_task_due_date().split("-")
+            task_date = new_check_box.task.due_date.split("-")
             task_hour = task_date[3]
             task_minute = task_date[4]
             hour_entry = DefaultEntry(task_entries_frame, placeholder_text='Hour')
@@ -230,7 +239,7 @@ class TasksPage(Page):
 
             due_date_calendar = dateentry.Calendar(task_entries_frame)
             due_date_calendar.pack(padx=10, pady=10)
-            due_date_calendar.selection_set(new_check_box.get_task_due_date())
+            due_date_calendar.selection_set(new_check_box.task.due_date)
 
             task_name_entry.pack(padx=20, pady=15, )
             task_source_entry.pack(padx=20, pady=10, )
@@ -258,25 +267,17 @@ class TasksPage(Page):
                     f"{isolate_string('0', edit_task_form.get_data(minute_entry))}",
                     original_format_string)
                 formatted_date = parsed_date.strftime(desired_format_string)
-                new_edited_check_box = TaskCheckBox(self.tasks_scrollable_frame,
-                                                    task_id=new_check_box.get_task_id(),
-                                                    text=task_name, source=task_source,
-                                                    link=task_link, due_date=formatted_date)
+                new_edited_check_box = TaskCheckBox(self.tasks_scrollable_frame, task=new_check_box.task)
                 # Reset notification flag since it was edited.
                 new_edited_check_box.notification_shown = False
 
                 self.init_checkbox(new_edited_check_box)
-                self.check_box_manager.add_checkbox(new_check_box.get_task_id(),
-                                                    new_edited_check_box.get_checkbox_data())
-                new_check_box.task_item_frame.destroy()
+                self.task_manager.add_task(new_edited_check_box.task)
+                new_check_box.destroy()
                 new_edited_check_box.pack(fill='both', expand=True, pady=(0, 10))
 
         def duplicate_callback():
-            new_id = self.check_box_manager.load_last_id()
-            new_duped_check_box = TaskCheckBox(self.tasks_scrollable_frame, new_id,
-                                               new_check_box.get_task_source(), new_check_box.get_task_link(),
-                                               new_check_box.get_task_due_date(), text=new_check_box.get_task_name())
-            self.check_box_manager.add_checkbox(new_id, new_duped_check_box.get_checkbox_data())
+            new_duped_check_box = TaskCheckBox(self.tasks_scrollable_frame, task=new_check_box.task)
             self.init_checkbox(new_duped_check_box)
             new_duped_check_box.pack(fill='both', expand=True, pady=(0, 10))
 
@@ -284,16 +285,6 @@ class TasksPage(Page):
             if tkinter.messagebox.askyesno("Delete Task",
                                            f"Are you sure you want to delete "
                                            f"'{new_check_box.cget("text")}'?"):
-                # Check if the current selected checkbox id matches with our checkbox id
-                active_checkbox = self.check_box_manager.get_active()
-                if active_checkbox == new_check_box.get_checkbox_data():
-                    # Destroy all items in details frame
-                    self.clear_info_frame()
-                    # Unset active checkbox
-                    self.check_box_manager.remove_active()
-
-                new_check_box.task_item_frame.destroy()
-                self.check_box_manager.remove_checkbox_data_by_id(new_check_box.get_task_id())
                 new_check_box.destroy()
 
         # Right Click menu
@@ -305,17 +296,10 @@ class TasksPage(Page):
         def action_menu(event):
             right_click_menu.tk_popup(event.x_root, event.y_root)
 
-        def toggle_state():
-            task_id = new_check_box.get_task_id()
-            old_data = self.check_box_manager.check_boxes_data[task_id]
-            new_data = new_check_box.get_checkbox_data()
-            new_data.completion_status = 1 - old_data.completion_status  # Toggles between 0 and 1
-            self.check_box_manager.check_boxes_data[task_id] = new_data
-
-        new_check_box.configure(command=toggle_state)
+        # On click of the checkbox set the status in the db
+        new_check_box.checkbox.configure(command=lambda: self.task_manager.toggle_task_status(new_check_box.task))
 
         # Configure labels to have word wrapping and justification
-        new_check_box.get_root_label().configure(wraplength=default_wrap_length, justify=default_justification)
         new_check_box.source_label.configure(wraplength=default_wrap_length, justify=default_justification)
         new_check_box.link_hyperlink.configure(wraplength=default_wrap_length, justify=default_justification)
         new_check_box.due_date_label.configure(wraplength=default_wrap_length, justify=default_justification)
@@ -397,8 +381,8 @@ class TasksPage(Page):
                     task_due_date: datetime.datetime = event.get("DTEND").dt
                     task_due_date_str = task_due_date.strftime("%m-%d-%Y-%H-%M")
                     # Convert the date to usable format
-                    new_ical_task = TaskCheckBox(ical_scrollable_frame, text=task_name, source="iCalendar",
-                                                 link=None, task_id=0, due_date=task_due_date_str)
+                    new_task = Task(0, task_name, 'iCalendar', link=None, due_date=task_due_date_str)
+                    new_ical_task = TaskCheckBox(ical_scrollable_frame, new_task)
                     new_ical_task.pack(anchor='w')
                     # Add to list
                     loaded_tasks.append(new_ical_task)
@@ -415,10 +399,10 @@ class TasksPage(Page):
             for child in ical_scrollable_frame.winfo_children():
                 task_check_box = child.winfo_children()[1]
                 if isinstance(task_check_box, TaskCheckBox):
-                    if not task_check_box.get():
-                        task_check_box.select()
+                    if not task_check_box.checkbox.get():
+                        task_check_box.checkbox.select()
                     else:
-                        task_check_box.deselect()
+                        task_check_box.checkbox.deselect()
 
         ical_select_all_button.configure(command=ical_select_all)
 
@@ -432,18 +416,13 @@ class TasksPage(Page):
             while loaded_tasks:
                 task_box: TaskCheckBox = loaded_tasks.pop()
                 # If selected
-                if task_box.get():
+                if task_box.checkbox.get():
                     # Unselect the checkbox
-                    task_box.deselect()
-                    task_box_data = task_box.get_checkbox_data()
-                    # Generate new id and set id
-                    task_box_data.task_id = self.check_box_manager.load_last_id()
+                    task_box.checkbox.deselect()
                     # Add to checkbox manager
-                    self.check_box_manager.add_checkbox(task_box_data.task_id, task_box_data)
+                    self.task_manager.add_task(task_box.task)
                     # Pack the checkbox
-                    new_task_box = TaskCheckBox(self.tasks_scrollable_frame, task_box_data.task_id,
-                                                task_box_data.task_source, task_box_data.task_link,
-                                                task_box_data.task_due_date, text=task_box_data.task_name)
+                    new_task_box = TaskCheckBox(self.tasks_scrollable_frame, task=task_box.task)
                     self.init_checkbox(new_task_box)
                     new_task_box.pack(fill='both', expand=True, pady=(0, 10))
 
@@ -456,35 +435,23 @@ class TasksPage(Page):
     def clear_tasks_callback(self):
         if messagebox.askyesno("Delete all tasks", "Are you sure you want to delete all of your tasks?"):
             for child in self.tasks_scrollable_frame.winfo_children():
-                # Delete from the checkbox manager
-                # TODO: FIND A NEW WAY TO DELETE THE TASK CHECKBOX
-                task_check_box = child.winfo_children()[1]
-                if isinstance(task_check_box, TaskCheckBox):
-                    self.check_box_manager.remove_checkbox_data_by_id(task_check_box.task_id)
-                    child.destroy()
-                else:
-                    ErrorPopup(self, f"Could not delete task {task_check_box}")
-            # Reset uid file
-            self.check_box_manager.reset_ids()
-            # Reset the checkbox active
-            self.check_box_manager.remove_active()
+                # Destroy the child
+                child.destroy()
+            # Delete table
+            self.task_manager.clear_table()
             # Delete all children in tasks information
             self.clear_info_frame()
 
-    def load_saved_checkboxes(self):
-        for checkbox_data in self.check_box_manager.load_from_file().values():
-            check_box = TaskCheckBox(self.tasks_scrollable_frame, task_id=checkbox_data.task_id,
-                                     text=checkbox_data.task_name, source=checkbox_data.task_source,
-                                     link=checkbox_data.task_link, due_date=checkbox_data.task_due_date)
+    def load_saved_tasks(self):
+        for task in self.task_manager.get_all_tasks():
+            check_box = TaskCheckBox(self.tasks_scrollable_frame, task)
             self.init_checkbox(check_box)
-            if checkbox_data.completion_status == 1:
-                check_box.select()
             check_box.pack(fill='both', expand=True, pady=(0, 10))
 
         self.load_popup.slide_up()
 
     def update_count_label(self):
-        self.task_count_label.configure(text=f"Count: {len(self.check_box_manager.check_boxes_data)}")
+        self.task_count_label.configure(text=f"Count: {self.task_manager.get_task_count()}")
         self.after(1, self.update_count_label)
 
 

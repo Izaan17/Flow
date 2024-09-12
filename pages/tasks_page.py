@@ -241,9 +241,9 @@ class TasksPage(Page):
             due_date_calendar.pack(padx=10, pady=10)
             due_date_calendar.selection_set(new_check_box.task.due_date)
 
-            task_name_entry.pack(padx=20, pady=15, )
-            task_source_entry.pack(padx=20, pady=10, )
-            task_link_entry.pack(padx=20, pady=15, )
+            task_name_entry.pack(padx=20, pady=15)
+            task_source_entry.pack(padx=20, pady=10)
+            task_link_entry.pack(padx=20, pady=15)
             hour_entry.pack(padx=20, pady=15)
             minute_entry.pack(padx=20, pady=15)
 
@@ -267,12 +267,11 @@ class TasksPage(Page):
                     f"{isolate_string('0', edit_task_form.get_data(minute_entry))}",
                     original_format_string)
                 formatted_date = parsed_date.strftime(desired_format_string)
-                new_edited_check_box = TaskCheckBox(self.tasks_scrollable_frame, task=new_check_box.task)
-                # Reset notification flag since it was edited.
-                new_edited_check_box.notification_shown = False
+                new_edited_task = Task(new_check_box.task.id, task_name, task_source, task_link, formatted_date, is_complete=new_check_box.task.is_complete)
+                new_edited_check_box = TaskCheckBox(self.tasks_scrollable_frame, task=new_edited_task)
 
                 self.init_checkbox(new_edited_check_box)
-                self.task_manager.add_task(new_edited_check_box.task)
+                self.task_manager.update_task(new_edited_check_box.task)
                 new_check_box.destroy()
                 new_edited_check_box.pack(fill='both', expand=True, pady=(0, 10))
 
@@ -284,7 +283,8 @@ class TasksPage(Page):
         def delete_callback():
             if tkinter.messagebox.askyesno("Delete Task",
                                            f"Are you sure you want to delete "
-                                           f"'{new_check_box.cget("text")}'?"):
+                                           f"'{new_check_box.task.name}'?"):
+                self.task_manager.delete_task(new_check_box.task)
                 new_check_box.destroy()
 
         # Right Click menu

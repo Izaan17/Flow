@@ -1,6 +1,5 @@
 import datetime
 import os
-import tkinter
 from tkinter import messagebox
 
 import customtkinter
@@ -12,11 +11,11 @@ import utils.system
 import utils.widget_utils
 from database.task_manager import TaskManager
 from models import Task
+from task_context_menu import TaskContextMenu
 from utils.directory_manager import get_app_dir
 from utils.icon import load_icon
 from utils.online_icalendar import OnlineICalendar
 from utils.settings import settings
-from utils.string_utils import isolate_string
 from widgets.buttons import DefaultButton
 from widgets.entry import DefaultEntry
 from widgets.hyper_link import HyperLink
@@ -29,10 +28,6 @@ from widgets.task_check_box import TaskCheckBox
 ALL_TASK_SOURCES = ["Achieve", "BlackBoard", "MyOpenMath"]
 
 
-# Todo: Add ability to select multiple tasks to delete or do other operations.
-#  Option 1: Add a button that will replace toggle_state function to now keep track of selected checkboxes to perform
-#  operations
-#  Option 2: TBD
 
 class TasksPage(Page):
     def __init__(self, *args, **kwargs):
@@ -74,9 +69,9 @@ class TasksPage(Page):
 
         self.tasks_scrollable_frame = customtkinter.CTkScrollableFrame(master=self.tasks_list_and_info_frame,
                                                                        fg_color='transparent', width=800,
-                                                                       scrollbar_button_color='white',
-                                                                       scrollbar_fg_color='white')
+                                                                       scrollbar_button_color='white')
         self.tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+        self.task_context_menu = TaskContextMenu(self.tasks_scrollable_frame, self.task_manager)
 
         self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white', width=10)
 
@@ -212,88 +207,6 @@ class TasksPage(Page):
                 wraplength=default_wrap_length, justify=default_justification)
             self.task_due_date_label.pack(anchor='w')
 
-        def edit_callback():
-            edit_task_form = PopupForm(self, fg_color='white')
-            edit_task_form.wm_title("Edit Task")
-
-            task_entries_frame = customtkinter.CTkFrame(edit_task_form)
-            task_entries_frame.pack(fill='both', expand=True, padx=10, pady=10)
-
-            task_name_entry = DefaultEntry(task_entries_frame, placeholder_text='Task Name')
-            task_name_entry.insert(0, new_check_box.task.name)
-            task_source_entry = customtkinter.CTkComboBox(task_entries_frame,
-                                                          values=ALL_TASK_SOURCES)
-            task_source_entry.set(new_check_box.task.source)
-            task_link_entry = DefaultEntry(task_entries_frame, placeholder_text='Task Link')
-            task_link_entry.insert(0, new_check_box.task.link)
-
-            task_date = new_check_box.task.due_date.split("-")
-            task_hour = task_date[3]
-            task_minute = task_date[4]
-            hour_entry = DefaultEntry(task_entries_frame, placeholder_text='Hour')
-            hour_entry.insert(0, task_hour)
-            minute_entry = DefaultEntry(task_entries_frame, placeholder_text='Minutes')
-            minute_entry.insert(0, task_minute)
-
-            due_date_calendar = dateentry.Calendar(task_entries_frame)
-            due_date_calendar.pack(padx=10, pady=10)
-            due_date_calendar.selection_set(new_check_box.task.due_date)
-
-            task_name_entry.pack(padx=20, pady=15)
-            task_source_entry.pack(padx=20, pady=10)
-            task_link_entry.pack(padx=20, pady=15)
-            hour_entry.pack(padx=20, pady=15)
-            minute_entry.pack(padx=20, pady=15)
-
-            edit_task_form.add_widget(task_name_entry, [NonEmptyValidator()])
-            edit_task_form.add_widget(task_source_entry)
-            edit_task_form.add_widget(task_link_entry)
-            edit_task_form.add_widget(hour_entry, [NonEmptyValidator(), NumericValidator(1, 23)])
-            edit_task_form.add_widget(minute_entry, [NonEmptyValidator(), NumericValidator(0, 60)])
-
-            self.wait_window(edit_task_form)
-
-            if edit_task_form.data_ready:
-                task_name = edit_task_form.get_data(task_name_entry)
-                task_source = edit_task_form.get_data(task_source_entry)
-                task_link = edit_task_form.get_data(task_link_entry)
-                original_format_string = '%m/%d/%y %H:%M'
-                desired_format_string = '%m-%d-%Y-%H-%M'
-                parsed_date = datetime.datetime.strptime(
-                    f"{due_date_calendar.get_date()} "
-                    f"{edit_task_form.get_data(hour_entry)}:"
-                    f"{isolate_string('0', edit_task_form.get_data(minute_entry))}",
-                    original_format_string)
-                formatted_date = parsed_date.strftime(desired_format_string)
-                new_edited_task = Task(new_check_box.task.id, task_name, task_source, task_link, formatted_date, is_complete=new_check_box.task.is_complete)
-                new_edited_check_box = TaskCheckBox(self.tasks_scrollable_frame, task=new_edited_task)
-
-                self.init_checkbox(new_edited_check_box)
-                self.task_manager.update_task(new_edited_check_box.task)
-                new_check_box.destroy()
-                new_edited_check_box.pack(fill='both', expand=True, pady=(0, 10))
-
-        def duplicate_callback():
-            new_duped_check_box = TaskCheckBox(self.tasks_scrollable_frame, task=new_check_box.task)
-            self.init_checkbox(new_duped_check_box)
-            new_duped_check_box.pack(fill='both', expand=True, pady=(0, 10))
-
-        def delete_callback():
-            if tkinter.messagebox.askyesno("Delete Task",
-                                           f"Are you sure you want to delete "
-                                           f"'{new_check_box.task.name}'?"):
-                self.task_manager.delete_task(new_check_box.task)
-                new_check_box.destroy()
-
-        # Right Click menu
-        right_click_menu = tkinter.Menu(tearoff=0)
-        right_click_menu.add_command(label="Edit", command=edit_callback)
-        right_click_menu.add_command(label="Duplicate", command=duplicate_callback)
-        right_click_menu.add_command(label="Delete", command=delete_callback)
-
-        def action_menu(event):
-            right_click_menu.tk_popup(event.x_root, event.y_root)
-
         # On click of the checkbox set the status in the db
         new_check_box.checkbox.configure(command=lambda: self.task_manager.toggle_task_status(new_check_box.task))
 
@@ -302,11 +215,8 @@ class TasksPage(Page):
         new_check_box.link_hyperlink.configure(wraplength=default_wrap_length, justify=default_justification)
         new_check_box.due_date_label.configure(wraplength=default_wrap_length, justify=default_justification)
 
-        # Assign action menu opening to right click
-        utils.widget_utils.bind_all(new_check_box.master, utils.system.right_click_binding_key_code, action_menu)
-
-        # Assign opening details menu to left click
-        utils.widget_utils.bind_all(new_check_box.master, "<Double Button-1>", display_details)
+        # Assign opening details menu to left-click
+        utils.widget_utils.bind_all(new_check_box, "<Double Button-1>", display_details)
 
     def clear_info_frame(self):
         # Clear details frame
@@ -407,7 +317,7 @@ class TasksPage(Page):
         # --ICAL--
 
         # Add all button
-        add_all_tasks_button = DefaultButton(new_top_level, text="Add Selected Tasks")
+        add_all_tasks_button = DefaultButton(new_top_level, text='Add Selected Tasks')
         add_all_tasks_button.pack(pady=10)
 
         def add_all_tasks():
@@ -426,7 +336,7 @@ class TasksPage(Page):
 
             # Close all
             new_top_level.destroy()
-            SuccessPopup(self, "Successfully Loaded Tasks")
+            SuccessPopup(self, 'Successfully Loaded Tasks')
 
         add_all_tasks_button.configure(command=add_all_tasks)
 

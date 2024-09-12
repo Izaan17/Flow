@@ -25,7 +25,7 @@ def parse_days_difference(days_difference):
         return "Yesterday"
     elif days_difference == 1:
         return "Tomorrow"
-    elif days_difference <= 0:
+    elif days_difference < 0:
         return f"Due {-days_difference} days ago"
     else:
         return f"Due in {days_difference} days"
@@ -56,4 +56,7 @@ def get_month_string(date_str):
 
 
 def get_time_suffix_string(date_str):
+    if isinstance(date_str, datetime.datetime):
+        return date_str.strftime("%I:%M %p")
+
     return convert_str_to_datetime(date_str).strftime("%I:%M %p")

@@ -80,10 +80,8 @@ class TasksPage(Page):
 
         self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white', width=10)
 
-        self.load_popup = SuccessPopup(self, "Loading saved tasks...", 100000)
-
         # Load checkboxes threaded
-        self.after(0, self.load_saved_tasks)
+        self.after(5, self.load_saved_tasks)
         self.update_count_label()
 
     def add_task_callback(self):
@@ -424,7 +422,7 @@ class TasksPage(Page):
                     # Pack the checkbox
                     new_task_box = TaskCheckBox(self.tasks_scrollable_frame, task=task_box.task)
                     self.init_checkbox(new_task_box)
-                    new_task_box.pack(fill='both', expand=True, pady=(0, 10))
+                    new_task_box.pack(fill='x', expand=True, pady=(0, 10))
 
             # Close all
             new_top_level.destroy()
@@ -448,17 +446,13 @@ class TasksPage(Page):
             self.init_checkbox(check_box)
             check_box.pack(fill='both', expand=True, pady=(0, 10))
 
-        self.load_popup.slide_up()
-
     def update_count_label(self):
         self.task_count_label.configure(text=f"Count: {self.task_manager.get_task_count()}")
-        self.after(1, self.update_count_label)
+        self.after(100, self.update_count_label)
 
 
 if __name__ == '__main__':
     app = customtkinter.CTk()
-
     page = TasksPage(app)
     page.pack(expand=True, fill='both')
-
     app.mainloop()

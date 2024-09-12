@@ -48,7 +48,7 @@ class TaskCheckBox(customtkinter.CTkFrame):
             hover_color='#398564',  # Darker shade on hover
             border_color='#49ab81',  # Light border color
             border_width=2,
-            corner_radius=12,
+            corner_radius=20,
             font=('Arial', 14, 'bold'),  # Modern font
             textvariable=self.task_name_var,
             text_color='black',
@@ -130,8 +130,8 @@ class TaskCheckBox(customtkinter.CTkFrame):
         # Update the due date label
         self.due_date_label.configure(text=label_text, text_color=text_color)
 
-        # Schedule the update every 60 seconds (adjust as needed)
-        self.after(60000, self._update_due_date_label)
+        update_interval = 60000 if abs(difference_from_now) <= 1 else 3600000  # Adjust to hourly updates for future tasks
+        self.after(update_interval, self._update_due_date_label)
 
     def get_checkbox(self) -> customtkinter.CTkCheckBox:
         """Return the checkbox widget."""

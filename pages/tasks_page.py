@@ -397,12 +397,12 @@ class TasksPage(Page):
 
         def ical_select_all():
             for child in ical_scrollable_frame.winfo_children():
-                task_check_box = child.winfo_children()[1]
-                if isinstance(task_check_box, TaskCheckBox):
-                    if not task_check_box.checkbox.get():
-                        task_check_box.checkbox.select()
-                    else:
-                        task_check_box.checkbox.deselect()
+                child: TaskCheckBox = child
+                task_check_box: customtkinter.CTkCheckBox = child.get_checkbox()
+                if not task_check_box.get():
+                    task_check_box.select()
+                else:
+                    task_check_box.deselect()
 
         ical_select_all_button.configure(command=ical_select_all)
 

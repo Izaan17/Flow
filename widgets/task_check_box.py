@@ -57,7 +57,7 @@ class TaskCheckBox(customtkinter.CTkFrame):
             offvalue=0
         )
         self.checkbox.pack(
-            padx=12,
+            padx=5,
             pady=6,
             expand=True,
             fill='x'

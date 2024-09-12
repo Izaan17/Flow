@@ -56,13 +56,26 @@ class TaskManager:
 
     def add_bulk_tasks(self, tasks: List[Task]) -> None:
         """
-        Add multiple tasks at once.
+        Add multiple tasks at once using a single database transaction.
 
         Args:
             tasks (List[Task]): A list of tasks to add.
         """
-        for task in tasks:
-            self.add_task(task)
+        if not tasks:
+            return
+
+        with self as conn:
+            cursor = conn.cursor()
+
+            # Prepare the SQL statement with placeholders for bulk insertion
+            sql = '''INSERT INTO tasks (task_name, source, task_link, due_date, is_complete) VALUES (?, ?, ?, ?, ?)'''
+
+            # Create a list of tuples containing the task data
+            task_data = [(task.name, task.source, task.link, task.due_date, task.is_complete) for task in tasks]
+
+            # Execute the bulk insert
+            cursor.executemany(sql, task_data)
+            conn.commit()
 
     def get_all_tasks(self) -> List[Task]:
         """
@@ -73,7 +86,7 @@ class TaskManager:
         """
         with self as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM tasks;')
+            cursor.execute('SELECT * FROM tasks')
             rows = cursor.fetchall()
             return [Task(_id=row[0], name=row[1], source=row[2], link=row[3], due_date=row[4], is_complete=row[5]) for row in rows]
 
@@ -81,7 +94,7 @@ class TaskManager:
         with self as conn:
             cursor = conn.cursor()
             # Execute the SQL query to count the number of rows
-            cursor.execute(f'SELECT COUNT(*) FROM tasks')
+            cursor.execute('SELECT COUNT(*) FROM tasks')
             # Fetch the result
             row_count = cursor.fetchone()[0]
 
@@ -132,5 +145,7 @@ class TaskManager:
         """
         with self as conn:
             cursor = conn.cursor()
-            cursor.execute('DELETE FROM tasks;')
+            cursor.execute('''DELETE FROM tasks''')
+            # Reset IDS to 1
+            cursor.execute(f"UPDATE sqlite_sequence SET seq = 0 WHERE name = 'tasks'")
             conn.commit()

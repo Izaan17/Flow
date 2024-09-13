@@ -81,7 +81,7 @@ class TaskContextMenu:
             edit_task_form.add_widget(task_name_entry, [NonEmptyValidator()])
             edit_task_form.add_widget(task_source_entry)
             edit_task_form.add_widget(task_link_entry)
-            edit_task_form.add_widget(hour_entry, [NonEmptyValidator(), NumericValidator(1, 23)])
+            edit_task_form.add_widget(hour_entry, [NonEmptyValidator(), NumericValidator(0, 23)])
             edit_task_form.add_widget(minute_entry, [NonEmptyValidator(), NumericValidator(0, 60)])
 
             self.master.wait_window(edit_task_form)

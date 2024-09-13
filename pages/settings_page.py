@@ -42,25 +42,24 @@ class SettingsPage(Page):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, page_title="Settings",
                          subheading="Edit all your settings here.")
-
         self.all_icon_sizes = ["24x24", "50x50", "100x100", "100x125", "125x100", "125x125", "200x200"]
 
         self.drop_downs_frame = customtkinter.CTkFrame(self, fg_color='white')
         self.drop_downs_frame.pack(fill='both', expand=True)
 
-        self.show_image_preview = create_switch(self.drop_downs_frame, "Show Image Preview", "show_img_preview",
-                                                backup_default="True")
+        self.show_image_preview_switch = create_switch(self.drop_downs_frame, "Show Image Preview", "show_img_preview",
+                                                       backup_default="True")
 
-        self.allow_full_directory_deletion = create_switch(self.drop_downs_frame, "Allow Full Directory Deletion",
+        self.allow_full_directory_deletion_switch = create_switch(self.drop_downs_frame, "Allow Full Directory Deletion",
                                                            "allow_full_dir_deletion")
 
         # Create dropdowns with a generic handler
-        self.max_items_per_row = create_dropdown(
+        self.max_items_per_row_drop_down = create_dropdown(
             self.drop_downs_frame, "Max Items Per Row", [str(i) for i in range(5, 11)],
             partial(on_setting_change, "max_items_per_row"), "max_items_per_row", 5
         )
 
-        self.max_text_length = create_dropdown(
+        self.max_text_length_drop_down = create_dropdown(
             self.drop_downs_frame, "Max Text Length", [str(i) for i in range(10, 50)],
             partial(on_setting_change, "max_text_length"), "max_text_length", 30
         )

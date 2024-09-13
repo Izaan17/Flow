@@ -12,7 +12,7 @@ import utils.widget_utils
 from constants import ALL_TASK_SOURCES
 from database.task_manager import TaskManager
 from models import Task
-from task_context_menu import TaskContextMenu
+from widgets.task_context_menu import TaskContextMenu
 from utils.directory_manager import get_app_dir
 from utils.icon import load_icon
 from utils.online_icalendar import OnlineICalendar
@@ -68,6 +68,7 @@ class TasksPage(Page):
                                                                        fg_color='transparent', width=800,
                                                                        scrollbar_button_color='white')
         self.tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+
         self.task_context_menu = TaskContextMenu(self.tasks_scrollable_frame, self.task_manager)
 
         self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white', width=10)
@@ -341,7 +342,8 @@ class TasksPage(Page):
         if messagebox.askyesno("Delete all tasks", "Are you sure you want to delete all of your tasks?"):
             for child in self.tasks_scrollable_frame.winfo_children():
                 # Destroy the child
-                child.destroy()
+                if isinstance(child, TaskCheckBox):
+                    child.destroy()
             # Delete table
             self.task_manager.clear_table()
             # Delete all children in tasks information
@@ -354,7 +356,7 @@ class TasksPage(Page):
             check_box.pack(fill='both', expand=True, pady=(0, 10))
 
     def update_count_label(self):
-        self.task_count_label.configure(text=f"Count: {self.task_manager.get_task_count()}")
+        self.task_count_label.configure(text=f"Count: {len(self.tasks_scrollable_frame.winfo_children()) - 1}")
         self.after(100, self.update_count_label)
 
 

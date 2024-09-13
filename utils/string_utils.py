@@ -4,6 +4,9 @@ import string
 
 
 def shorten_text(text, max_length):
+    if not text:
+        return ''
+
     if len(text) <= max_length:
         return text
     else:

@@ -95,27 +95,28 @@ class TaskCheckBox(customtkinter.CTkFrame):
         time_difference = due_date_obj - now
         difference_from_now = (due_date_obj.date() - now.date()).days
         seconds_difference = time_difference.total_seconds()
+        strf_time_format = '%I:%M %p'
 
         if seconds_difference < 0:
             if difference_from_now == 0:
-                # Due earlier today
+                # Was due earlier today
                 text_color = '#D64045'  # Deep coral
-                label_text = f"Today at {due_date_obj.strftime('%I:%M %p')} (Overdue)"
+                label_text = f"Today at {due_date_obj.strftime(strf_time_format)} (Overdue)"
             elif difference_from_now == -1:
                 # Due yesterday
                 text_color = '#D64045'  # Deep coral
-                label_text = f"Yesterday at {due_date_obj.strftime('%I:%M %p')} (Overdue)"
+                label_text = f"Yesterday at {due_date_obj.strftime(strf_time_format)} (Overdue)"
             else:
                 # Due on a previous day
                 text_color = '#D64045'  # Deep coral
                 label_text = f"{parse_days_difference(difference_from_now)}, {get_time_suffix_string(due_date_obj)} (Overdue)"
         elif difference_from_now == 0:
-            # Due later today
+            # Is due later today
             text_color = '#17A2B8'  # Vibrant teal
-            label_text = f"Today at {due_date_obj.strftime('%I:%M %p')}"
+            label_text = f"Today at {due_date_obj.strftime(strf_time_format)}"
         elif difference_from_now == 1:
             text_color = '#FFA300'  # Warm amber
-            label_text = f"Tomorrow at {due_date_obj.strftime('%I:%M %p')}"
+            label_text = f"Tomorrow at {due_date_obj.strftime(strf_time_format)}"
         elif 1 < difference_from_now <= 3:
             text_color = '#FFA300'  # Warm amber
             label_text = f"{parse_days_difference(difference_from_now)}, {get_time_suffix_string(due_date_obj)}"
@@ -136,7 +137,7 @@ class TaskCheckBox(customtkinter.CTkFrame):
 
 if __name__ == '__main__':
     root = customtkinter.CTk()
-    task = Task(0, 'Task Name', 'Source Label', 'www.google.com', '09-25-2024-10-20')
-    t = TaskCheckBox(root, task)
+    test_task = Task(0, 'Task Name', 'Source Label', 'www.google.com', '09-25-2024-10-20')
+    t = TaskCheckBox(root, test_task)
     t.pack(expand=True, fill='x', padx=10)
     root.mainloop()

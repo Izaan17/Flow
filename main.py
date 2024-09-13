@@ -1,4 +1,6 @@
 import os
+import sys
+import tkinter
 from tkinter import PhotoImage
 
 import customtkinter
@@ -14,18 +16,34 @@ from widgets.menu_button import MenuButton
 
 
 class Flow(customtkinter.CTk):
+    APP_NAME = 'Flow'
     def __init__(self):
         super().__init__()
         # Set light mode
         customtkinter.set_appearance_mode('light')
         customtkinter.set_default_color_theme('blue')
 
+        # Set app settings for darwin
+        if sys.platform == 'darwin':
+            # Get rid of the "Python" menu
+            menu = tkinter.Menu()
+            python_menu = tkinter.Menu(menu, name='apple')
+            menu.add_cascade(menu=python_menu)
+            self.configure(menu=menu)
+            python_menu.destroy()
+
+            app_menu = tkinter.Menu(menu)
+            menu.add_cascade(menu=app_menu, label=self.APP_NAME)
+            app_menu.add_command(label=f'About {self.APP_NAME}')
+            app_menu.add_separator()
+            app_menu.add_command(label=f'Quit {self.APP_NAME}', command=self.destroy)
+
         # Initialize window
         self.wm_title('Flow')
         self.geometry("1300x650")
         self.configure(fg_color='white')
         self.app_icon = PhotoImage(file=f'{utils.directory_manager.get_icon_dir()}{os.sep}app_icon.png')
-        self.wm_iconphoto(False, self.app_icon)
+        self.wm_iconphoto(True, self.app_icon)
 
         # Create frames
         self.main_frame = customtkinter.CTkFrame(self)

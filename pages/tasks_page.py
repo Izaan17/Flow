@@ -12,19 +12,20 @@ import utils.widget_utils
 from constants import ALL_TASK_SOURCES
 from database.task_manager import TaskManager
 from models import Task
-from widgets.task_context_menu import TaskContextMenu
 from utils.directory_manager import get_app_dir
 from utils.icon import load_icon
 from utils.online_icalendar import OnlineICalendar
 from utils.settings import settings
 from widgets.buttons import DefaultButton
 from widgets.entry import DefaultEntry
-from widgets.hyper_link import HyperLink
 from widgets.page import Page
 from widgets.popups.PopupForm import PopupForm
 from widgets.popups.Popups import SuccessPopup, ErrorPopup
 from widgets.popups.validation.widget_data_validator import NonEmptyValidator, NumericValidator
 from widgets.task_check_box import TaskCheckBox
+from widgets.task_check_box_context_menu import TaskContextMenu
+from widgets.task_check_box_displayer import TaskCheckBoxDisplayer
+
 
 class TasksPage(Page):
     def __init__(self, *args, **kwargs):
@@ -69,9 +70,13 @@ class TasksPage(Page):
                                                                        scrollbar_button_color='white')
         self.tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
 
+        self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white', width=10)
+
+        # Init task context menu
         self.task_context_menu = TaskContextMenu(self.tasks_scrollable_frame, self.task_manager)
 
-        self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white', width=10)
+        # Initialize task displayer
+        self.task_check_box_displayer = TaskCheckBoxDisplayer(self.tasks_scrollable_frame, self.task_info_frame)
 
         # Load checkboxes threaded
         self.after(5, self.load_saved_tasks)
@@ -141,85 +146,7 @@ class TasksPage(Page):
 
             # Create and pack the new checkbox
             new_check_box = TaskCheckBox(self.tasks_scrollable_frame, created_task)
-            self.init_checkbox(new_check_box)
             new_check_box.pack(fill='both', expand=True, pady=(0, 10))
-
-    def init_checkbox(self, new_check_box: TaskCheckBox):
-        header_font = ('Roboto', 12)
-        header_color = 'grey'
-        default_wrap_length = 380
-        default_justification = 'left'
-
-        def display_details(event):
-            # Show info only when user clicks on a checkbox and hide it if clicked on same one.
-            self.task_info_frame.pack(side='right', fill='both', expand=True)
-
-            self.clear_info_frame()
-
-            self.task_name_label = customtkinter.CTkLabel(self.task_info_frame,
-                                                          text=new_check_box.task.name, font=('Roboto', 26),
-                                                          wraplength=default_wrap_length,
-                                                          justify=default_justification)
-            self.task_name_label.pack()
-
-            self.about_label = customtkinter.CTkLabel(self.task_info_frame, text="About",
-                                                      font=('Roboto bold', 14, 'bold'),
-                                                      wraplength=default_wrap_length,
-                                                      justify=default_justification)
-            self.about_label.pack()
-
-            self.source_header_label = customtkinter.CTkLabel(self.task_info_frame, text="Source",
-                                                              font=header_font,
-                                                              text_color=header_color,
-                                                              wraplength=default_wrap_length,
-                                                              justify=default_justification)
-            self.source_header_label.pack(anchor='w')
-
-            self.source_label = customtkinter.CTkLabel(self.task_info_frame, text=new_check_box.task.source,
-                                                       wraplength=default_wrap_length,
-                                                       justify=default_justification)
-            self.source_label.pack(anchor='w')
-
-            self.link_header_label = customtkinter.CTkLabel(self.task_info_frame, text="Link", font=header_font,
-                                                            text_color=header_color, wraplength=default_wrap_length,
-                                                            justify=default_justification)
-            self.link_header_label.pack(anchor='w')
-
-            self.link_hyperlink = HyperLink(self.task_info_frame, text=new_check_box.task.link,
-                                            url=new_check_box.task.link, wraplength=default_wrap_length,
-                                            justify=default_justification)
-            self.link_hyperlink.pack(anchor='w')
-
-            self.due_date_header = customtkinter.CTkLabel(self.task_info_frame, text="Due Date", font=header_font,
-                                                          text_color=header_color, wraplength=default_wrap_length,
-                                                          justify=default_justification)
-            self.due_date_header.pack(anchor='w')
-
-            self.task_due_date = new_check_box.task.due_date
-            self.task_due_date_label = customtkinter.CTkLabel(
-                self.task_info_frame,
-                text=f"{utils.date.get_day_of_week_string(self.task_due_date)}, "
-                     f"{utils.date.get_month_string(self.task_due_date)} "
-                     f"{utils.date.get_day_string(self.task_due_date)}, "
-                     f"{utils.date.get_time_suffix_string(self.task_due_date)}",
-                wraplength=default_wrap_length, justify=default_justification)
-            self.task_due_date_label.pack(anchor='w')
-
-        # On click of the checkbox set the status in the db
-        new_check_box.checkbox.configure(command=lambda: self.task_manager.toggle_task_status(new_check_box.task))
-
-        # Configure labels to have word wrapping and justification
-        new_check_box.source_label.configure(wraplength=default_wrap_length, justify=default_justification)
-        new_check_box.link_hyperlink.configure(wraplength=default_wrap_length, justify=default_justification)
-        new_check_box.due_date_label.configure(wraplength=default_wrap_length, justify=default_justification)
-
-        # Assign opening details menu to left-click
-        utils.widget_utils.bind_all(new_check_box, "<Double Button-1>", display_details)
-
-    def clear_info_frame(self):
-        # Clear details frame
-        for child in self.task_info_frame.winfo_children():
-            child.destroy()
 
     def import_tasks_callback(self):
         # Create a new toplevel
@@ -329,7 +256,6 @@ class TasksPage(Page):
                     self.task_manager.add_task(task_box.task)
                     # Pack the checkbox
                     new_task_box = TaskCheckBox(self.tasks_scrollable_frame, task=task_box.task)
-                    self.init_checkbox(new_task_box)
                     new_task_box.pack(fill='x', expand=True, pady=(0, 10))
 
             # Close all
@@ -347,12 +273,11 @@ class TasksPage(Page):
             # Delete table
             self.task_manager.clear_table()
             # Delete all children in tasks information
-            self.clear_info_frame()
+            self.task_check_box_displayer.clear_info_frame()
 
     def load_saved_tasks(self):
         for task in self.task_manager.get_all_tasks():
             check_box = TaskCheckBox(self.tasks_scrollable_frame, task)
-            self.init_checkbox(check_box)
             check_box.pack(fill='both', expand=True, pady=(0, 10))
 
     def update_count_label(self):

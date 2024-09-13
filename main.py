@@ -35,7 +35,7 @@ class Flow(customtkinter.CTk):
                                                       corner_radius=0)
         self.left_menu_frame.pack(side='left', fill='both')
 
-        self.content_frame = customtkinter.CTkFrame(master=self.main_frame, fg_color='blue', corner_radius=0)
+        self.content_frame = customtkinter.CTkFrame(master=self.main_frame, corner_radius=0)
         self.content_frame.pack(side='right', fill='both', expand=True)
 
         # Initialize pages

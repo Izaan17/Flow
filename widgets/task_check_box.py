@@ -40,14 +40,14 @@ class TaskCheckBox(customtkinter.CTkFrame):
         """Create and pack the checkbox widget."""
         self.checkbox = customtkinter.CTkCheckBox(
             self,
-            fg_color='#52bf90',  # Primary color
-            hover_color='#398564',  # Darker shade on hover
-            border_color='#49ab81',  # Light border color
+            fg_color='#1ABC9C',  # A vibrant teal for the checkbox color
+            hover_color='#16A085',  # Darker teal for hover effect
+            border_color='#48C9B0',  # Lighter teal for the border
             border_width=2,
             corner_radius=20,
             font=('Arial', 14, 'bold'),  # Modern font
             text=self.task.name,
-            text_color='black',
+            text_color='#2C3E50',  # Darker navy for the text color
             variable=self.task_status_var,
             onvalue=1,
             offvalue=0

@@ -30,7 +30,7 @@ class TaskManager:
                 source TEXT,
                 task_link TEXT,
                 due_date TEXT DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now')),
-                is_complete INTEGER DEFAULT 0
+                is_complete BOOLEAN DEFAULT 0
             )
             ''')
             conn.commit()

@@ -20,10 +20,6 @@ class TaskCheckBox(customtkinter.CTkFrame):
             corner_radius=8,
         )
 
-        # Initialize StringVars and other variables
-        self.task_name_var = customtkinter.StringVar(value=task.name)
-        self.task_source_var = customtkinter.StringVar(value=task.source)
-        self.task_link_var = customtkinter.StringVar(value=task.link)
         self.task_status_var = customtkinter.IntVar(value=task.is_complete)
         self.task_due_date = task.due_date  # Store the due date string
 
@@ -50,7 +46,7 @@ class TaskCheckBox(customtkinter.CTkFrame):
             border_width=2,
             corner_radius=20,
             font=('Arial', 14, 'bold'),  # Modern font
-            textvariable=self.task_name_var,
+            text=self.task.name,
             text_color='black',
             variable=self.task_status_var,
             onvalue=1,
@@ -67,7 +63,7 @@ class TaskCheckBox(customtkinter.CTkFrame):
         """Create and pack the source label widget."""
         self.source_label = customtkinter.CTkLabel(
             self,
-            textvariable=self.task_source_var,
+            text=self.task.source,
             font=('Arial', 12),  # Font size for readability
             text_color='#8ca19e'  # Dark grey for text
         )
@@ -77,7 +73,7 @@ class TaskCheckBox(customtkinter.CTkFrame):
         """Create and pack the hyperlink widget."""
         self.link_hyperlink = HyperLink(
             self,
-            text=shorten_text(self.task_link_var.get(), 30),
+            text=shorten_text(self.task.link, 30),
             url=self.task.link,
         )
         self.link_hyperlink.pack(side='left', padx=8)

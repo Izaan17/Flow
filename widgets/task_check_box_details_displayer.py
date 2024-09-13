@@ -28,7 +28,7 @@ class TaskCheckBoxDisplayer:
         if not isinstance(widget, TaskCheckBox):
             return
 
-        # If the frame is already packed and it's the same widget, close it
+        # If the frame is already packed, and it's the same widget, close it
         if self.details_frame.winfo_ismapped() and widget == self.active_task_check_box:
             self.details_frame.pack_forget()
             self.active_task_check_box = None

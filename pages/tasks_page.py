@@ -24,7 +24,7 @@ from widgets.popups.Popups import SuccessPopup, ErrorPopup
 from widgets.popups.validation.widget_data_validator import NonEmptyValidator, NumericValidator
 from widgets.task_check_box import TaskCheckBox
 from widgets.task_check_box_context_menu import TaskContextMenu
-from widgets.task_check_box_displayer import TaskCheckBoxDisplayer
+from widgets.task_check_box_details_displayer import TaskCheckBoxDisplayer
 
 
 class TasksPage(Page):
@@ -70,7 +70,7 @@ class TasksPage(Page):
                                                                        scrollbar_button_color='white')
         self.tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
 
-        self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white', width=10)
+        self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white')
 
         # Init task context menu
         self.task_context_menu = TaskContextMenu(self.tasks_scrollable_frame, self.task_manager)

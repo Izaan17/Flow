@@ -6,7 +6,7 @@ from widgets.hyper_link import HyperLink
 from widgets.task_check_box import TaskCheckBox
 
 
-class TaskCheckBoxDisplayer:
+class TaskCheckBoxDetailsDisplayer:
     def __init__(self, master: Any, details_frame: customtkinter.CTkFrame):
         self.master = master
         self.details_frame = details_frame

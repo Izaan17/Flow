@@ -24,7 +24,7 @@ from widgets.popups.Popups import SuccessPopup, ErrorPopup
 from widgets.popups.validation.widget_data_validator import NonEmptyValidator, NumericValidator
 from widgets.task_check_box import TaskCheckBox
 from widgets.task_check_box_context_menu import TaskContextMenu
-from widgets.task_check_box_details_displayer import TaskCheckBoxDisplayer
+from widgets.task_check_box_details_displayer import TaskCheckBoxDetailsDisplayer
 
 
 class TasksPage(Page):
@@ -76,7 +76,7 @@ class TasksPage(Page):
         self.task_context_menu = TaskContextMenu(self.tasks_scrollable_frame, self.task_manager)
 
         # Initialize task displayer
-        self.task_check_box_displayer = TaskCheckBoxDisplayer(self.tasks_scrollable_frame, self.task_info_frame)
+        self.task_check_box_displayer = TaskCheckBoxDetailsDisplayer(self.tasks_scrollable_frame, self.task_info_frame)
 
         # Load checkboxes threaded
         self.after(5, self.load_saved_tasks)

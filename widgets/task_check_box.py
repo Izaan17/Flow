@@ -8,7 +8,7 @@ from widgets.hyper_link import HyperLink
 
 
 class TaskCheckBox(customtkinter.CTkFrame):
-    """A Frame containing a CheckBox and details of a task."""
+    """A Frame displaying and containing a CheckBox and a task."""
 
     def __init__(self, master: Any, task: Task, **kwargs: Any):
         super().__init__(master, **kwargs)

@@ -129,13 +129,13 @@ class TaskManager:
             cursor.execute('''DELETE FROM tasks WHERE id = ?;''', (task.id,))
             conn.commit()
 
-    def set_task_status(self, task: Task, status: int):
+    def set_task_status(self, task: Task, status: int) -> None:
         with self as conn:
             cursor = conn.cursor()
             cursor.execute('UPDATE tasks SET is_complete = ? WHERE id = ?', (status, task.id))
             conn.commit()
 
-    def toggle_task_status(self, task: Task):
+    def toggle_task_status(self, task: Task) -> None:
         new_status = 0 if task.is_complete == 1 else 1
         self.set_task_status(task, new_status)
 

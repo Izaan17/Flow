@@ -9,11 +9,11 @@ class TaskManager:
         self.db_name = db_name
         self.init_db()
 
-    def __enter__(self):
+    def __enter__(self) -> sqlite3.Connection:
         self.conn = sqlite3.connect(self.db_name)
         return self.conn
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         if self.conn:
             self.conn.close()
 

@@ -23,6 +23,9 @@ class TaskCheckBoxDetailsDisplayer:
         widget = event.widget
 
         while widget is not self.master and not isinstance(widget, TaskCheckBox) and widget:
+            if isinstance(widget, str):
+                return
+
             widget = widget.master
 
         if not isinstance(widget, TaskCheckBox):

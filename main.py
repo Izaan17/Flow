@@ -5,6 +5,7 @@ from tkinter import PhotoImage
 
 import customtkinter
 
+import constants
 import utils.directory_manager
 from pages.curriculum_page import CurriculumPage
 from pages.notes_page import NotesPage
@@ -16,7 +17,6 @@ from widgets.menu_button import MenuButton
 
 
 class Flow(customtkinter.CTk):
-    APP_NAME = 'Flow'
     def __init__(self):
         super().__init__()
         # Set light mode
@@ -33,10 +33,10 @@ class Flow(customtkinter.CTk):
             python_menu.destroy()
 
             app_menu = tkinter.Menu(menu)
-            menu.add_cascade(menu=app_menu, label=self.APP_NAME)
-            app_menu.add_command(label=f'About {self.APP_NAME}')
+            menu.add_cascade(menu=app_menu, label=constants.APP_NAME)
+            app_menu.add_command(label=f'About {constants.APP_NAME}')
             app_menu.add_separator()
-            app_menu.add_command(label=f'Quit {self.APP_NAME}', command=self.destroy)
+            app_menu.add_command(label=f'Quit {constants.APP_NAME}', command=self.destroy)
 
         # Initialize window
         self.wm_title('Flow')

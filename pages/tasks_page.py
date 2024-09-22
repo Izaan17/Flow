@@ -31,10 +31,10 @@ from widgets.task_check_box_details_displayer import TaskCheckBoxDetailsDisplaye
 class TasksPage(Page):
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, page_title="My Tasks")
+        super().__init__(*args, **kwargs, page_title='My Tasks')
 
         self.TASKS_LIMIT_PER_PAGE = customtkinter.IntVar()
-        self.TASKS_LIMIT_PER_PAGE.set((settings.get_setting("max_items_per_row", 10)))
+        self.TASKS_LIMIT_PER_PAGE.set((settings.get_setting('max_tasks_per_page', 10)))
 
         # Initialize DB
         self.task_manager = TaskManager(f'{get_app_dir()}{os.sep}tasks.db')
@@ -72,6 +72,20 @@ class TasksPage(Page):
         self.tasks_per_page_label = customtkinter.CTkLabel(self.top_buttons_frame, textvariable=self.TASKS_LIMIT_PER_PAGE)
         self.tasks_per_page_label.pack(side='right', padx=10)
 
+        # Page handler
+        self.page_controls_frame = customtkinter.CTkFrame(self, fg_color='transparent')
+        self.page_controls_frame.pack(expand=False, fill='x')
+
+        self.page_count = customtkinter.CTkLabel(self.page_controls_frame, text=f'{self.current_page}/{self.total_pages}')
+        self.page_count.pack()
+
+        # Next page button
+        self.next_page_button = DefaultButton(self.page_controls_frame, text='>', command=self.on_next)
+        self.next_page_button.pack(side='right', padx=20)
+
+        self.prev_page_button = DefaultButton(self.page_controls_frame, text='<', command=self.on_prev)
+        self.prev_page_button.pack(side='left', padx=20)
+
         self.tasks_list_and_info_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.tasks_list_and_info_frame.pack(fill='both', expand=True)
 
@@ -87,20 +101,6 @@ class TasksPage(Page):
 
         # Initialize task displayer
         self.task_check_box_displayer = TaskCheckBoxDetailsDisplayer(self.tasks_scrollable_frame, self.task_info_frame)
-
-        # Page handler
-        self.page_controls_frame = customtkinter.CTkFrame(self, fg_color='transparent')
-        self.page_controls_frame.pack(expand=True, fill='x')
-
-        self.page_count = customtkinter.CTkLabel(self.page_controls_frame, text=f'{self.current_page}/{self.total_pages}')
-        self.page_count.pack()
-
-        # Next page button
-        self.next_page_button = DefaultButton(self.page_controls_frame, text='>', command=self.on_next)
-        self.next_page_button.pack(side='right', padx=20)
-
-        self.prev_page_button = DefaultButton(self.page_controls_frame, text='<', command=self.on_prev)
-        self.prev_page_button.pack(side='left', padx=20)
 
         # Load checkboxes threaded
         self.after(5, self.load_saved_tasks)

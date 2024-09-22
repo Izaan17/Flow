@@ -72,19 +72,6 @@ class TasksPage(Page):
         self.tasks_per_page_label = customtkinter.CTkLabel(self.top_buttons_frame, textvariable=self.TASKS_LIMIT_PER_PAGE)
         self.tasks_per_page_label.pack(side='right', padx=10)
 
-        # Page handler
-        self.page_controls_frame = customtkinter.CTkFrame(self, fg_color='transparent')
-        self.page_controls_frame.pack(expand=False, fill='x')
-
-        self.page_count = customtkinter.CTkLabel(self.page_controls_frame, text=f'{self.current_page}/{self.total_pages}')
-        self.page_count.pack()
-
-        # Next page button
-        self.next_page_button = DefaultButton(self.page_controls_frame, text='>', command=self.on_next)
-        self.next_page_button.pack(side='right', padx=20)
-
-        self.prev_page_button = DefaultButton(self.page_controls_frame, text='<', command=self.on_prev)
-        self.prev_page_button.pack(side='left', padx=20)
 
         self.tasks_list_and_info_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.tasks_list_and_info_frame.pack(fill='both', expand=True)
@@ -93,6 +80,37 @@ class TasksPage(Page):
                                                                        fg_color='transparent', width=800,
                                                                        scrollbar_button_color='white')
         self.tasks_scrollable_frame.pack(fill='both', expand=True, padx=(5, 10), pady=(5, 5), side='left')
+
+        # Page handler
+        self.page_controls_frame = customtkinter.CTkFrame(self)
+        self.page_controls_frame.pack(expand=False, fill='x', pady=10)
+
+
+        self.prev_page_button = customtkinter.CTkButton(self.page_controls_frame, text='Previous',
+                                              command=self.on_prev,
+                                              image=load_icon("arrow-left.png"), fg_color='transparent',
+                                                        text_color='black')
+        self.prev_page_button.pack(side='left', padx=15)
+
+        self.page_count = customtkinter.CTkLabel(self.page_controls_frame, text=f'{self.current_page}/{self.total_pages}',
+                                                 font=('', 14))
+        self.page_count.pack(side='left', padx=20)
+
+        self.next_page_button = customtkinter.CTkButton(self.page_controls_frame, text='Next',
+                                              command=self.on_next,
+                                              image=load_icon("arrow-right.png"), fg_color='transparent',
+                                                        text_color='black')
+        self.next_page_button.pack(side='left', padx=15)
+
+        self.go_to_page_frame = customtkinter.CTkFrame(self.page_controls_frame, fg_color='transparent')
+        self.go_to_page_frame.pack(side='right', padx=20)
+
+        self.go_to_page_entry = DefaultEntry(self.go_to_page_frame, width=100, placeholder_text='Page Number')
+        self.go_to_page_entry.pack(side='left', padx=(0, 5))
+
+        self.go_to_page_button = DefaultButton(self.go_to_page_frame, text='Go',
+                                               command=self.go_to_page)
+        self.go_to_page_button.pack(side='left')
 
         self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white')
 
@@ -324,6 +342,19 @@ class TasksPage(Page):
     def update_page_buttons(self):
         self.prev_page_button.configure(state='normal' if self.current_page > 1 else 'disabled')
         self.next_page_button.configure(state='normal' if self.current_page < self.total_pages else 'disabled')
+        self.go_to_page_entry.configure(state='normal' if self.total_pages > 1 else 'disabled')
+        self.go_to_page_button.configure(state='normal' if self.total_pages > 1 else 'disabled')
+
+    def go_to_page(self):
+        try:
+            page = int(self.go_to_page_entry.get())
+            if 1 <= page <= self.total_pages:
+                self.current_page = page
+                self.load_saved_tasks()
+            else:
+                raise ValueError
+        except ValueError:
+            messagebox.showerror("Invalid Page", f"Please enter a valid page number between 1 and {self.total_pages}")
 
     def load_saved_tasks(self):
         self.clear_task_widgets()

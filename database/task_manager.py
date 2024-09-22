@@ -86,7 +86,22 @@ class TaskManager:
         """
         with self as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM tasks')
+            cursor.execute('''
+             SELECT *
+             FROM tasks
+             ORDER BY id DESC''')
+            rows = cursor.fetchall()
+            return [Task(_id=row[0], name=row[1], source=row[2], link=row[3], due_date=row[4], is_complete=row[5]) for row in rows]
+
+    def get_tasks(self, amount: int = 20, offset: int = 0) -> List[Task]:
+        with self as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+             SELECT *
+             FROM tasks
+             ORDER BY id DESC
+             LIMIT ?
+             OFFSET ?''', (amount, offset))
             rows = cursor.fetchall()
             return [Task(_id=row[0], name=row[1], source=row[2], link=row[3], due_date=row[4], is_complete=row[5]) for row in rows]
 

@@ -71,6 +71,9 @@ class SettingsPage(Page):
         self.icon_size_drop_down.set(
             f"{settings.get_setting('icon_width', 50)}x{settings.get_setting('icon_height', 50)}")
 
+        self.max_tasks_per_page = create_dropdown(self.drop_downs_frame, 'Max Tasks Per Page', [str(i) for i in range(5, 51)],
+                                                  partial(on_setting_change, 'max_tasks_per_page'), 'max_tasks_per_page', 10)
+
 
 if __name__ == '__main__':
     app = customtkinter.CTk()

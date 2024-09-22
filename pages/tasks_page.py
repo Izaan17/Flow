@@ -1,4 +1,5 @@
 import datetime
+import math
 import os
 from tkinter import messagebox
 
@@ -28,11 +29,17 @@ from widgets.task_check_box_details_displayer import TaskCheckBoxDetailsDisplaye
 
 
 class TasksPage(Page):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, page_title="My Tasks")
 
+        self.TASKS_LIMIT_PER_PAGE = customtkinter.IntVar()
+        self.TASKS_LIMIT_PER_PAGE.set((settings.get_setting("max_items_per_row", 10)))
+
         # Initialize DB
         self.task_manager = TaskManager(f'{get_app_dir()}{os.sep}tasks.db')
+        self.total_pages = self.calculate_total_pages()
+        self.current_page = 1
 
         self.current_date = datetime.datetime.now().strftime("%m-%d-%Y-%H-%M")
         # Change subheading
@@ -60,7 +67,10 @@ class TasksPage(Page):
 
         self.task_count_label = customtkinter.CTkLabel(self.top_buttons_frame, text=f"Count: N/A",
                                                        height=50)
-        self.task_count_label.pack(anchor='e')
+        self.task_count_label.pack(side='left')
+
+        self.tasks_per_page_label = customtkinter.CTkLabel(self.top_buttons_frame, textvariable=self.TASKS_LIMIT_PER_PAGE)
+        self.tasks_per_page_label.pack(side='right', padx=10)
 
         self.tasks_list_and_info_frame = customtkinter.CTkFrame(self, fg_color='transparent')
         self.tasks_list_and_info_frame.pack(fill='both', expand=True)
@@ -73,10 +83,24 @@ class TasksPage(Page):
         self.task_info_frame = customtkinter.CTkFrame(self.tasks_list_and_info_frame, fg_color='white')
 
         # Init task context menu
-        self.task_context_menu = TaskContextMenu(self.tasks_scrollable_frame, self.task_manager)
+        self.task_context_menu = TaskContextMenu(self.tasks_scrollable_frame, self.task_manager, self)
 
         # Initialize task displayer
         self.task_check_box_displayer = TaskCheckBoxDetailsDisplayer(self.tasks_scrollable_frame, self.task_info_frame)
+
+        # Page handler
+        self.page_controls_frame = customtkinter.CTkFrame(self, fg_color='transparent')
+        self.page_controls_frame.pack(expand=True, fill='x')
+
+        self.page_count = customtkinter.CTkLabel(self.page_controls_frame, text=f'{self.current_page}/{self.total_pages}')
+        self.page_count.pack()
+
+        # Next page button
+        self.next_page_button = DefaultButton(self.page_controls_frame, text='>', command=self.on_next)
+        self.next_page_button.pack(side='right', padx=20)
+
+        self.prev_page_button = DefaultButton(self.page_controls_frame, text='<', command=self.on_prev)
+        self.prev_page_button.pack(side='left', padx=20)
 
         # Load checkboxes threaded
         self.after(5, self.load_saved_tasks)
@@ -114,25 +138,20 @@ class TasksPage(Page):
         # Wait for window to be destroyed or submitted
         self.wait_window(task_popup_form)
 
-        # Check if the user pressed the submit button if yes get the data else do nothing
         if task_popup_form.data_ready:
             task_name = task_popup_form.get_data(task_name_entry)
             task_source = task_popup_form.get_data(task_source_entry)
             task_link = task_popup_form.get_data(task_link_entry)
 
             # Get date from calendar and time from entries
-            due_date_str = due_date_calendar.get_date()  # e.g., '9/11/24'
-            hour_str = task_popup_form.get_data(hour_entry).zfill(2)  # Ensure two digits
-            minute_str = task_popup_form.get_data(minute_entry).zfill(2)  # Ensure two digits
+            due_date_str = due_date_calendar.get_date()
+            hour_str = task_popup_form.get_data(hour_entry).zfill(2)
+            minute_str = task_popup_form.get_data(minute_entry).zfill(2)
 
-            # Combine date and time into one string
             combined_date_time_str = f"{due_date_str} {hour_str}:{minute_str}"
-
-            # Define format strings
-            original_format_string = '%m/%d/%y %H:%M'  # Format used by dateentry.Calendar
+            original_format_string = '%m/%d/%y %H:%M'
             desired_format_string = '%m-%d-%Y-%H-%M'
 
-            # Parse and format the date
             try:
                 parsed_date = datetime.datetime.strptime(combined_date_time_str, original_format_string)
                 formatted_date = parsed_date.strftime(desired_format_string)
@@ -143,10 +162,24 @@ class TasksPage(Page):
             # Create the task
             created_task = Task(0, task_name, task_source, task_link, formatted_date)
             task_id = self.task_manager.add_task(created_task)
+            self.update_pagination()
 
-            # Create and pack the new checkbox
-            new_check_box = TaskCheckBox(self.tasks_scrollable_frame, created_task)
-            new_check_box.pack(fill='both', expand=True, pady=(0, 10))
+            # Check if the current page has reached the task limit
+            task_count = self.task_manager.get_task_count()
+            total_pages = math.ceil(task_count / self.TASKS_LIMIT_PER_PAGE.get())
+
+            # If the new task should appear on the last page, move to it
+            if self.current_page != self.total_pages:
+                self.current_page = self.total_pages
+
+            self.load_saved_tasks()
+
+            self.update_page_count_label()  # Update the page count after adding the task
+
+    def add_check_box_widget(self, task: Task):
+        check_box = TaskCheckBox(self.tasks_scrollable_frame, task)
+        check_box.pack(fill='both', expand=True, pady=(0, 10))
+        check_box.get_checkbox().configure(command=lambda: self.task_manager.toggle_task_status(task))
 
     def import_tasks_callback(self):
         # Create a new toplevel
@@ -254,9 +287,8 @@ class TasksPage(Page):
                     task_box.checkbox.deselect()
                     # Add to checkbox manager
                     self.task_manager.add_task(task_box.task)
-                    # Pack the checkbox
-                    new_task_box = TaskCheckBox(self.tasks_scrollable_frame, task=task_box.task)
-                    new_task_box.pack(fill='x', expand=True, pady=(0, 10))
+
+                self.load_saved_tasks()
 
             # Close all
             new_top_level.destroy()
@@ -266,23 +298,73 @@ class TasksPage(Page):
 
     def clear_tasks_callback(self):
         if messagebox.askyesno("Delete all tasks", "Are you sure you want to delete all of your tasks?"):
-            for child in self.tasks_scrollable_frame.winfo_children():
-                # Destroy the child
-                if isinstance(child, TaskCheckBox):
-                    child.destroy()
-            # Delete table
+            self.clear_task_widgets()
             self.task_manager.clear_table()
-            # Delete all children in tasks information
             self.task_check_box_displayer.clear_info_frame()
+            self.update_pagination()
+            self.load_saved_tasks()
+
+    def clear_task_widgets(self):
+        for child in self.tasks_scrollable_frame.winfo_children():
+            # Destroy the child
+            if isinstance(child, TaskCheckBox):
+                child.destroy()
+
+    def calculate_total_pages(self):
+        total_pages = math.ceil(self.task_manager.get_task_count() / self.TASKS_LIMIT_PER_PAGE.get())
+        return total_pages if total_pages > 0 else 1
+
+    def update_pagination(self):
+        self.total_pages = self.calculate_total_pages()
+        if self.current_page > self.total_pages:
+            self.current_page = max(1, self.total_pages)
+        self.update_page_count_label()
+        self.update_page_buttons()
+
+    def update_page_buttons(self):
+        self.prev_page_button.configure(state='normal' if self.current_page > 1 else 'disabled')
+        self.next_page_button.configure(state='normal' if self.current_page < self.total_pages else 'disabled')
 
     def load_saved_tasks(self):
-        for task in self.task_manager.get_all_tasks():
-            check_box = TaskCheckBox(self.tasks_scrollable_frame, task)
-            check_box.pack(fill='both', expand=True, pady=(0, 10))
+        self.clear_task_widgets()
+
+        offset = (self.current_page - 1) * self.TASKS_LIMIT_PER_PAGE.get()
+        tasks = self.task_manager.get_tasks(self.TASKS_LIMIT_PER_PAGE.get(), offset)
+
+        for task in tasks:
+            self.add_check_box_widget(task)
+
+        self.update_pagination()
+
+    def on_next(self):
+        if self.current_page < self.total_pages:
+            self.current_page += 1
+            self.load_saved_tasks()
+
+    def on_prev(self):
+        if self.current_page > 1:
+            self.current_page -= 1
+            self.load_saved_tasks()
+
+    def update_page_count_label(self):
+        self.page_count.configure(text=f'{self.current_page}/{self.total_pages}')
 
     def update_count_label(self):
-        self.task_count_label.configure(text=f"Count: {len(self.tasks_scrollable_frame.winfo_children()) - 1}")
+        total_tasks = self.task_manager.get_task_count()
+        self.task_count_label.configure(text=f"Count: {total_tasks}")
         self.after(100, self.update_count_label)
+
+    # Method to handle task deletion
+    def on_task_deleted(self):
+        self.update_pagination()
+        self.load_saved_tasks()
+
+    # Method to handle task duplication
+    def on_task_duplicated(self):
+        self.update_pagination()
+        if self.current_page != self.total_pages:
+            self.current_page = self.total_pages
+        self.load_saved_tasks()
 
 
 if __name__ == '__main__':

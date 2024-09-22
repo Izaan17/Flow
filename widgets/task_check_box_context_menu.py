@@ -17,9 +17,10 @@ from widgets.task_check_box import TaskCheckBox
 
 
 class TaskContextMenu:
-    def __init__(self, master: Any, task_manager: TaskManager):
+    def __init__(self, master: Any, task_manager: TaskManager, tasks_page):
         self.master = master
         self.task_manager = task_manager
+        self.tasks_page = tasks_page
         self.selected_task_check_box: TaskCheckBox | None = None
 
         # Create the context menu
@@ -110,9 +111,11 @@ class TaskContextMenu:
             new_duped_check_box = TaskCheckBox(self.master, task=self.selected_task_check_box.task)
             new_duped_check_box.pack(fill='both', expand=True, pady=(0, 10))
             self.task_manager.add_task(new_duped_check_box.task)
+            self.tasks_page.on_task_duplicated()
 
     def delete_task(self):
         if self.selected_task_check_box:
             if tkinter.messagebox.askyesno("Delete Task", f"Are you sure you want to delete '{self.selected_task_check_box.task.name}'?"):
                 self.task_manager.delete_task(self.selected_task_check_box.task)
                 self.selected_task_check_box.destroy()
+                self.tasks_page.on_task_deleted()
